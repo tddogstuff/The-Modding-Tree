@@ -1,7 +1,7 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
+	name: "Mathmatical Progression",
+	id: "mthprog",
+	author: "ccon1416",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
 
@@ -43,6 +43,13 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	if (hasUpgrade('n', 11)) gain = gain.times(2)
+	if (hasUpgrade('n', 12)) gain = gain.times(upgradeEffect('n', 12))
+	if (hasUpgrade('n', 13)) gain = gain.times(upgradeEffect('n', 13))
+	if (hasUpgrade('n', 14)) gain = gain.times(1.2)
+	if (hasUpgrade('n', 24)) gain = gain.times(1.2)
+	if (hasUpgrade('a', 21)) gain = gain.times(upgradeEffect('a', 21))
+
 	return gain
 }
 
@@ -56,7 +63,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.points.gte(new Decimal("e10"))
 }
 
 
