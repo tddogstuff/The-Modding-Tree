@@ -1010,9 +1010,9 @@ addLayer("d", {
         12: {
             name: "Worsen condition",
             challengeDescription: "All Point multiplier become log(multi)^5" ,
-            goalDescription: "Reach 2.09e14 points",
+            goalDescription: "Reach 1e12 points",
             rewardDescription: "Unlock a new layer and raise Point Boost multiplicative buyable effect by 1.15",
-            canComplete: function() {return player.points.gte("2.09e14")},
+            canComplete: function() {return player.points.gte("1e12")},
             unlock() {return true},
         },
         },
