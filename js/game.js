@@ -69,7 +69,7 @@ function getNextAt(layer, canMax=false, useType = null) {
 		return decimalZero
 	}}
 
-function softcap(value, cap, power = 0.5) {
+function softcap(value, cap, power ) {
 	if (value.lte(cap)) return value
 	else
 		return value.pow(power).times(cap.pow(decimalOne.sub(power)))
@@ -342,8 +342,8 @@ function gameLoop(diff) {
 	for (let x = 0; x <= maxRow; x++){
 		for (item in TREE_LAYERS[x]) {
 			let layer = TREE_LAYERS[x][item]
-			player[layer].resetTime += diff
-			if (tmp[layer].passiveGeneration) generatePoints(layer, diff*tmp[layer].passiveGeneration);
+			if (!player[layer].unlocked) player[layer].first += diff;
+			if (tmp[layer].passiveGeneration) generatePoints(layer, (diff*tmp[layer].passiveGeneration));
 			if (layers[layer].update) layers[layer].update(diff);
 		}
 	}

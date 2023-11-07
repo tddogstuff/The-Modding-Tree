@@ -109,7 +109,6 @@ function updateTemp() {
 		if (tmp[layer].passiveGeneration === true) tmp[layer].passiveGeneration = 1 // new Decimal(true) = decimalZero
 
 	}
-
 	tmp.pointGen = getPointGen()
 	tmp.backgroundStyle = readData(backgroundStyle)
 

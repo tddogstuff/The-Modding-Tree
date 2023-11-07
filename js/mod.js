@@ -1,7 +1,8 @@
+
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
+	name: "Mathmatical Progression",
+	id: "mthprog",
+	author: "ccon1416",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
 
@@ -41,9 +42,31 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
+	let gain = new Decimal(1).times(buyableEffect('m',11))
+	if (hasUpgrade('n', 11)) gain = gain.times(2)
+	if (hasUpgrade('n', 12)) gain = gain.times(upgradeEffect('n', 12))
+	if (hasUpgrade('n', 13)) gain = gain.times(upgradeEffect('n', 13))
+	if (hasUpgrade('n', 14)) gain = gain.times(1.2)
+	if (hasUpgrade('n', 24)) gain = gain.times(1.2)
+	if (hasUpgrade('a', 21)) gain = gain.times(upgradeEffect('a', 21))
+	if (hasChallenge('m', 11)) gain = gain.times(challengeEffect('m',11))
+	if (player.d.unlocked) gain = gain.times(tmp.d.effect)
+	if (player.e.unlocked) gain = gain.times(tmp.e.effect)
+	if (hasUpgrade('m', 61)) gain = gain.times(5)
 
-	let gain = new Decimal(1)
-	return gain
+
+	let power = new Decimal(1)
+	if (hasUpgrade('m', 42)) power = power.times(1.05)
+	if (inChallenge('m', 11)) power = power.times(0.5)
+	if (inChallenge('d',12)) power = power.times(5)
+	if (player.e.unlocked) power = power.times(tmp.e.expeffect)
+
+	if (inChallenge('d',12)) gain = gain.log(10)
+ 	let total = gain.pow(power)
+	if (inChallenge('e',11)) total = total.min(player.n.points.pow(0.5))
+	let exponentalreduction = new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1))
+	if (inChallenge('e',12)) total = new Decimal(10).pow(total.max(10).log(10).pow(exponentalreduction))
+	return total.times(tmp.t.effect.times(0.001))
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -52,11 +75,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	function() {return "Current Tickspeed/s : "+format(tmp.t.effect)}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.points.gte(new Decimal("e4000"))
 }
 
 
