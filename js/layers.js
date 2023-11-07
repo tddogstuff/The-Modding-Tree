@@ -181,9 +181,9 @@ addLayer("t", {
           content: [["display-text", function(){return "Base Point gained : +1.00"}],
           ["display-text",function(){return hasUpgrade('n', 11)?"Counting Faster (Number) : x2.00":""}]
           ,["display-text",function(){return hasUpgrade('n', 12)?"Headstart (Number) : x"+format(upgradeEffect('n',12))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 13)?"1st Grade (Number) : x1.20":""}],
+          ["display-text",function(){return hasUpgrade('n', 14)?"1st Grade (Number) : x1.20":""}],
           ["display-text",function(){return hasUpgrade('a', 21)?"Addition (Additive) : x"+format(upgradeEffect('a',21))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 12)?"Effective Counting (Number) : x"+format(upgradeEffect('n',13))+"":""}],
+          ["display-text",function(){return hasUpgrade('n', 13)?"Effective Counting (Number) : x"+format(upgradeEffect('n',13))+"":""}],
           ,["display-text",function(){return hasUpgrade('n', 24)?"3rd Grade (Number) : x1.20":""}],
           ["display-text",function(){return buyableEffect('m', 11)>1?"Point Boost (Multiplicative) : x"+format(buyableEffect('m',11))+"":""}],
           ["display-text",function(){return hasChallenge('m', 11)?"Square root challenge (Multiplicative) : x"+format(challengeEffect('m',11))+"":""}],
