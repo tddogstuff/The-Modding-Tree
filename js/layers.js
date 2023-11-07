@@ -186,7 +186,7 @@ addLayer("t", {
           ["display-text",function(){return hasUpgrade('n', 12)?"Effective Counting (Number) : x"+format(upgradeEffect('n',13))+"":""}],
           ,["display-text",function(){return hasUpgrade('n', 24)?"3rd Grade (Number) : x1.20":""}],
           ["display-text",function(){return buyableEffect('m', 11)>1?"Point Boost (Multiplicative) : x"+format(buyableEffect('m',11))+"":""}],
-          ["display-text",function(){return hasChallenge('m', 11)?"Square root challenge (Multiplicative) : x"+format(challengeEffect('m',11))+"":""}]
+          ["display-text",function(){return hasChallenge('m', 11)?"Square root challenge (Multiplicative) : x"+format(challengeEffect('m',11))+"":""}],
           ["display-text",function(){return player.d.points>0?"Divisive Effect (Divisive) : x"+format(tmp.d.effect)+"":""}],
           ["display-text",function(){return player.e.points>0?"Exponent Effect (Exponent) : x"+format(tmp.e.effect)+"":""}],
           ["display-text", function(){return hasUpgrade('m',43)?"Glazed Point (Multiplicative) : ^1.05":""}],
@@ -973,7 +973,7 @@ addLayer("d", {
         return Decimal.pow(player[this.layer].points.add(1),power)
     },
     effectDescription() {
-        return " which is boosting Point and Number gained by " + format(tmp.d.effect) +"x (exponent is "+ format(tmp.d.power) +")"
+        return " which is boosting Point and Number gained by " + format(tmp.d.effect) +"x"
     },
     passiveGeneration() { 
         let numpas = new Decimal(0)
@@ -1594,12 +1594,12 @@ addLayer("r", {
         },
         2: {
             requirementDescription: "2 Research (2)",
-            effectDescription: "Unlock Field Selector & Gain +100% Number , Multiplicative , Divisive passively",
+            effectDescription: "Gain +100% Number , Multiplicative , Divisive passively",
             done() { return player.r.points.gte(2) }
         },
         3: {
             requirementDescription: "4 Research (3)",
-            effectDescription: "Keep all Exponent milestone",
+            effectDescription: "Keep all Exponent milestone on reset",
             done() { return player.r.points.gte(4) }
         },           
     },
@@ -1607,7 +1607,7 @@ addLayer("r", {
     buyables: {
         11: {
             title() {
-                   return "Reset your upgrade in this tab but lose 25% of your Prestige time"
+                   return "Reset all improvement in this tab but lose 25% of your Prestige time"
                } ,
             cost() { return new Decimal(0) },
             canAfford() { return player.points.gte(this.cost())},
