@@ -66,7 +66,8 @@ function getPointGen() {
 	if (inChallenge('e',11)) total = total.min(player.n.points.pow(0.5))
 	let exponentalreduction = new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1))
 	if (inChallenge('e',12)) total = new Decimal(10).pow(total.max(10).log(10).pow(exponentalreduction))
-	return total.times(tmp.t.effect.times(0.001))
+	let sum = total.times(tmp.t.effect.times(0.001))
+    return sum
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
