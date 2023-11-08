@@ -76,7 +76,8 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	function() {return "Current Tickspeed/s : "+format(tmp.t.effect)}
+	function() {return "Current Tickspeed/s : "+format(tmp.t.effect)},
+	function() {return "Current Mastery : "+format(player.r.mastery)}
 ]
 
 // Determines when the game "ends"

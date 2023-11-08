@@ -3,12 +3,23 @@ addLayer("t", {
     startData() { return {                  
         unlocked: true,
         points: new Decimal(0), 
-        total: new Decimal(0),      
+        total: new Decimal(0),  
+        tickspeedcontrol: new Decimal(1),    
     }},
     infoboxes: {
         lore: {
             title: "Tickspeed",
-            body() { return "Tickspeed increase point generation and all layer passive generation unless stated . You have "+format(player.t.total)+" total ticks , you gain exactly 1,000 ticks per real-life second"},
+            body() {
+                let mas = player.r.mastery.add(-100).max(0)
+            let multi = mas.times(1000)
+            let multi1 = softcap(multi,new Decimal(1000),0.05)
+                
+                return "Tickspeed increase point generation and all layer passive generation unless stated . You have "+format(player.t.total)+" total ticks , You gain +"+format(multi1)+" ticks/s (Based on Mastery , require 100 Mastery)"},
+        },
+         lore2: {
+            title: "Tickspeed Control",
+            body() {                
+                return "Current tickspeed is ^"+(player.t.tickspeedcontrol)+" above 1000"},
         }
     },
     symbol:"T",
@@ -16,14 +27,19 @@ addLayer("t", {
     resource: "Tick",            // The name of this layer's main prestige resource.
     row: "side",                           
 
+
     baseResource: "points",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.points},  // A function to return the current amount of baseResource.
 
     requires: new Decimal(0),              // The amount of the base needed to  gain 1 of the prestige currency.
-    canReset() {return true},
+    canReset() {return player.r.mastery>100},
     passiveGeneration() {
         let speed = new Decimal(1)
-        return speed.times(1000)
+        let mas = player.r.mastery.add(-100).max(0)
+        let multi = mas.times(1000)
+        let multi1 = softcap(multi,new Decimal(1000),0.05)
+
+        return speed.times(multi1)
     },
 
     type: "normal",                         // Determines the formula used for calculating prestige currency.
@@ -47,7 +63,12 @@ addLayer("t", {
         if(hasUpgrade('t',16)) exp = exp.times(upgradeEffect('t',16))
 
         let total = base.pow(exp)
-        return total
+        let total1 = softcap(total,new Decimal(1000),player.t.tickspeedcontrol)
+
+
+
+
+        return total1
     },
     layerShown() { return true },          // Returns a bool for if this layer's node should be visible in the tree.
     upgrades: {
@@ -160,14 +181,62 @@ addLayer("t", {
     buyables: {
         11: {
             title() {
-             return "Exponent challenge softlock help"
+             return "-1% Tickspeed"
             } ,
-            cost(x) { return new Decimal(0) },
-            display() { return "Your exponent is set to 0.0001 , this is enough to unlock the exponent tab to exit challenge" },
-            canAfford() { return (inChallenge('e',11) || inChallenge('e',12)) },
+            cost() { return new Decimal(0) },
+            display() { return "Tickspeed is ^0.99 above 1000" },
+            canAfford() { return true },
             buyMax() {return true},
             buy() {
-                player.e.points = player.e.points.max(0.0001)
+                player.t.tickspeedcontrol = player.t.tickspeedcontrol.times(0.99)
+            },
+        },
+        12: {
+            title() {
+             return "-5% Tickspeed"
+            } ,
+            cost() { return new Decimal(0) },
+            display() { return "Tickspeed is ^0.95 above 1000" },
+            canAfford() { return true },
+            buyMax() {return true},
+            buy() {
+                player.t.tickspeedcontrol = player.t.tickspeedcontrol.times(0.95)
+            },
+        },
+        13: {
+            title() {
+             return "-25% Tickspeed"
+            } ,
+            cost() { return new Decimal(0) },
+            display() { return "Tickspeed is ^0.75 above 1000" },
+            canAfford() { return true },
+            buyMax() {return true},
+            buy() {
+                player.t.tickspeedcontrol = player.t.tickspeedcontrol.times(0.75)
+            },
+        },
+        14: {
+            title() {
+             return "Disable Tickspeed"
+            } ,
+            cost() { return new Decimal(0) },
+            display() { return "Tickspeed is reduced to 1000/s if higher" },
+            canAfford() { return true },
+            buyMax() {return true},
+            buy() {
+                player.t.tickspeedcontrol = player.t.tickspeedcontrol.times(0)
+            },
+        },
+        15: {
+            title() {
+             return "Normal Tickspeed"
+            } ,
+            cost() { return new Decimal(0) },
+            display() { return "Tickspeed is returned to normal" },
+            canAfford() { return true },
+            buyMax() {return true},
+            buy() {
+                player.t.tickspeedcontrol = player.t.tickspeedcontrol.max(1)
             },
         },
         
@@ -192,8 +261,8 @@ addLayer("t", {
           ["display-text", function(){return hasUpgrade('m',43)?"Glazed Point (Multiplicative) : ^1.05":""}],
           ["display-text", function(){return player.e.points>0?"Exponent effect (Exponent) : ^"+format(tmp.e.expeffect)+"":""}]]
         },
-        "Softlock Helper": {
-            content: [["display-text", function(){return "Use this button to help you get out of some known softlock"}],"buyables"]
+        "Tickspeed Control": {
+            content: [["infobox", "lore2"],"buyables"]
         }
         }
     
@@ -1589,7 +1658,7 @@ addLayer("r", {
     milestones: {
         1: {
             requirementDescription: "1 Research (1)",
-            effectDescription: "Always buy all Perk Power buyable and autobuy Additive & Subtractive . Exponent cost scaling is x0.925 ",
+            effectDescription: "Always buy (most) Perk Power buyable and autobuy Additive & Subtractive . Exponent cost scaling is x0.925 ",
             done() { return player.r.points.gte(1) }
         },
         2: {
