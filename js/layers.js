@@ -19,7 +19,7 @@ addLayer("t", {
          lore2: {
             title: "Tickspeed Control",
             body() {                
-                return "Current tickspeed is ^"+(player.t.tickspeedcontrol)+" above 1000"},
+                return "Current tickspeed is ^"+format(player.t.tickspeedcontrol)+" above 1000"},
         }
     },
     symbol:"T",
@@ -1523,14 +1523,14 @@ addLayer("e", {
             name: "No number",
             challengeDescription: "Point gained are 10^(log(gain)^0.25) which is worsen based on Point . Tickspeed increase the challenge goal" ,
             goalDescription: function() { 
-                let base = new Decimal(100000)
+                let base = new Decimal(10000000)
                 let ts = tmp.t.effect.div(1000).add(1).pow(0.5)
 
                 let goal = base.times(ts)
                 return "Reach "+format(goal)+" points"},
             rewardDescription: "Additive and Subtractive softcap start x1.1 later",
             canComplete: function() {
-                let goal = new Decimal(100000).times(tmp.t.effect.div(1000).add(1).pow(0.5))
+                let goal = new Decimal(10000000).times(tmp.t.effect.div(1000).add(1).pow(0.5))
                 return player.points.gte(goal)},
             unlock() {return true},
         },
