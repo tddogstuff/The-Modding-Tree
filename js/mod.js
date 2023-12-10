@@ -1,6 +1,6 @@
 
 let modInfo = {
-	name: "Mathmatical Progression",
+	name: "Math Tree",
 	id: "mthprog",
 	author: "ccon1416",
 	pointsName: "points",
@@ -8,17 +8,22 @@ let modInfo = {
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	initialStartPoints: new Decimal(10), // Used for hard resets and new players
+	offlineLimit:1  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1",
-	name: "Literally nothing",
+	num: "0.0.2",
+	name: "Algebra field part 1",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.2</h3><br>
+	- Algebric field part 1 is done.<br>
+	- Reduced difficulty of verious resource and challenge.<br>
+	- Endgame : 10,000 Mastery<br>
+
 	<h3>v0.0.1</h3><br>
 		- Added Some stuff.<br>
 		- Endgame : 320 Mastery`
@@ -42,8 +47,8 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
-	let gain = new Decimal(1).times(buyableEffect('m',11))
-	if (hasUpgrade('n', 11)) gain = gain.times(2)
+	let gain = new Decimal(1).times(buyableEffect('m',11)).times(buyableEffect('al',33)).times(player.r.la1)
+	if (hasUpgrade('n', 11)) gain = gain.times(upgradeEffect('n',11))
 	if (hasUpgrade('n', 12)) gain = gain.times(upgradeEffect('n', 12))
 	if (hasUpgrade('n', 13)) gain = gain.times(upgradeEffect('n', 13))
 	if (hasUpgrade('n', 14)) gain = gain.times(1.2)
@@ -53,6 +58,8 @@ function getPointGen() {
 	if (player.d.unlocked) gain = gain.times(tmp.d.effect)
 	if (player.e.unlocked) gain = gain.times(tmp.e.effect)
 	if (hasUpgrade('m', 61)) gain = gain.times(5)
+
+	if (hasAchievement('ac',19)) gain = gain.times(achievementEffect('ac',19))
 
 
 	let power = new Decimal(1)
@@ -67,6 +74,12 @@ function getPointGen() {
 	let exponentalreduction = new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1))
 	if (inChallenge('e',12)) total = new Decimal(10).pow(total.max(10).log(10).pow(exponentalreduction))
 	let sum = total.times(tmp.t.effect.times(0.001))
+
+	if(inChallenge('d',13)) sum = sum.pow(0.2)
+	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
+	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
+
+
     return sum
 }
 
@@ -76,8 +89,30 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	function() {return "Current Tickspeed/s : "+format(tmp.t.effect)},
-	function() {return "Current Mastery : "+format(player.r.mastery)}
+	function() {return inChallenge('al',11)?"This realm have been altered":""},
+	function() {
+		let a = player.t.tickspeedcontrol.eq(1)?"":" (^"+format(player.t.tickspeedcontrol)+")"
+
+		if(!tmp.t.effect.eq(1000) && !inChallenge('al',11))
+		return "Current Tickspeed/s : "+format(tmp.t.effect)+""+a
+		if(tmp.t.effect.lt(1) && inChallenge('al',11))
+		return "Altered Tickspeed/s : (1/"+format(tmp.t.effect.pow(-1))+") "+a
+		if(tmp.t.effect.gte(1) && inChallenge('al',11))
+		return "Altered Tickspeed/s : "+format(tmp.t.effect)+""+a
+		else 
+		return ""
+ 		},
+	function() {return "Current Mastery : "+format(player.r.mastery)+" (Highest : "+format(player.r.bestmastery)+") "},
+	function() {
+	if (!player.r.bestmastery.gte(100)) 
+    return "Unlock Tickspeed Upgrade at 100 Best Mastery"
+    if (!player.r.bestmastery.gte(308.25)) 
+    return "Unlock field selector at 308.25 Best Mastery"
+    if (!player.r.bestmastery.gte(10000)) 
+    return "Unlock Meta-research resetting at 10 000 Best Mastery"
+	else
+    return "All content unlocked."
+		}
 ]
 
 // Determines when the game "ends"
