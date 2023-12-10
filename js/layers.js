@@ -2675,7 +2675,7 @@ addLayer("r", {
         let leff21 = softcap(leff2,new Decimal("1e200"),0.5)
         let leff3 = player.r.lightadd.pow(player.r.lightadd.add(10).log(10).times(4).pow(1.5)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
         let leff31 = softcap(leff3,new Decimal("1e500"),0.25)
-        let lred1 = player.r.lightadd.pow(0.5).add(1)
+        let lred1 = player.r.lightadd.pow(0.5).add(1).max(1)
         let deff1 = player.r.darksub.pow(player.r.darksub.add(10).log(10).times(3).pow(1.5)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
         let deff11 = softcap(deff1,new Decimal("1e800"),0.4)
         let deff2 = player.r.darksub.pow(player.r.darksub.add(10).log(10).times(5)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
@@ -2684,15 +2684,15 @@ addLayer("r", {
         let deff31 = softcap(deff3,new Decimal("1e500"),0.275)
         let dred1 = player.r.darksub.pow(0.5).add(1)
         let teff = player.r.twilight.pow(0.25).add(1)
-        player.r.la1 = leff11
-        player.r.la2 = leff21
-        player.r.la3 = leff31
+        player.r.la1 = leff11.max(1)
+        player.r.la2 = leff21.max(1)
+        player.r.la3 = leff31.max(1)
         player.r.lb1 = lred1
-        player.r.da1 = deff11
-        player.r.da2 = deff21
-        player.r.da3 = deff31
+        player.r.da1 = deff11.max(1)
+        player.r.da2 = deff21.max(1)
+        player.r.da3 = deff31.max(1)
         player.r.db1 = dred1
-        player.r.ta1 = teff
+        player.r.ta1 = teff.max(1)
 
 
         },

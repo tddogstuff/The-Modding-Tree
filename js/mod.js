@@ -47,7 +47,7 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
-	let gain = new Decimal(1).times(buyableEffect('m',11)).times(buyableEffect('al',33)).times(player.r.la1)
+	let gain = new Decimal(1).times(buyableEffect('m',11).max(1)).times(buyableEffect('al',33).max(1)).times(player.r.la1.max(1))
 	if (hasUpgrade('n', 11)) gain = gain.times(upgradeEffect('n',11))
 	if (hasUpgrade('n', 12)) gain = gain.times(upgradeEffect('n', 12))
 	if (hasUpgrade('n', 13)) gain = gain.times(upgradeEffect('n', 13))
