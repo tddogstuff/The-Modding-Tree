@@ -79,6 +79,7 @@ function getPointGen() {
 	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
 	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
 
+	if(!hasUpgrade('n',14) && player.points.gte(160) && !player.a.unlocked && !player.s.unlocked) sum = sum.times(0)
 
     return sum
 }
@@ -108,16 +109,22 @@ var displayThings = [
     return "Unlock Tickspeed Upgrade at 100 Best Mastery"
     if (!player.r.bestmastery.gte(308.25)) 
     return "Unlock field selector at 308.25 Best Mastery"
+	if (!player.r.bestmastery.gte(6000)) 
+    return "Current Endgame is ~6000 Best Mastery"
     if (!player.r.bestmastery.gte(10000)) 
-    return "Unlock Meta-research resetting at 10 000 Best Mastery"
+    return "Unlock Meta-research resetting at 10000 Best Mastery"
 	else
     return "All content unlocked."
-		}
+		},
+	function() {
+		if(!hasUpgrade('n',14) && player.points.gte(160) && !player.a.unlocked && !player.s.unlocked)
+		return "Points is currently capped at 160 , buy more number upgrade to uncap this"
+	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e4000"))
+	return player.r.bestmastery.gte(6000)
 }
 
 

@@ -278,8 +278,8 @@ addLayer("ac", {
         },
         52: {
             name: "True Equality",
-            done() { return   player.points.eq(player.n.points)},
-            tooltip() {return "Get Number amount EXACTLY equal to Point amount . Reward : Number => Mastery formula is better"},
+            done() { return   player.points.floor().eq(player.n.points.floor()) && inChallenge('e',11)},
+            tooltip() {return "Get Number amount EXACTLY equal to Point amount while in Equality (^) challenge . Reward : Number => Mastery formula is better"},
 
         },
         53: {
@@ -319,7 +319,7 @@ addLayer("ac", {
         58: {
             name: "Relativity",
             done() { return   tmp.t.effect.gte("1e15")},
-            tooltip() {return "Reach 1e15 Tickspeed/s . Reward : Unlock a tickspeed buyable"},
+            tooltip() {return "Reach 1e15 Tickspeed/s . Reward : Unlock 2 more tickspeed upgrade"},
 
         },
         59: {
@@ -331,39 +331,39 @@ addLayer("ac", {
         61: {
             name: "Point Boost++",
             done() { return   player.m.buyables[11].gte(4000)},
-            tooltip() {return "Reach 'Point Boost' multiplicative buyable level 4000 . Reward : Unlock 2 more Multiplicative upgrade "},
+            tooltip() {return "Reach 'Point Boost' multiplicative buyable level 4000 . Reward : Unlock 4 more Multiplicative upgrade"},
 
         },
         62: {
             name: "Elder age",
             done() { return   player.r.prestigetime.gte("31556926")},
-            tooltip() {return "Reach 1 Year (~365.25 days) . Reward : All Research Improvement cost increase 10% less when buying any Improvement "},
+            tooltip() {return "Reach 1 Year (~365.25 days) worth of Prestige Time . Reward : All Research Improvement cost increase 10% less when buying any Improvement "},
 
         },
         63: {
             name: "Number greatness",
             done() { return player.n.points.gte("1e2000")},
-            tooltip() {return "Reach 1e2000 Number. Reward : Subtractive softcap start +20 later"},
+            tooltip() {return "Reach 1e2000 Number. Reward : Number passive generation is ^2"},
 
         },
         64: {
             name: "Its Metain' time",
             done() { return   player.r.mastery.gte(10000)},
-            tooltip() {return "Get 10000 Mastery . Reward : Permeantly keep Number upgrade on any reset"},
+            tooltip() {return "Get 10000 Mastery . Reward : Slightly improve Perk Power effect"},
 
         },
         65: {
             name: "Slightly more ...",
-            done() { return   player.r.mastery.gte(11830)},
-            tooltip() {return "Get 11830 Mastery  . Reward : Gain 2 Meta-research instantly"},
+            done() { return   player.r.mastery.gte(10830)},
+            tooltip() {return "Get 10830 Mastery  . Reward : Gain 2 Meta-research instantly"},
             onComplete() {
-                player.r.metaresearch = player.metaresearch.add(2)
+                player.r.metaresearch = player.r.metaresearch.add(2)
             },
         },
         66: {
             name: "What's next",
             done() { return   player.e.effective.gte(75)},
-            tooltip() {return "Get 75 effective exponent . Reward : Exponent cost reduction is ^1.1"},
+            tooltip() {return "Get 75 effective exponent . Reward : Exponent boost is 5% more effective "},
 
         },
         67: {
@@ -373,9 +373,9 @@ addLayer("ac", {
 
         },
         68: {
-            name: "Further researchest",
-            done() { return   player.r.twilight.gte("1e9")},
-            tooltip() {return "Reach 1e9 Twilight . Reward : x2 Twilight gained"},
+            name: "Twilight gatherer",
+            done() { return   player.r.twilight.gte("1e6")},
+            tooltip() {return "Reach 1e6 Twilight . Reward : x2 Twilight gained"},
 
         },
         69: {
@@ -592,6 +592,8 @@ addLayer("t", {
         if (hasUpgrade('t', 12)) base = base.times(upgradeEffect('t', 12))
         if (hasUpgrade('t', 13)) base = base.times(upgradeEffect('t', 13))
         if (hasUpgrade('t', 14)) base = base.times(upgradeEffect('t', 14))
+        if (hasUpgrade('t', 31)) base = base.times(upgradeEffect('t', 31))
+        if (hasUpgrade('t', 32)) base = base.times(upgradeEffect('t', 32))
         if (hasAchievement('ac', 29)) base = base.times(1.15)
         if (hasAchievement('ac', 39)) base = base.times(2)
         if(hasAchievement('ac',45)) base = base.times(2)
@@ -685,7 +687,7 @@ addLayer("t", {
             title: "Prestige Time I",
             description: "Prestige time/s (Research) is increased by +3",
             cost: new Decimal(1200000),
-            unlocked() {return player.r.points>0},
+            unlocked() {return player.r.points.gte(0)},
             effect() {
                 return new Decimal(3)
             } ,
@@ -696,7 +698,7 @@ addLayer("t", {
             description: "Prestige time/s (Research) is increased more based on Points",
             cost: new Decimal(1200000),
             tooltip:"Bonus : 1.4slog(points+10)",
-            unlocked() {return player.r.points>0},
+            unlocked() {return player.r.points.gte(0)},
             effect() {
                 let a = player.points.add(10).slog()
                 return a.times(1.4)
@@ -708,7 +710,7 @@ addLayer("t", {
             description: "Prestige time/s (Research) is increased more based on Mastery",
             cost: new Decimal(1200000),
             tooltip:"Bonus : 1.1mastery^0.2",
-            unlocked() {return player.r.points>0},
+            unlocked() {return player.r.points.gte(0)},
             effect() {
                 let mast = player.r.mastery
                 return mast.pow(0.2).times(1.1)
@@ -720,12 +722,35 @@ addLayer("t", {
             description: "Prestige time/s (Research) is increased more based on Multiplicative",
             cost: new Decimal(1200000),
             tooltip:"Bonus : 1.45slog(multiplicative+10)",
-            unlocked() {return player.r.points>0},
+            unlocked() {return player.r.points.gte(0)},
             effect() {
                 return player.m.points.add(10).slog().times(1.45)
             }, 
             effectDisplay() {return "+"+format(upgradeEffect(this.layer,this.id))+""}
         },
+        31: {
+            title: "Faster Time VII",
+            description: "Multiply Tickspeed based on best Mastery",
+            cost: new Decimal(3600000),
+            tooltip:"Bonus : (mastery+1)^0.02",
+            unlocked() {return hasAchievement('ac',58)},
+            effect() {
+                return player.r.bestmastery.add(1).pow(0.02)
+            }, 
+            effectDisplay() {return ""+format(upgradeEffect(this.layer,this.id))+"x"}
+        },
+        32: {
+            title: "Faster Time VIII",
+            description: "Multiply Tickspeed based on Exponent",
+            cost: new Decimal(3600000),
+            tooltip:"Bonus : (exponent+1)^0.05",
+            unlocked() {return hasAchievement('ac',58)},
+            effect() {
+                return player.e.effective.add(1).pow(0.05)
+            }, 
+            effectDisplay() {return ""+format(upgradeEffect(this.layer,this.id))+"x"}
+        },
+       
        
     },
     buyables: {
@@ -810,6 +835,7 @@ addLayer("t", {
           ["display-text",function(){return player.d.points.gt(0)?"Divisive Effect (Divisive) : x"+format(tmp.d.effect)+"":""}],
           ["display-text",function(){return player.e.points.gt(0)?"Exponent Effect (Exponent) : x"+format(tmp.e.effect)+"":""}],
           ["display-text",function(){return buyableEffect('al',33).gt(1)?"Algebric Point boost (Algebra - Field) : x"+format(buyableEffect('al',33))+"":""}],
+          
           ["display-text", function(){return hasUpgrade('m',43)?"Glazed Point (Multiplicative) : ^1.05":""}],
           ["display-text", function(){return player.e.points.gt(0)?"Exponent effect (Exponent) : ^"+format(tmp.e.expeffect)+"":""}],
           ]
@@ -1039,7 +1065,7 @@ addLayer("n", {
 },},
     tabFormat: [
         ["raw-html", function () { return "<h3>You have  " + format(player.n.points)+" Number => +"+format(player.r.basemastery)+" Mastery"}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return "<h3>You are currently gaining " + format(tmp.n.passiveGeneration.times(getResetGain(this.layer)))+" Number/s" }, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],    
+        ["raw-html", function () { return tmp.n.passiveGeneration.times(getResetGain(this.layer)).gt(0)?"<h3>You are currently gaining " + format(tmp.n.passiveGeneration.times(getResetGain(this.layer)))+" Number/s":"" }, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],    
         ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
     layerShown() { return true }
@@ -1088,7 +1114,7 @@ addLayer("a", {
     },
     resetDescription:"Increase for ",
 
-    layerShown() { return (hasUpgrade('n', 14))||player[this.layer].best>0||player.s.best>0||(hasUpgrade('a', 21))||(hasUpgrade('s', 31)) },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return (hasUpgrade('n', 14))||player[this.layer].best.gt(0)||player.s.best.gt(0)||(hasUpgrade('a', 21))||(hasUpgrade('s', 31)) },          // Returns a bool for if this layer's node should be visible in the tree.
     hotkeys: [
         {key: "a", description: "A: Reset for Additives", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -1347,7 +1373,7 @@ addLayer("s", {
     resetDescription:"Reduce for ",
 
 
-    layerShown() { return (hasUpgrade('n', 14))||player[this.layer].best>0||player.a.best>0||(hasUpgrade('s', 31))||(hasUpgrade('a', 21)) },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return (hasUpgrade('n', 14))||player[this.layer].best.gt(0)||player.a.best.gt(0)||(hasUpgrade('s', 31))||(hasUpgrade('a', 21)) },          // Returns a bool for if this layer's node should be visible in the tree.
     hotkeys: [
         {key: "s", description: "S: Reset for Subtractive", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -1570,7 +1596,7 @@ addLayer("m", {
     },
     resetDescription:"Multiply for ",
 
-    layerShown() { return (hasUpgrade('n', 24))||player[this.layer].points>0||player.d.points>0 },          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return (hasUpgrade('n', 24))||player[this.layer].best.gt(0)||player.d.points.gt(0) },          // Returns a bool for if this layer's node should be visible in the tree.
     hotkeys: [
         {key: "m", description: "M: Reset for Multiplicative", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -1602,7 +1628,9 @@ addLayer("m", {
             cost(x) { 
                 let increase = x.max(600).sub(600)
                 
-                return (new Decimal(2).add(increase.times(0.0025))).pow(x) },
+                let cost =  (new Decimal(2).add(increase.times(0.0025))).pow(x)
+                if(hasAchievement("ac",55)) cost = cost.pow(achievementEffect('ac',55))
+                return cost},
             display() { return "Multiply point gained by " + format(this.effect()) +"x </br> Cost : " + format(this.cost()) + " Multiplicative" },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buyMax() {return true},
@@ -1764,7 +1792,7 @@ addLayer("m", {
 },},
     tabFormat: [
         ["raw-html", function () { return "<h3>You have  " + format(player.m.points)+" Multiplicative => x"+format(player.r.multiplicativemastery)+" Mastery"}, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return "<h3>You are currently gaining " + format(tmp.m.passiveGeneration.times(getResetGain(this.layer)))+" Multiplicative/s" }, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],    
+        ["raw-html", function () { return tmp.m.passiveGeneration.times(getResetGain(this.layer)).gt(0)?"<h3>You are currently gaining " + format(tmp.m.passiveGeneration.times(getResetGain(this.layer)))+" Multiplicative/s":"" }, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],    
         ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
 })
@@ -1802,7 +1830,7 @@ addLayer("d", {
         return exp
     },
     resetDescription:"Divide for ",
-    layerShown() { return (hasUpgrade('a', 34))||player[this.layer].best>0},          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return (hasUpgrade('a', 34))||player[this.layer].best.gt(0)},          // Returns a bool for if this layer's node should be visible in the tree.
     hotkeys: [
         {key: "d", description: "D: Reset for Divisive", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -1855,7 +1883,7 @@ addLayer("d", {
             goalDescription: "Reach 4.85e30 points",
             rewardDescription: "Unlock 4 more multiplicative upgrade",
             canComplete: function() {return player.points.gte("4.85e30")},
-            unlock() {return true},
+            unlocked() {return true},
         },
         12: {
             name: "Worsen condition",
@@ -1873,7 +1901,7 @@ addLayer("d", {
                 let base = new Decimal("1e12")
                 if(inChallenge('al',11)) base = base.pow(0.000001).times(10)
                 return player.points.gte(base)},
-            unlock() {return true},
+            unlocked() {return true},
         },
         13: {
             name: "Chaotic division",
@@ -1897,7 +1925,7 @@ addLayer("d", {
             canComplete: function() {
                 let base = new Decimal("1e33")
                  return player.points.gte(base)},
-            unlock() {return hasAchievement('ac',57)},
+            unlocked() {return hasAchievement('ac',57)},
         },
         },
         microtabs: {
@@ -1919,7 +1947,7 @@ addLayer("d", {
         tabFormat: [
             ["raw-html", function () { return "<h3>You have  " + format(player.d.points)+" Divisive => x"+format(player.r.divisivemastery)+" Mastery"}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Divisive provide x"+format(tmp.d.effect)+" to Points and Numbers gained"}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>You are currently gaining " + format(tmp.d.passiveGeneration.times(getResetGain(this.layer)))+" Divisive/s" }, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],    
+            ["raw-html", function () { return tmp.d.passiveGeneration.times(getResetGain(this.layer)).gt(0)?"<h3>You are currently gaining " + format(tmp.d.passiveGeneration.times(getResetGain(this.layer)))+" Divisive/s":"" }, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],    
             ["microtabs", "stuff", { 'border-width': '0px' }],
         ],
 
@@ -1969,7 +1997,7 @@ addLayer("e", {
         return exp.times(mul)
     },
 
-    layerShown() { return (hasChallenge('d', 12))||player[this.layer].points>0},          // Returns a bool for if this layer's node should be visible in the tree.
+    layerShown() { return (hasChallenge('d', 12))||player[this.layer].best.gt(0)},          // Returns a bool for if this layer's node should be visible in the tree.
     hotkeys: [
         {key: "e", description: "E: Reset for Exponent", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -2195,7 +2223,7 @@ addLayer("e", {
             buy() {
                 player[this.layer].points = player[this.layer].points.times(0).add(1)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id))
-            }, 
+            },
         },
         14: {
             title: "Lose all upgrade" ,
@@ -2365,7 +2393,7 @@ addLayer("e", {
             goalDescription: "Reach 1e80 points",
             rewardDescription: "x1.14 Perk Point gained , Exponent cost scaling increase 2% slower per Exponent ",
             canComplete: function() {return player.points.gte("1e80")},
-            unlock() {return true},
+            unlocked() {return true},
         },
         12: {
             name: "No number",
@@ -2380,7 +2408,7 @@ addLayer("e", {
             canComplete: function() {
                 let goal = new Decimal(10000000).times(tmp.t.effect.div(1000).add(1).pow(0.5))
                 return player.points.gte(goal)},
-            unlock() {return true},
+            ed() {return true},
         },
         },
 
@@ -2418,7 +2446,7 @@ addLayer("e", {
                         ["raw-html", function () { 
                             return "<h3>You have "+format(player.e.perkpower)+" perk power , which boost Effective Exponent by x"+format(player.e.bonus)+" "}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
                         ["blank","25px"],
-                        ["row", [["buyable", 11],["buyable", 12],["buyable", 13],["buyable",14]]],
+                        ["row", [["buyable", 11],["buyable", 12]]],
                         ["row", [["buyable", 21],["buyable", 22],["buyable", 23],["buyable",24]]],
                         ["row", [["buyable", 31],["buyable", 32],["buyable", 33],["buyable",34]]],
 
@@ -2597,7 +2625,7 @@ addLayer("r", {
 
         
 
-        player.r.improvementfactor = getBuyableAmount(this.layer, '101').add(getBuyableAmount(this.layer, '102')).add(getBuyableAmount(this.layer, '103')).add(getBuyableAmount(this.layer, '104'))
+        player.r.improvementfactor = getBuyableAmount(this.layer, '101').add(getBuyableAmount(this.layer, '102')).add(getBuyableAmount(this.layer, '103')).add(getBuyableAmount(this.layer, '104')).add(getBuyableAmount(this.layer,'105'))
 
 
 
@@ -2667,31 +2695,31 @@ addLayer("r", {
 
         player.r.lightaddpersec = light.div(player.r.darksub.pow(0.5).add(1)).times(buyableEffect('r',401))
         player.r.darksubpersec = dark.div(player.r.lightadd.pow(0.5).add(1)).times(buyableEffect('r',401))
-        player.r.twilightpersec = twi.pow(0.25).div(100)
+        player.r.twilightpersec = twi.pow(0.25).div(100).div(player.r.twilight.add(1).pow(0.5))
 
         let leff1 = player.r.lightadd.pow(player.r.lightadd.add(10).log(10).times(4)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
         let leff11 = softcap(leff1,new Decimal("1e100"),0.1)
         let leff2 = player.r.lightadd.pow(player.r.lightadd.add(10).log(10).times(6)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
         let leff21 = softcap(leff2,new Decimal("1e200"),0.5)
         let leff3 = player.r.lightadd.pow(player.r.lightadd.add(10).log(10).times(4).pow(1.5)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
-        let leff31 = softcap(leff3,new Decimal("1e500"),0.25)
-        let lred1 = player.r.lightadd.pow(0.5).add(1).max(1)
+        let leff31 = softcap(leff3,new Decimal("1e500"),0.1)
+        let lred1 = player.r.lightadd.pow(0.5).add(1)
         let deff1 = player.r.darksub.pow(player.r.darksub.add(10).log(10).times(3).pow(1.5)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
         let deff11 = softcap(deff1,new Decimal("1e800"),0.4)
         let deff2 = player.r.darksub.pow(player.r.darksub.add(10).log(10).times(5)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
-        let deff21 = softcap(deff2,new Decimal("1e500"),0.35)
+        let deff21 = softcap(deff2,new Decimal("1e500"),0.3)
         let deff3 = player.r.darksub.pow(player.r.darksub.add(10).log(10).times(4).pow(1.625)).pow(new Decimal(1).add(buyableEffect('r',402).div(100)))
-        let deff31 = softcap(deff3,new Decimal("1e500"),0.275)
+        let deff31 = softcap(deff3,new Decimal("1e500"),0.1)
         let dred1 = player.r.darksub.pow(0.5).add(1)
         let teff = player.r.twilight.pow(0.25).add(1)
         player.r.la1 = leff11.max(1)
         player.r.la2 = leff21.max(1)
         player.r.la3 = leff31.max(1)
-        player.r.lb1 = lred1
+        player.r.lb1 = lred1.max(1)
         player.r.da1 = deff11.max(1)
         player.r.da2 = deff21.max(1)
         player.r.da3 = deff31.max(1)
-        player.r.db1 = dred1
+        player.r.db1 = dred1.max(1)
         player.r.ta1 = teff.max(1)
 
 
@@ -2833,7 +2861,7 @@ addLayer("r", {
             unlocked() { return true }},
          41: {
             title: "Lightness",
-            description: "Light additive is +10% stronger",
+            description: "Light additive is +20% stronger",
             cost: new Decimal("2"),
             currencyLocation() { return player.r },
             currencyDisplayName: "Meta research",
@@ -2841,7 +2869,7 @@ addLayer("r", {
             unlocked() { return true }},
          42: {
             title: "Darkness",
-            description: "Dark subtractive is +10% stronger",
+            description: "Dark subtractive is +20% stronger",
             cost: new Decimal("2"),
             currencyLocation() { return player.r },
             currencyDisplayName: "Meta research",
@@ -2982,6 +3010,34 @@ addLayer("r", {
                 return sfcbase
             }
         },
+        105: {
+            title() {
+                return format(getBuyableAmount(this.layer, this.id),0) + "<br/> More Operation "
+               } ,
+            cost(x) { 
+                let cost = x.add(player.r.improvementfactor)
+                return new Decimal(10).pow(cost.pow(1.5)).times("1e3") },
+            display() { 
+                return "You must be inside of Altered realm and reached "+format(this.cost())+" points <br/> Effect : Gain " + format(this.per()) + "x Operation per upgrade (Very slowly increasing) </br> Current : x"+format(this.effect())+"  " },
+            canAfford() { return player.points.gte(this.cost()) && inChallenge('al',11)},
+            buy() {
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(x) {
+                let time = player.r.prestigetime.add(10).log(10000)
+                let base = player.r.prestigetime.pow(time)
+                let sfcbase = softcap(base,new Decimal(1),0.0125)                
+                let sfcbase1 = sfcbase.times(x).add(1)
+                return sfcbase1           
+            },
+            per() {
+                let time = player.r.prestigetime.add(10).log(10000)
+                let base = player.r.prestigetime.pow(time)
+                let sfcbase = softcap(base,new Decimal(1),0.0125) 
+                return sfcbase
+            },
+            unlocked() {return hasAchievement('ac',59) && player.r.algebraf.gte(1)}
+        },
         110: {
             title() {
                 return "META RESET"
@@ -3054,7 +3110,7 @@ addLayer("r", {
                 return "Geometry field"
                } ,
             cost() { return  new Decimal(0) },
-            unlocked() {return  !player.r.infield},
+            unlocked() {return  false},
             canAfford() { return player.r.mastery.gte(308.25) },
             buy() {
                 player.r.geometryf = player.r.geometryf.add(1)
@@ -3068,7 +3124,7 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Light Additive Generator  "
                } ,
             cost(x) { 
-                return x.pow(1.25).times(100) },
+                return x.pow(2).times(100) },
             display() { 
                 return "Generate +"+format(this.effect())+" Light Additive . Req : "+format(this.cost())+" Additive " },
             canAfford() { return player.a.points.gte(this.cost())},
@@ -3085,7 +3141,7 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Light Additive Multiplier  "
                } ,
             cost(x) { 
-                return new Decimal(1.25).pow(x.pow(1.3)).times(5) },
+                return new Decimal(1.25).pow(x.pow(1.5)).times(5) },
             display() { 
                 return "Generate x"+format(this.effect())+" more Light Additive . Cost : "+format(this.cost())+" Light Additive " },
             canAfford() { return player.r.lightadd.gte(this.cost())},
@@ -3104,7 +3160,7 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Light Additive Powerer  "
                } ,
             cost(x) { 
-                return new Decimal(2).pow(x.pow(1.25)).times(10) },
+                return new Decimal(2).pow(x.pow(1.4)).times(10) },
             display() { 
                 return "Generate ^"+format(this.effect())+" more Light Additive . Cost : "+format(this.cost())+" Light Additive " },
             canAfford() { return player.r.lightadd.gte(this.cost())},
@@ -3123,9 +3179,9 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Dark Subtractive Generator  "
                } ,
             cost(x) { 
-                return x.pow(1.25).times(100) },
+                return x.pow(2).times(100) },
             display() { 
-                return "Generate +"+format(this.effect())+" Light Additive . Req : "+format(this.cost())+" Subtractive " },
+                return "Generate +"+format(this.effect())+" Dark Subtractive . Req : "+format(this.cost())+" Subtractive " },
             canAfford() { return player.s.points.gte(this.cost())},
             buy() {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
@@ -3140,7 +3196,7 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Dark Subtractive Multiplier  "
                } ,
             cost(x) { 
-                return new Decimal(1.25).pow(x.pow(1.3)).times(5) },
+                return new Decimal(1.25).pow(x.pow(1.6)).times(5) },
             display() { 
                 return "Generate x"+format(this.effect())+" more Dark Subtractive . Cost : "+format(this.cost())+" Dark Subtractive " },
             canAfford() { return player.r.darksub.gte(this.cost())},
@@ -3159,7 +3215,7 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Dark Subtractive Powerer  "
                } ,
             cost(x) { 
-                return new Decimal(2).pow(x.pow(1.25)).times(10) },
+                return new Decimal(2).pow(x.pow(1.3)).times(10) },
             display() { 
                 return "Generate ^"+format(this.effect())+" more Dark Subtractive . Cost : "+format(this.cost())+" Dark Subtractive " },
             canAfford() { return player.r.darksub.gte(this.cost())},
@@ -3208,7 +3264,9 @@ addLayer("r", {
             },
             effect(x) {
                 let base = x.times(2)
-                return base      
+                let base1 = softcap(base,new Decimal(20),0.5)
+                if(inChallenge('al',11)) base1 = base1.times(0).sub(100)
+                return base1
             },
         },
         403: {
@@ -3216,9 +3274,9 @@ addLayer("r", {
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> Twilight Improver"
                } ,
             cost(x) { 
-                return new Decimal(10).pow(x) },
+                return new Decimal(3).pow(x).times(x) },
             display() { 
-                return " x"+format(this.effect())+" Effective Exponent . Cost : "+format(this.cost())+" Twilight " },
+                return "Gain x"+format(this.effect())+" Effective Exponent . Cost : "+format(this.cost())+" Twilight " },
             canAfford() { return player.r.twilight.gte(this.cost())},
             buy() {
                 player.r.twilight = player.r.twilight.sub(this.cost())
@@ -3329,7 +3387,7 @@ microtabs: {
         ["raw-html", function () { return "<h2>Each improvement bought increase the cost of all other improvement (including itself)" }, { "color": "red", "font-size": "18px", "font-family": "helvetica" }],
                     ["blank", "25px"],
                     ["row", [["buyable", 11]]],
-                    ["row", [["buyable", 101], ["buyable", 102], ["buyable", 103], ["buyable", 104]]],
+                    ["row", [["buyable", 101], ["buyable", 102], ["buyable", 103], ["buyable", 104],["buyable",105]]],
     ]
 
         },
@@ -3406,7 +3464,7 @@ microtabs: {
         },
         "Twilight": {
             buttonStyle() { return { 'color': '#ffffff' , "border-color" : "gray" } },
-            unlocked() { return true },
+            unlocked() { return hasAchievement('ac',54) },
             content: [
                 ["blank", "25px"],
                 ["raw-html", function () { return "<h2>You have "+format(player.r.lightadd)+" Light Additive (+"+format(player.r.lightaddpersec)+") which boost Points gained by "+format(player.r.la1)+"x , Number gained by "+format(player.r.la2)+"x and decrease Additive cost by /"+format(player.r.la3)+" BUT reduce Dark Subtractive gained by /"+format(player.r.lb1)+"" }, { "color": "lime", "font-size": "14px", "font-family": "helvetica" }],
@@ -3566,7 +3624,7 @@ addLayer("al", {
     
         let operationgainedal1 = operationgainedal
         let operationgainedal2 = softcap(operationgainedal1,new Decimal("1e6"),0.00).times(operationgainedal1.add(1e6).div(1e6).floor().max(2).log(2))
-        player.al.operationgained = operationgainedal2.times(buyableEffect('al',31))
+        player.al.operationgained = operationgainedal2.times(buyableEffect('al',31)).times(buyableEffect('r',105))
 
         //tick
         let tickspeedreduction1eff = new Decimal(0.2)
