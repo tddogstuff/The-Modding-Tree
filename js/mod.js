@@ -9,26 +9,39 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal(10), // Used for hard resets and new players
-	offlineLimit:1  // In hours
+	offlineLimit:24  
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.2",
-	name: "Algebra field part 1",
+	num: "0.0.3",
+	name: "Graduation I ",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.3</h3><br>
+	- Fixed some issue where localStorage would get flood too quick </br>
+	- Upon reaching their respective achievement , Pre-Research layer will always be shown (available) </br>
+	- Added 1 more semi 'layer' and new challenges (don't need to complete all) <br>
+	- Most meta research upgrade cost are reduced (Will be rebalanced later)<br>
+	- Prevented softlock when entering any Exponent challenge with 0 Exponent <br>
+	- More achievement content and reward<br>
+	- Rebalanced some achievement to be much easier<br>
+	- Removed default offline progress <br>
+	- Rebalanced some tickspeed upgrade effect and cost <br>
+	- Fixed various bug </br>
+	- Endgame : Graduation unlocked (35k Mastery)<br>
 	<h3>v0.0.2</h3><br>
 	- Algebric field part 1 is done.<br>
 	- Reduced difficulty of verious resource and challenge.<br>
-	- Endgame : 10,000 Mastery<br>
+	- Improved GUI</br>
+	- Endgame : 6,000 Mastery<br>
 
 	<h3>v0.0.1</h3><br>
 		- Added Some stuff.<br>
 		- Endgame : 320 Mastery`
 
-let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
+let winText = `Congratulations! You have reached the end of Graduation I .`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -47,26 +60,35 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
+	//multiplier
 	let gain = new Decimal(1).times(buyableEffect('m',11).max(1)).times(buyableEffect('al',33).max(1)).times(player.r.la1.max(1))
-	if (hasUpgrade('n', 11)) gain = gain.times(upgradeEffect('n',11))
-	if (hasUpgrade('n', 12)) gain = gain.times(upgradeEffect('n', 12))
-	if (hasUpgrade('n', 13)) gain = gain.times(upgradeEffect('n', 13))
-	if (hasUpgrade('n', 14)) gain = gain.times(1.2)
+	if (hasUpgrade('n', 11) &&player.r.tetration.lt(9)) gain = gain.times(upgradeEffect('n',11))
+	if (hasUpgrade('n', 12) &&player.r.tetration.lt(9)) gain = gain.times(upgradeEffect('n', 12))
+	if (hasUpgrade('n', 13) &&player.r.tetration.lt(9)) gain = gain.times(upgradeEffect('n', 13))
+	if (hasUpgrade('n', 14) &&player.r.tetration.lt(9)) gain = gain.times(1.2)
 	if (hasUpgrade('n', 24)) gain = gain.times(1.2)
-	if (hasUpgrade('a', 21)) gain = gain.times(upgradeEffect('a', 21))
+	if (hasUpgrade('a', 21) && !player.r.buyables[121].gte(1)) gain = gain.times(upgradeEffect('a', 21))
 	if (hasChallenge('m', 11)) gain = gain.times(challengeEffect('m',11))
 	if (player.d.unlocked) gain = gain.times(tmp.d.effect)
 	if (player.e.unlocked) gain = gain.times(tmp.e.effect)
 	if (hasUpgrade('m', 61)) gain = gain.times(5)
+	if (hasUpgrade('n',31)) gain = gain.times(getPointCondensereffect_MUL())
 
-	if (hasAchievement('ac',19)) gain = gain.times(achievementEffect('ac',19))
+	if (hasAchievement('ac',19)) gain = gain.times(2)
 
-
+	//exponent
 	let power = new Decimal(1)
 	if (hasUpgrade('m', 42)) power = power.times(1.05)
 	if (inChallenge('m', 11)) power = power.times(0.5)
-	if (inChallenge('d',12)) power = power.times(5)
+	if (inChallenge('d',12)) power = power.times(5) 
+	if (player.r.tetration.gt(0)) power = power.times(1.1)
 	if (player.e.unlocked) power = power.times(tmp.e.expeffect)
+	if (hasUpgrade('n', 11) &&player.r.tetration.gte(9)) power = power.times(upgradeEffect('n',11))
+	if (hasUpgrade('n', 12) &&player.r.tetration.gte(9)) power = power.times(upgradeEffect('n', 12))
+	if (hasUpgrade('n', 13) &&player.r.tetration.gte(9)) power = power.times(upgradeEffect('n', 13))
+	if (hasUpgrade('n', 14) &&player.r.tetration.gte(9) && !player.r.buyables[121].gte(1)) power = power.times(1.01)
+	if (inChallenge('r',11)) power = power.times(player.r.cha)
+	if (hasUpgrade('n',31)) power = power.times(getPointCondensereffect_POW())
 
 	if (inChallenge('d',12)) gain = gain.log(10)
  	let total = gain.pow(power)
@@ -78,10 +100,10 @@ function getPointGen() {
 	if(inChallenge('d',13)) sum = sum.pow(0.2)
 	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
 	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
-
-	if(!hasUpgrade('n',14) && player.points.gte(160) && !player.a.unlocked && !player.s.unlocked) sum = sum.times(0)
-
-    return sum
+	//Grad 1 softcap
+	sum = softcap(sum,new Decimal("1e5000"),0)
+    sum = sum.times(player.r.truegamespeed)
+	return sum
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -90,16 +112,15 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	function() {return inChallenge('al',11)?"This realm have been altered":""},
+	function() {
+		return !player.r.truegamespeed.eq(1)?"Gamespeed : "+format(player.r.truegamespeed)+"x":""},
 	function() {
 		let a = player.t.tickspeedcontrol.eq(1)?"":" (^"+format(player.t.tickspeedcontrol)+")"
 
 		if(!tmp.t.effect.eq(1000) && !inChallenge('al',11))
-		return "Current Tickspeed/s : "+format(tmp.t.effect)+""+a
-		if(tmp.t.effect.lt(1) && inChallenge('al',11))
-		return "Altered Tickspeed/s : (1/"+format(tmp.t.effect.pow(-1))+") "+a
-		if(tmp.t.effect.gte(1) && inChallenge('al',11))
-		return "Altered Tickspeed/s : "+format(tmp.t.effect)+""+a
+		return "Tickspeed : "+format(tmp.t.effect)+""+a
+		if(inChallenge('al',11))
+		return "Altered Tickspeed : "+format(tmp.t.effect)+""+a
 		else 
 		return ""
  		},
@@ -109,22 +130,28 @@ var displayThings = [
     return "Unlock Tickspeed Upgrade at 100 Best Mastery"
     if (!player.r.bestmastery.gte(308.25)) 
     return "Unlock field selector at 308.25 Best Mastery"
-	if (!player.r.bestmastery.gte(6000)) 
-    return "Current Endgame is ~6000 Best Mastery"
     if (!player.r.bestmastery.gte(10000)) 
     return "Unlock Meta-research resetting at 10000 Best Mastery"
-	else
-    return "All content unlocked."
+	if (!player.r.bestmastery.gte(35000)) 
+    return "Unlock something important at 35000 Best Mastery"
+	if (!hasAchievement('ac',109))
+    return "Complete remaining Meta research achievement to progress ..."
+	else 
+	return ""
 		},
 	function() {
-		if(!hasUpgrade('n',14) && player.points.gte(160) && !player.a.unlocked && !player.s.unlocked)
-		return "Points is currently capped at 160 , buy more number upgrade to uncap this"
+		if(inChallenge('e',12)) 
+		return "No Number challenge : Points gained is 10^log(gain)^"+format(new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1)),6)+""
+	},
+	function() {
+		if(inChallenge('d',13)) 
+		return "Chaotic Divisor challenge : "+format(player.points)+"/"+format(player.d.timereq)+" Points"
 	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.r.bestmastery.gte(6000)
+	return player.r.bestmastery.gte(35000)
 }
 
 
@@ -144,4 +171,5 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
+	
 }

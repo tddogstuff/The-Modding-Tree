@@ -52,8 +52,8 @@ function getNextAt(layer, canMax=false, useType = null) {
 	if (type=="static") 
 	{
 		if (!tmp[layer].canBuyMax) canMax = false
-		let amt = player[layer].points.plus((canMax&&tmp[layer].baseAmount.gte(tmp[layer].nextAt))?tmp[layer].resetGain:0).div(tmp[layer].directMult)
-		let extraCost = Decimal.pow(tmp[layer].base, amt.pow(tmp[layer].exponent).div(tmp[layer].gainExp)).times(tmp[layer].gainMult)
+		let amt = player[layer].points.plus((canMax&&tmp[layer].baseAmount.gte(tmp[layer].nextAt))?tmp[layer].resetGain:0).div(tmp[layer].directMult) 
+		let extraCost = Decimal.pow(tmp[layer].base, amt.pow(tmp[layer].exponent).div(tmp[layer].gainExp)).times(tmp[layer].gainMult) 
 		let cost = extraCost.times(tmp[layer].requires).max(tmp[layer].requires)
 		if (tmp[layer].roundUpCost) cost = cost.ceil()
 		return cost;
@@ -221,9 +221,6 @@ function doReset(layer, force=false) {
 	for (r in OTHER_LAYERS){
 		rowReset(r, layer)
 	}
-
-	player[layer].resetTime = 0
-
 	updateTemp()
 	updateTemp()
 }
@@ -330,19 +327,12 @@ function gameLoop(diff) {
 		//player.tab = "tmp.gameEnded"
 		clearParticles()
 	}
-
-	if (maxTickLength) {
-		let limit = maxTickLength()
-		if(diff > limit)
-			diff = limit
-	}
 	addTime(diff)
 	player.points = player.points.add(tmp.pointGen.times(diff)).max(0)
 
 	for (let x = 0; x <= maxRow; x++){
 		for (item in TREE_LAYERS[x]) {
 			let layer = TREE_LAYERS[x][item]
-			if (!player[layer].unlocked) player[layer].first += diff;
 			if (tmp[layer].passiveGeneration) generatePoints(layer, (diff*tmp[layer].passiveGeneration));
 			if (layers[layer].update) layers[layer].update(diff);
 		}
@@ -351,7 +341,6 @@ function gameLoop(diff) {
 	for (row in OTHER_LAYERS){
 		for (item in OTHER_LAYERS[row]) {
 			let layer = OTHER_LAYERS[row][item]
-			player[layer].resetTime += diff
 			if (tmp[layer].passiveGeneration) generatePoints(layer, diff*tmp[layer].passiveGeneration);
 			if (layers[layer].update) layers[layer].update(diff);
 		}
@@ -382,7 +371,6 @@ function gameLoop(diff) {
 	}
 
 }
-
 function hardReset(resetOptions) {
 	if (!confirm("Are you sure you want to do this? You will lose all your progress!")) return
 	player = null
@@ -399,14 +387,16 @@ var interval = setInterval(function() {
 	if (tmp.gameEnded&&!player.keepGoing) return;
 	ticking = true
 	let now = Date.now()
-	let diff = (now - player.time) / 1e3
+	let diff = (now - player.time) / 1000
 	let trueDiff = diff
 	if (player.offTime !== undefined) {
-		if (player.offTime.remain > modInfo.offlineLimit * 3600) player.offTime.remain = modInfo.offlineLimit * 3600
+		if (player.offTime.remain > (modInfo.offlineLimit * 3600 + buyableEffect('o',13))) player.offTime.remain = (modInfo.offlineLimit * 3600 + buyableEffect('o',13))
 		if (player.offTime.remain > 0) {
 			let offlineDiff = Math.max(player.offTime.remain / 10, diff)
 			player.offTime.remain -= offlineDiff
-			diff += offlineDiff
+			player.o.rerolltime = player.o.rerolltime.sub(offlineDiff)
+			player.o.time = player.o.time.add(offlineDiff)
+
 		}
 		if (!options.offlineProd || player.offTime.remain <= 0) player.offTime = undefined
 	}

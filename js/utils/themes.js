@@ -1,5 +1,5 @@
 // ************ Themes ************
-var themes = ["default", "aqua"]
+var themes = ["default", "aqua","r"]
 
 var colors = {
 	default: {
@@ -22,6 +22,16 @@ var colors = {
 		background: "#001f3f",
 		background_tooltip: "rgba(0, 15, 31, 0.75)",
 	},
+	r: {
+		1: "#ffcccc",
+		2: "#ff6666",
+		3: "#ff1a1a",
+		color: "#ffcccc",
+		points: "#ffcccc",
+		locked: "#b30000",
+		background: "#1f1f04",
+		background_tooltip: "rgba(26, 10, 0, 0.75)",
+	}
 }
 function changeTheme() {
 
@@ -33,19 +43,10 @@ function changeTheme() {
 	document.body.style.setProperty("--locked", colors_theme["locked"]);
 }
 function getThemeName() {
-	return options.theme? options.theme : "default";
+	return "CANNOT BE CHANGED"
 }
-
+// Did anyone actually switch
 function switchTheme() {
-	let index = themes.indexOf(options.theme)
-	if (options.theme === null || index >= themes.length-1 || index < 0) {
-		options.theme = themes[0];
-	}
-	else {
-		index ++;
-		options.theme = themes[index];
-		options.theme = themes[1];
-	}
 	changeTheme();
 	resizeCanvas();
 }
