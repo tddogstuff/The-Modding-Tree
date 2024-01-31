@@ -5122,34 +5122,6 @@ addLayer("r", {
             },
             style: { width: '275px', height: '150px', }
         },
-        112: {
-            title() {
-                return "Geometry field"
-               } ,
-            cost() { return  new Decimal(0) },
-            unlocked() {return  false},
-            canAfford() { return player.r.mastery.gte(308.25) },
-            buy() {
-                player.r.geometryf = player.r.geometryf.add(1)
-                player.r.infield = true
-                player.r.currentfield = "Geometry"
-            },
-            style: { width: '275px', height: '150px', }
-        },
-        112: {
-            title() {
-                return "Geometry field"
-               } ,
-            cost() { return  new Decimal(0) },
-            unlocked() {return  false},
-            canAfford() { return player.r.mastery.gte(308.25) },
-            buy() {
-                player.r.geometryf = player.r.geometryf.add(1)
-                player.r.infield = true
-                player.r.currentfield = "Geometry"
-            },
-            style: { width: '275px', height: '150px', }
-        },
         120: {
             title() {
                 return "Tetration reset"
