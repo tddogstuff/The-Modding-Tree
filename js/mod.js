@@ -53,7 +53,7 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	return !player.points.gte("1e5000")
 }
 
 // Calculate points/sec!
@@ -100,9 +100,10 @@ function getPointGen() {
 	if(inChallenge('d',13)) sum = sum.pow(0.2)
 	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
 	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
+	sum = sum.times(player.r.truegamespeed)
+
 	//Grad 1 softcap
 	sum = softcap(sum,new Decimal("1e5000"),0)
-    sum = sum.times(player.r.truegamespeed)
 	return sum
 }
 

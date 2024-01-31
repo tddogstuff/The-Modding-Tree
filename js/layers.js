@@ -360,7 +360,7 @@ addLayer("o", {
      return +getBuyableAmount(this.layer, this.id) + " free </br> 1 minute warp"
     } ,
     display() { return "Grant 60s worth of normal production instantly" },
-    canAfford() { return player[this.layer].realtime.gte(60) && player.o.gamespeed.eq(1) },
+    canAfford() { return (player[this.layer].realtime.gte(60) || player.o.buyables[31].gt(0)) && player.o.gamespeed.eq(1) },
     buy() {
         if(player.o.buyables[31].eq(0)) player.o.realtime = player.o.realtime.sub(60)
         if(player.o.buyables[31].gt(0)) player.o.buyables[31] = player.o.buyables[31].sub(1)
@@ -368,7 +368,7 @@ addLayer("o", {
         gameLoop(60)
     },
     style() {
-        if (!player.o.gamespeed.eq(1) && (!player.o.realtime.lt(60) || !player.o.buyables[31].gt(0))) {
+        if (!player.o.gamespeed.eq(1) || (player.o.realtime.lt(60) && player.o.buyables[31].eq(0))) {
             return {
                 'border-radius': '0%',
                 'color':'white',
@@ -381,7 +381,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -390,7 +390,7 @@ addLayer("o", {
      return +getBuyableAmount(this.layer, this.id) + " free </br> 10 minutes warp"
     } ,
     display() { return "Grant 600s (10 minutes) worth of normal production instantly" },
-    canAfford() { return player[this.layer].realtime.gte(600) && player.o.gamespeed.eq(1) },
+    canAfford() { return (player[this.layer].realtime.gte(600) || player.o.buyables[32].gt(0)) && player.o.gamespeed.eq(1) },
     buy() {
          if(player.o.buyables[32].eq(0)) player.o.realtime = player.o.realtime.sub(600)
         if(player.o.buyables[32].gt(0)) player.o.buyables[32] = player.o.buyables[32].sub(1)
@@ -398,7 +398,7 @@ addLayer("o", {
         gameLoop(600)
     },
     style() {
-        if (!player.o.gamespeed.eq(1) && (!player.o.realtime.lt(600) || !player.o.buyables[32].gt(0))) {
+        if (!player.o.gamespeed.eq(1) || (player.o.realtime.lt(600) && !player.o.buyables[32].gt(0))) {
             return {
                 'border-radius': '0%',
                 'color':'white',
@@ -411,7 +411,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -420,7 +420,7 @@ addLayer("o", {
      return +getBuyableAmount(this.layer, this.id) + " free </br> 1 hour warp"
     } ,
     display() { return "Grant 3600s (1h) worth of normal production instantly" },
-    canAfford() { return player[this.layer].realtime.gte(3600) && player.o.gamespeed.eq(1) },
+    canAfford() { return (player[this.layer].realtime.gte(3600) || player.o.buyables[33].gt(0) )&& player.o.gamespeed.eq(1) },
     buy() {
          if(player.o.buyables[33].eq(0)) player.o.realtime = player.o.realtime.sub(3600)
         if(player.o.buyables[33].gt(0)) player.o.buyables[33] = player.o.buyables[33].sub(1)
@@ -428,7 +428,7 @@ addLayer("o", {
         gameLoop(3600)
     },
     style() {
-        if (!player.o.gamespeed.eq(1) && (!player.o.realtime.lt(3600) || !player.o.buyables[33].gt(0))) {
+        if (!player.o.gamespeed.eq(1) || (player.o.realtime.lt(3600) && !player.o.buyables[33].gt(0))) {
             return {
                 'border-radius': '0%',
                 'color':'white',
@@ -441,7 +441,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -473,15 +473,7 @@ addLayer("o", {
         player.o.realtime = player.o.realtime.times(0)
     },
     style() {
-        if (!player.o.gamespeed.eq(1) || player.o.realtime.lt(10)) {
-            return {
-                'border-radius': '0%',
-                'color':'white',
-                'background-color':'red',
-                'border':'2px solid',
-                'height':'125px'
-            } 
-        }    else return {
+        return {
             'border-radius': '0%',
             'color':'white',
             'background-color':'purple',
@@ -569,7 +561,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -605,7 +597,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -642,7 +634,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -679,7 +671,7 @@ addLayer("o", {
             'color':'white',
             'background-color':'green',
             'border':'2px solid',
-            'height':'100px'
+            'height':'125px'
         }
 }
 },
@@ -2048,6 +2040,7 @@ addLayer("n", {
         if(inChallenge('d',13)) exp = exp.times(0.1)
         if (hasAchievement('ac',92)) exp = exp.times(achievementEffect('ac',92))
         if (inChallenge('d',11)) exp = exp.times(0)
+        if (player.n.points.gte("1e6400")) exp = exp.times(0)
         return exp
     },
     row: 0, 
@@ -7702,7 +7695,7 @@ addLayer("g", {
         if (inChallenge('al',11) && player.al.operation.gte("1e40") && hasChallenge('d',13) && player.m.buyables[11].gte("2500") && player.n.points.gte("1e1024") && player.e.perkpower.gte("60") && player.g.req[1].eq(0) && hasAchievement('ac',109)) {
             player.g.req[1] = new Decimal(1)
         }
-
+        player.points = player.points.min("1e5000")
 
     },
     update(delta) {
