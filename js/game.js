@@ -169,7 +169,7 @@ function addPoints(layer, gain) {
 }
 
 function generatePoints(layer, diff) {
-	addPoints(layer, tmp[layer].resetGain.times(diff))
+	addPoints(layer, tmp[layer].resetGain.times(diff).times(tmp[layer].passiveGeneration))
 }
 
 function doReset(layer, force=false) {
@@ -333,7 +333,7 @@ function gameLoop(diff) {
 	for (let x = 0; x <= maxRow; x++){
 		for (item in TREE_LAYERS[x]) {
 			let layer = TREE_LAYERS[x][item]
-			if (tmp[layer].passiveGeneration) generatePoints(layer, (diff*tmp[layer].passiveGeneration));
+			if (tmp[layer].passiveGeneration) generatePoints(layer, diff);
 			if (layers[layer].update) layers[layer].update(diff);
 		}
 	}
@@ -341,7 +341,7 @@ function gameLoop(diff) {
 	for (row in OTHER_LAYERS){
 		for (item in OTHER_LAYERS[row]) {
 			let layer = OTHER_LAYERS[row][item]
-			if (tmp[layer].passiveGeneration) generatePoints(layer, diff*tmp[layer].passiveGeneration);
+			if (tmp[layer].passiveGeneration) generatePoints(layer, diff);
 			if (layers[layer].update) layers[layer].update(diff);
 		}
 	}	

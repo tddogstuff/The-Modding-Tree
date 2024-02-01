@@ -1409,7 +1409,7 @@ addLayer("ac", {
         104: {
             name: "Final tetration ...",
             done() {return player.r.tetration.gte(10)},
-            tooltip() {return "Reach 10 tetration . Reward : Improvement 'More Letter' now provide a Multiplicative buff and rooted its requirement by 4"},
+            tooltip() {return "Reach 10 tetration . Reward : Improvement 'More letter' now provide a multiplicative buff per upgrade (severely nerfed)"},
         },
         105: {
             name: "Twilight mastery",
@@ -1620,7 +1620,7 @@ addLayer("t", {
         lore: {
             title: "Tickspeed & Ticks",
             body() {          
-                return "Tickspeed : Tickspeed boost point generation and Row 1 , Row 2 resource generation (apply after exponents , etc) </br> Ticks : You have "+format(player.t.total)+" total , You are gaining +"+format(tmp.t.passiveGeneration)+" ticks/s (Based on best Mastery)"},
+                return "Tickspeed : Tickspeed boost point generation and Row 1 , Row 2 resource passive production (apply after exponents , etc) </br> Ticks : You have "+format(player.t.total)+" total , You are gaining +"+format(tmp.t.passiveGeneration)+" ticks/s (Based on best Mastery)"},
         },
 
         
@@ -1998,13 +1998,6 @@ addLayer("n", {
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: 0.5, // Prestige currency exponent
-    softcap() {return new Decimal("1e6400").div(tmp.n.passiveGeneration.max(1))},
-    softcapPower() {return new Decimal(0)},
-    automate() {
-        if(player.n.points.gt("1e6400")) {
-            player.n.points = new Decimal("1e6400")
-        }
-    },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         multi = new Decimal(1).times(buyableEffect('r',103)).times(player.r.la2)
         if (hasAchievement('ac',18)) multi = multi.times(1.1)
@@ -2040,7 +2033,6 @@ addLayer("n", {
         if(inChallenge('d',13)) exp = exp.times(0.1)
         if (hasAchievement('ac',92)) exp = exp.times(achievementEffect('ac',92))
         if (inChallenge('d',11)) exp = exp.times(0)
-        if (player.n.points.gte("1e6400")) exp = exp.times(0)
         return exp
     },
     row: 0, 
@@ -2052,9 +2044,9 @@ addLayer("n", {
     passiveGeneration() { 
         let numpas = new Decimal(0)
         if (hasMilestone('e',2) && !inChallenge('e',11) && !inChallenge('e',12)) numpas = numpas.add(1) 
+        if (hasUpgrade('s', 41)) numpas = numpas.times(upgradeEffect('s', 41))
         if (hasMilestone('r',2)) numpas = numpas.add(1)
         if (hasUpgrade('s', 33) && player.r.buyables[121].lt(1)) numpas = numpas.add(upgradeEffect('s', 33)).times(0.01)
-        if (hasUpgrade('s', 41)) numpas = numpas.times(upgradeEffect('s', 41))
         let multi = numpas.times(tmp.t.effect.times(0.001))
         if (hasUpgrade('al',32)) multi = multi.add(1)
         if (hasUpgrade('r',12)) multi = multi.add(1)
@@ -2661,8 +2653,8 @@ addLayer("s", {
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"%" }, },
         41: {
-            title: "Faster automation",
-            description: "Multiply Number gained from passive generation based on subtractive",
+            title: "Faster Automation",
+            description: "Speed up number passive production based on subtractive ",
             cost: new Decimal(12),
             unlocked() { return hasUpgrade("m", 44) },
             effect() {
@@ -2701,8 +2693,8 @@ addLayer("s", {
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, },
         51: {
-            title: "Fastest Automation",
-            description: "The upgrade above ('Faster Automation') is strengthen based on subtractive . Capped at ^32 ",
+            title: "Faster automation",
+            description: "The upgrade above ('Faster automation') is strengthen based on subtractive",
             cost() {
                 let base = new Decimal(160)
                 if(hasUpgrade('s',52)) base = base.times(1.15)
@@ -2712,7 +2704,8 @@ addLayer("s", {
             },
             unlocked() { return buyableEffect("e", 34).gte(1) },
             effect() {
-                let eff = player.s.points.times(0.02).add(1).min(32)
+                let eff = player.s.points.times(0.02).add(1)
+                eff = softcap(eff,new Decimal(32),0.5)
                 return eff
             },
             effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id))+"" }, },
@@ -4931,7 +4924,9 @@ addLayer("r", {
                 if(player.r.buyables[104].gte(10)) level = (level.div(10)).pow(3).times(10)
                 let extralevel = player.r.improvementfactor
                 let cost = level.add(extralevel)
-                return new Decimal(10).pow(cost.pow(1.05)).times("1e3")},
+                let basecost =  new Decimal(10).pow(cost.pow(1.05)).times("1e3")
+                return basecost
+            },
             display() { 
                 return "You must be inside of No Letter (Exponent) challenge and reached "+format(this.cost())+" points <br/> Effect : Gain +" + format(this.per()) + "x Tickspeed per upgrade (Very slowly increasing) , Current : x"+format(this.effect())+"  " },
             canAfford() { return player.points.gte(this.cost()) && inChallenge('e',12)},
@@ -4941,14 +4936,17 @@ addLayer("r", {
             effect(x) {
                 let time = player.r.prestigetime.add(10).log(100)
                 let base = player.r.prestigetime.pow(time)
-                let sfcbase = softcap(base,new Decimal(1),0.05)                
+                let sfcbase = softcap(base,new Decimal(1),0.05)
+                if(hasAchievement('ac',104)) sfcbase = sfcbase.pow(2).add(2).log(2)                
                 let sfcbase1 = sfcbase.times(x).add(1)
+                if(hasAchievement('ac',104)) sfcbase1 = sfcbase1.times(0).add(sfcbase.pow(x))
                 return sfcbase1           
             },
             per() {
                 let time = player.r.prestigetime.add(10).log(100)
                 let base = player.r.prestigetime.pow(time)
                 let sfcbase = softcap(base,new Decimal(1),0.05) 
+                if(hasAchievement('ac',104)) sfcbase = sfcbase.pow(2).add(2).log(2)                
                 return sfcbase
             },
             style() {
@@ -6647,6 +6645,7 @@ addLayer("al", {
         tickspeedreduction1:new Decimal(0.2),
         tickspeedreduction2:new Decimal(1),
         alteredpow:new Decimal(0.25),
+        operationeffect: new Decimal(0),
         //
         bank1: new Decimal(0),
         bank2: new Decimal(0),
@@ -6734,7 +6733,7 @@ addLayer("al", {
         deltaextension = player.al.points.div("1e6").pow(0.75)
         if(inChallenge('r',11)) deltaextension = deltaextension.pow(player.r.chh)
         deltaextension1 = softcap(deltaextension,new Decimal("1e3"),0.5)
-        deltaextension12 = softcap(deltaextension1,limitofext,0.0)
+        deltaextension12 = softcap(deltaextension1,limitofext,player.al.operationeffect.div(100).max(0).min(1))
         player.al.extensiongain = deltaextension12.times(buyableEffect('al',24))
 
         extensionbuff = player.al.extension.add(1).pow(0.9)
@@ -6776,6 +6775,8 @@ addLayer("al", {
         if(hasAchievement('ac',79)) alteredpower = alteredpower.add(0.1)
         if(hasUpgrade('al',53)) alteredpower = alteredpower.add(0.1)
         player.al.alteredpow = alteredpower 
+
+        player.al.operationeffect = new Decimal(100).sub(new Decimal(100).div(player.al.operation.add(10).slog()))
     },
       
     update(delta) {
@@ -7638,6 +7639,8 @@ microtabs: {
                 ["raw-html", function () { return "<h3>Pre-Research resource multiplier and cost reduction (except Points gained) are ^"+format(player.al.alteredpow)+"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank", "25px"],
                 ["raw-html", function () { return "<h3>You have "+format(player.al.operation)+" Operation (+"+format(player.al.operationgained)+"/s)" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Weakening Extension cap by "+format(player.al.operationeffect)+"%" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
+                ["blank","25px"],
                 ["row", [["challenge", 11]]],
                 ["blank", "25px"],
                 ["row", [["buyable", 31],["buyable", 32],["buyable", 33],["buyable",34]]],
@@ -7689,14 +7692,12 @@ addLayer("g", {
 
 
     automate() {
-        if(player.points.gte("1e5000") && player.m.points.gte("1e9000") && player.e.effective.gte(285) && player.r.points.gte(13) && tmp.t.effect.gte("1e100") && player.r.lightadd.gte("1e21") && player.r.darksub.gte("1e20") && player.r.energy.gte("1e90") && player.r.prestigetime.gte("1788923149") && player.g.req[0].eq(0) && hasAchievement('ac',109)) {
+        if(player.points.gte("1e5000") && player.m.points.gte("1e10000") && player.e.effective.gte(300) && player.r.points.gte(13) && tmp.t.effect.gte("1e150") && player.r.lightadd.gte("1e21") && player.r.darksub.gte("1e20") && player.r.energy.gte("1e90") && player.r.prestigetime.gte("315360000") && player.g.req[0].eq(0) && hasAchievement('ac',109)) {
             player.g.req[0] = new Decimal(1)
         } 
-        if (inChallenge('al',11) && player.al.operation.gte("1e40") && hasChallenge('d',13) && player.m.buyables[11].gte("2500") && player.n.points.gte("1e1024") && player.e.perkpower.gte("60") && player.g.req[1].eq(0) && hasAchievement('ac',109)) {
+        if (inChallenge('al',11) && player.al.operation.gte("1e60") && player.r.mastery.gte(20000) && hasChallenge('d',13) && player.m.buyables[11].gte("2500") && player.n.points.gte("1e1024") && player.e.perkpower.gte("60") && player.g.req[1].eq(0) && hasAchievement('ac',109)) {
             player.g.req[1] = new Decimal(1)
         }
-        player.points = player.points.min("1e5000")
-
     },
     update(delta) {
 
@@ -7758,14 +7759,14 @@ microtabs: {
                 ["raw-html", function () { return "<h3>Normal realm task" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return player.g.req[0].gte(1)?"<h3> Status : Completed":"<h3> Status : Incompleted" }, { "color": function(){return player.g.req[0].gte(1)?"cyan":"purple"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 1 : Obtain 1e5000 Points ("+format(player.points)+")" }, { "color": function(){return player.points.gte("1e5000")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 2 : Obtain 1e9000 Multiplicative ("+format(player.m.points)+")" }, { "color": function(){return player.m.points.gte("1e9000")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 3 : Have at least 285 effective exponent ("+format(player.e.effective)+")" }, { "color": function(){return player.e.effective.gte("285")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Task 2 : Obtain 1e10000 Multiplicative ("+format(player.m.points)+")" }, { "color": function(){return player.m.points.gte("1e10000")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Task 3 : Have at least 300 effective exponent ("+format(player.e.effective)+")" }, { "color": function(){return player.e.effective.gte("300")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 4 : Have at least 13 research ("+format(player.r.points)+")" }, { "color": function(){return player.r.points.gte("13")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 5 : Reach 1e100 tickspeed ("+format(tmp.t.effect)+")" }, { "color": function(){return tmp.t.effect.gte("1e100")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Task 5 : Reach 1e150 tickspeed ("+format(tmp.t.effect)+")" }, { "color": function(){return tmp.t.effect.gte("1e150")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 6 : Gather 1e21 Light additive ("+format(player.r.lightadd)+")" }, { "color": function(){return player.r.lightadd.gte("1e21")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 7 : Gather 1e20 Dark subtractive ("+format(player.r.darksub)+")" }, { "color": function(){return player.r.darksub.gte("1e20")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 8 : Gather 1e90 Energy ("+format(player.r.energy)+")" }, { "color": function(){return player.r.energy.gte("1e90")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 9 : Reach around 25 years worth of Prestige Time ("+formatTime(player.r.prestigetime)+")" }, { "color": function(){return player.r.prestigetime.gte("1788923149")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Task 9 : Reach 10 years worth of Prestige Time ("+formatTime(player.r.prestigetime)+")" }, { "color": function(){return player.r.prestigetime.gte("315360000")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
             ]
         },
         "Altered requirement" : {
@@ -7774,9 +7775,9 @@ microtabs: {
             content: [
                 ["raw-html", function () { return "<h3>Altered realm task" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return player.g.req[1].gte(1)?"<h3> Status : Completed":"<h3> Status : Incompleted" }, { "color": function(){return player.g.req[1].gte(1)?"cyan":"purple"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 1 : Have 1e40 Operation" }, { "color": function(){return player.al.operation.gte("1e40")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Task 1 : Have 1e60 Operation" }, { "color": function(){return player.al.operation.gte("1e60")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 2 : Complete 'Chaotic Division' divisive challenge inside altered realm" }, { "color": function(){return (hasChallenge('d',13) && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 3 : Reach 17500 Mastery inside altered realm" }, { "color": function(){return (player.r.mastery.gte("17500") && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Task 3 : Reach 20000 Mastery inside altered realm" }, { "color": function(){return (player.r.mastery.gte("20000") && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 4 : Buy 'Point Boost' buyable at least 2500 times inside altered realm" }, { "color": function(){return (player.m.buyables[11].gte(2500) && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 5 : Have 1e1024 number inside altered realm" }, { "color": function(){return (player.n.points.gte("1e1024") && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 6 : Have 60 perk power inside altered realm" }, { "color": function(){return (player.e.perkpower.gte(60) && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],

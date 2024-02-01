@@ -15,15 +15,17 @@ let modInfo = {
 // Set your version in num and name
 let VERSION = {
 	num: "0.0.3",
-	name: "Graduation I ",
+	name: "Graduation I",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3> v0.0.3 (fix) </h3><br>
+	- Fixed a NaN when any layer passive generation is above 1.79e308x its gain </br>
 	<h3>v0.0.3</h3><br>
 	- Fixed some issue where localStorage would get flood too quick </br>
 	- Upon reaching their respective achievement , Pre-Research layer will always be shown (available) </br>
 	- Added 1 more semi 'layer' and new challenges (don't need to complete all) <br>
-	- Most meta research upgrade cost are reduced (Will be rebalanced later)<br>
+	- Most meta research upgrade cost are reduced<br>
 	- Prevented softlock when entering any Exponent challenge with 0 Exponent <br>
 	- More achievement content and reward<br>
 	- Rebalanced some achievement to be much easier<br>
@@ -53,7 +55,7 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return !player.points.gte("1e5000")
+	return true
 }
 
 // Calculate points/sec!
@@ -101,9 +103,6 @@ function getPointGen() {
 	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
 	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
 	sum = sum.times(player.r.truegamespeed)
-
-	//Grad 1 softcap
-	sum = softcap(sum,new Decimal("1e5000"),0)
 	return sum
 }
 
