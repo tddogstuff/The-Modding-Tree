@@ -825,24 +825,11 @@ addLayer("ac", {
         }
         if(hasAchievement('ac',36)) {
             buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
-            buyBuyable('m',11)
+        }
+        if(hasAchievement('ac',37)) {
+            buyUpgrade('a',21)
+            buyUpgrade('s',31)
+            buyUpgrade('m',41)
         }
     },
     upgrades: {
@@ -973,12 +960,12 @@ addLayer("ac", {
         36: {
             name: "More like Google",
             done() { return player.points.gte("1e100") },
-            tooltip: "Goal : Have 1e100 Points . Reward : Automaticly buy 'Point Boost' buyable for free",
+            tooltip: "Goal : Have 1e100 Points . Reward : Automaticly buy 'Point Boost' multiplicative buyable for free .",
         },
         37: {
             name: "Third one",
             done() { return player.e.points.gte("3") },
-            tooltip: "Goal : Reach 3 Exponent . Reward : x2 Divisive gained ",
+            tooltip: "Goal : Reach 3 Exponent . Reward : x2 Divisive gained AND autobuy the first row2 upgrade ",
         },
         38: {
             name: "Literally Eight Exponent",
@@ -1001,8 +988,8 @@ addLayer("ac", {
         },
         42: {
             name: "Not even halted",
-            done() { return player.n.points.gte("1e9") && player.points.lt("1e20") && inChallenge('m',12) },
-            tooltip() {return "Complete (x) challenge 'Halted Counter' while having less than 1e20 Points  . Reward : 'Halted Counter' Challenge reward ^"+format(this.effect())+" (based on Multiplicative)"},
+            done() { return player.n.points.gte("1e90") && inChallenge('m',12) },
+            tooltip() {return "Reach 1e90 Number in (x) challenge 'Halted Counter'  . Reward : 'Halted Counter' Challenge reward ^"+format(this.effect())+" (based on Multiplicative)"},
             effect() {
                 let a = player.m.points.add(10).slog()
                 return a.pow(2)
@@ -1561,7 +1548,7 @@ addLayer("ac", {
         },
         "Tier 2" : {
             buttonStyle() { return { 'color': 'lime' , "border-color" : "green" } },
-            unlocked() { return true },
+            unlocked() { return player.r.tetration.gte(6) },
             content: [
                 ["raw-html", function () { return "<h3>These achievemeent require at least 6 tetration to obtain" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank", "50px"],
@@ -1628,13 +1615,7 @@ addLayer("t", {
             title: "Tickspeed Control",
             body() {                
                 return "Current tickspeed is ^"+format(player.t.tickspeedcontrol)+" above 1,000."},
-        },
-        lore3: {
-            title: "Gamespeed",
-            body() {              
-                return "Gamespeed increase how fast the game run . This affect everything but ticks gained"},
-        },
-        
+        },        
     },
     symbol:"T",
     color: "#FFFFFF",                       // The color for this layer, which affects many elements.
@@ -1648,7 +1629,7 @@ addLayer("t", {
     requires: new Decimal(0),              // The amount of the base needed to  gain 1 of the prestige currency.
     canReset() {return player.r.bestmastery.gte(100)},
     passiveGeneration() {
-        let speed = new Decimal(1)
+        let speed = new Decimal(1).times(player.r.truegamespeed).div(player.r.gamespeed.max(1))
         if (hasAchievement('ac',88)) speed = speed.times(achievementEffect('ac',88))
         let mas = player.r.bestmastery.add(-100).max(0)
         let multi = mas.times(1000)
@@ -2095,7 +2076,7 @@ addLayer("n", {
         },
         12: {
             title: "Headstart",
-            description: "Points gained is based on number",
+            description: "Points gained is boosted based on number",
             cost: new Decimal(2),
             unlocked() { return hasUpgrade("n", 11) && !player.r.buyables[121].gte(1)},
             effect() {
@@ -2282,7 +2263,7 @@ addLayer("a", {
         {key: "a", description: "A: Reset for Additives", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     automate() {
-        if(hasUpgrade('m',43) || hasMilestone('r',1) ) {
+        if(hasUpgrade('m',43) || (hasMilestone('r',1) && !inChallenge('al',11)) ) {
             let start = player.a.startsoftcap
             let maxadditive = (player.points.times(tmp.a.gainMult.pow(-1)).times(1/125).max(2).log(10).add(-new Decimal(2).log(10))).pow(20/27).times(new Decimal(2).log(10).pow(-20/27))
             let power = new Decimal(0.6)
@@ -2372,7 +2353,7 @@ infoboxes: {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, },
         23: {
             title: "More addition",
-            description: "Addtive upgrade 'Addition' is more effective based on subtraction",
+            description: "Addtive upgrade 'Addition' is more effective based on subtractives",
             cost: new Decimal(4),
             unlocked() { return hasUpgrade("a", 22) && !player.r.buyables[121].gte(1) },
             effect() {
@@ -2405,7 +2386,7 @@ infoboxes: {
             unlocked() { return hasUpgrade("a", 31) && !player.r.buyables[121].gte(1) }, },
         33: {
             title: "Multiplier automation",
-            description: "Gain a percentage of your multiplicatives passively per seconds (based on additives)",
+            description: "Gain a percentage of your multiplicatives passively per second (based on additives)",
             cost: new Decimal(35),
             unlocked() { return hasUpgrade("a", 32) && !player.r.buyables[121].gte(1)},
             effect() {
@@ -2585,7 +2566,7 @@ addLayer("s", {
         }
     },
     automate() {
-        if(hasUpgrade('m',43) || hasMilestone('r',1)) {
+        if(hasUpgrade('m',43) || (hasMilestone('r',1) && !inChallenge('al',11))) {
             let start = player.s.startsoftcap
             let maxsubtractive = (player.points.times(tmp.s.gainMult.pow(-1)).times(1/125).max(2).log(10).add(-new Decimal(2).log(10))).pow(20/27).times(new Decimal(2).log(10).pow(-20/27))
             let power  = new Decimal(0.6)
@@ -2815,7 +2796,7 @@ addLayer("m", {
     lore: {
         title: "Multiplicative gained",
         body() {
-            return "Base : "+format(player.n.points.times("e-8").pow(0.5))+" . Multiplier : x"+format(tmp.m.gainMult)+" . Exponent : ^"+format(tmp.m.gainExp)+""  },
+            return "Base : "+format(player.n.points.div(tmp.m.requires).pow(0.5))+" . Multiplier : x"+format(tmp.m.gainMult)+" . Exponent : ^"+format(tmp.m.gainExp)+""  },
     },
     },
     doReset(resettingLayer) {
@@ -2831,21 +2812,34 @@ addLayer("m", {
              return +getBuyableAmount(this.layer, this.id) + "<br/> "+a+" Point Boost"
             } ,
             cost(x) { 
-                let increase = x.max(600).sub(600)
-                
-                let cost =  (new Decimal(2).add(increase.times(0.0025))).pow(x)
+                let level = x
+                if(level.gt(600)) level = (level.div(600)).pow(1.9016).times(600)    
+                let cost =  (new Decimal(2)).pow(x)
+            
                 if(hasAchievement("ac",55)) cost = cost.pow(achievementEffect('ac',55))
                 if (hasAchievement('ac',77)) cost = cost.pow(0.5) 
 
                 return cost},
             display() { return "Multiply point gained by " + format(this.effect()) +"x </br> Cost : " + format(this.cost()) + " Multiplicative" },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
-            buyMax() {return true},
             buy() {
                 if(!hasAchievement('ac',36)) {
                     player[this.layer].points = player[this.layer].points.sub(this.cost())
                 }
+                if(!hasAchievement('ac',36)) {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                } else {
+                let v = new Decimal(0)
+                let u = player.m.points.max(1)
+                if(hasAchievement("ac",55)) u = u.root(achievementEffect('ac',55))
+                if (hasAchievement('ac',77)) u = u.root(0.5)
+
+                if(u.lt(new Decimal(2).pow(600))) v = u.log(2)
+                if(u.gt(new Decimal(2).pow(600))) v = u.pow(0.52587294909).times(20.7585)
+
+                v = v.add(1).floor().min(this.purchaseLimit()).max(player.m.buyables[11])
+                setBuyableAmount(this.layer,this.id ,v)
+                }
             },
             effect(x) {
                 let d12r = new Decimal(1.15)
@@ -3151,7 +3145,7 @@ addLayer("d", {
     lore: {
         title: "Divisive gained",
         body() {
-            return "Base : "+format(player.n.points.times("e-18").pow(0.5))+" . Multiplier : x"+format(tmp.d.gainMult)+" . Exponent : ^"+format(tmp.d.gainExp)+""  },
+            return "Base : "+format(player.n.points.div(tmp.d.requires).pow(0.5))+" . Multiplier : x"+format(tmp.d.gainMult)+" . Exponent : ^"+format(tmp.d.gainExp)+""  },
     },
     
     },
@@ -3186,7 +3180,7 @@ addLayer("d", {
         },
         12: {
             name: "Worsen condition",
-            challengeDescription: "All Point multiplier become log(multi)^5" ,
+            challengeDescription: "Points gained (before exponent) is log(gain)^5" ,
             goalDescription() {
                 let base = new Decimal("3.16e10")
                 if(inChallenge('al',11)) base = base.pow(0.000001).times(10)                   
@@ -3695,7 +3689,7 @@ addLayer("e", {
             cost(x) { return (x.times(0.04).add(1)).pow(1.3) },
             display() { return "Subtractive cost is /" + format(this.effect()) +" </br> Cost : " + format(this.cost()) + " Perk Power " },
             canAfford() { return player[this.layer].perkpower.gte(this.cost()) },
-            unlocked() {!player.r.buyables[121].gte(1)},
+            unlocked() {return !player.r.buyables[121].gte(1)},
             buy() {
                 if(player.r.tetration.lt(2)) {
                 player[this.layer].perkpower = player[this.layer].perkpower.sub(this.cost())
@@ -3731,7 +3725,7 @@ addLayer("e", {
             cost(x) { return (x.times(0.04).add(1)).pow(1.3) },
             display() { return "Additive cost is /" + format(this.effect()) +" </br> Cost : " + format(this.cost()) + " Perk Power " },
             canAfford() { return player[this.layer].perkpower.gte(this.cost()) },
-            unlocked() {!player.r.buyables[121].gte(1)},
+            unlocked() { return !player.r.buyables[121].gte(1)},
             buy() {
                 if(player.r.tetration.lt(2)) {
                     player[this.layer].perkpower = player[this.layer].perkpower.sub(this.cost())
@@ -3768,7 +3762,7 @@ addLayer("e", {
             cost(x) { return (x.times(0.1).add(1)).pow(1.5) },
             display() { return "Exponent cost is /" + format(this.effect()) +" <br/> Cost : " + format(this.cost()) + " Perk Power " },
             canAfford() { return player[this.layer].perkpower.gte(this.cost()) },
-            unlocked() {!player.r.buyables[121].gte(1)},
+            unlocked() { return !player.r.buyables[121].gte(1)},
             buy() {
                 if(player.r.tetration.lt(2)) {
                     player[this.layer].perkpower = player[this.layer].perkpower.sub(this.cost())
@@ -4041,7 +4035,8 @@ addLayer("e", {
             canComplete: function() {
                 let base = new Decimal("1e80")
                 if(inChallenge('r',11)) base = base.pow(player.r.chi)
-                return player.points.gte("base")},
+                return player.points.gte(base)
+            },
             unlocked() {return hasMilestone('e',7)},
         },
         12: {
@@ -4545,8 +4540,8 @@ addLayer("r", {
 
 
             if(inChallenge('r',11)| inChallenge('al',11) ) {
-                if(player.n.points.gt(getResetGain('n').times(tmp.n.passiveGeneration).times("1e10")) && player.e.points.eq(0)) {
-                    player.n.points = getResetGain('n').times("1e10").times(tmp.n.passiveGeneration)
+                if(player.n.points.gt(getResetGain('n').add(1).times(tmp.n.passiveGeneration.max(1)).times("1e10")) && player.e.points.eq(0)) {
+                    player.n.points = getResetGain('n').add(1).times("1e10").times(tmp.n.passiveGeneration.max(1))
                 }
             }
             //Energy
@@ -6292,7 +6287,7 @@ microtabs: {
         ]},
         "Meta research": {
             buttonStyle() { return { 'color': '#ff0000' , "border-color" : "orange" } },
-            unlocked() { return true },
+            unlocked() { return player.r.bestmastery.gte("308.25") },
             content:
 
                 [
@@ -6313,7 +6308,7 @@ microtabs: {
         },
         "Permeant research": {
             buttonStyle() { return { 'color': '#ffffff' , "border-color" : "gray" } },
-            unlocked() { return true },
+            unlocked() { return hasAchievement('ac',54) },
             content:
 
                 [
@@ -6583,9 +6578,9 @@ microtabs: {
                 unlocked() { return hasAchievement('ac',67) },
                 content: [
                     ["blank", "25px"],
-                    ["raw-html", function () { return "<h2> Gamespeed boost all resource production" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
-                    ["raw-html", function () { return "<h2> Consuming "+format(player.r.gsreq,0)+" Ticks/s to boost Gamespeed by "+format(player.r.gsbase,0)+"x"}, { "color": "green", "font-size": "14px", "font-family": "helvetica" }],
-                    ["raw-html", function () { return "<h2> Gamespeed cost scale much faster above 5x"}, { "color": "red", "font-size": "10px", "font-family": "helvetica" }],
+                    ["raw-html", function () { return "<h2> Gamespeed speed up most resource production (apply after exponent , etc)" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
+                    ["raw-html", function () { return "<h2> Consuming "+format(player.r.gsreq,0)+" Ticks per real life second to boost Gamespeed by "+format(player.r.gsbase,0)+"x"}, { "color": "green", "font-size": "14px", "font-family": "helvetica" }],
+                    ["raw-html", function () { return "<h2> This gamespeed multiplier do not apply to Ticks gained!"}, { "color": "red", "font-size": "10px", "font-family": "helvetica" }],
                     ["raw-html", function () { return "<h2> You can upkeep this Gamespeed for "+formatTime(player.r.gsupkeep)+" "}, { "color": "white", "font-size": "10px", "font-family": "helvetica" }],
                     ["blank","25px"],
                     ["raw-html", function()  {return "<h2> You have spent "+format(player.r.spenttick)+" ticks"}, {"color": "grey","font-size":"15px","font-family":"helvetica"}],
@@ -6603,7 +6598,7 @@ microtabs: {
 tabFormat: [
     ["microtabs", "stuff", { 'border-width': '0px' }],
 ],
-layerShown() { return player.r.bestmastery.gte(200) || player.e.points.gte(10) }
+layerShown() { return hasAchievement('ac',39) || player.e.points.gte(10) }
 
 
 }) 
@@ -6714,7 +6709,12 @@ addLayer("al", {
 
 
         let gainal = player.al.value.times(player.al.extensionboost).times(buyableEffect('al',23))
+        if(player.al.resetcooldown.gt(0)) gainal = gainal.times(0)
         player.al.pointsgainal = gainal.times(player.r.truegamespeed)
+
+        if(player.al.resetcooldown.gt(0)) {
+            player.al.points = new Decimal(0)
+        }
 
         //milestone
         let reqc = new Decimal(16).times(buyableEffect('al',21))
@@ -6782,7 +6782,7 @@ addLayer("al", {
     update(delta) {
     player.al.resetcooldown = player.al.resetcooldown.sub(delta).max(0)
     player.al.x = player.al.x.add(player.al.deltax.times(delta))
-    player.al.points = player.al.points.add((player.al.pointsgainal).times(delta)).sub(player.al.resetcooldown.div(6).abs().ceil().times(player.al.points))
+    player.al.points = player.al.points.add((player.al.pointsgainal).times(delta))
 
     player.al.operation = player.al.operation.add(player.al.operationgained.times(delta))
         if(hasUpgrade('r',31)) {
@@ -7396,7 +7396,7 @@ addLayer("al", {
             unlocked() { return true }, 
         },
         34: {
-            title: "Number gained",
+            title: "Extra operation",
             description: "You gain more Operation based on Prestige Time",
             cost: new Decimal("2000"),
             currencyLocation() { return player.al },
@@ -7411,7 +7411,7 @@ addLayer("al", {
         },
         41: {
             title: "Stronger Upgrade",
-            description: "Increase the strength of Number upgrade 'Headstart' (^1.2 effect)",
+            description: "Increase the strength of Number upgrade 'Headstart' (^1.2 to base effect)",
             cost: new Decimal("8000"),
             currencyLocation() { return player.al },
             currencyDisplayName: "Operation",
