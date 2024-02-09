@@ -74,6 +74,11 @@ function softcap(value, cap, power ) {
 	else
 		return value.pow(power).times(cap.pow(decimalOne.sub(power)))
 }
+function softcap2(value , cap , power) {
+	if (value.lte(cap)) return value
+	else 
+		return cap.times(new Decimal(10).pow(value.div(cap.max(1)).max(1).log(10).pow(power)))
+}
 
 // Return true if the layer should be highlighted. By default checks for upgrades only.
 function shouldNotify(layer){
@@ -390,7 +395,7 @@ var interval = setInterval(function() {
 	let diff = (now - player.time) / 1000
 	let trueDiff = diff
 	if (player.offTime !== undefined) {
-		if (player.offTime.remain > (modInfo.offlineLimit * 3600 + buyableEffect('o',13))) player.offTime.remain = (modInfo.offlineLimit * 3600 + buyableEffect('o',13))
+		if (player.offTime.remain > (modInfo.offlineLimit * 7200)) player.offTime.remain = (modInfo.offlineLimit * 7200)
 		if (player.offTime.remain > 0) {
 			let offlineDiff = Math.max(player.offTime.remain / 10, diff)
 			player.offTime.remain -= offlineDiff

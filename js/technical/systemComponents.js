@@ -170,6 +170,8 @@ var systemComponents = {
                 <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: {{ options.forceOneTab?"ALWAYS":"AUTO" }}</button></td>
 				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
 			</tr> 
+				<td><button class="opt" onclick="earlyskip()">Skip to End of Grad 1</button></td>
+				<td><button class="opt" onclick="betatest()">Beta test : {{options.betatest?"TRUE":"FALSE"}}</button></td>
 
         </table>`
     },

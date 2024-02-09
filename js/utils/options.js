@@ -14,7 +14,8 @@ function getStartOptions() {
 		forceOneTab: false,
 		oldStyle: false,
 		tooltipForcing: true,
-		shortdisplay: false,
+		earlyskip: 0,
+		betatest: false,
 	}
 }
 function toggleOpt(name) {
@@ -76,3 +77,50 @@ function milestoneShown(layer, id) {
 	}
 	return false;
 }
+function earlyskip() {
+	if(options.earlyskip !== 0) {	
+		options.earlyskip = options.earlyskip * 0
+		alert("Look like you want to do it (1/5)");
+		alert("You will receive the first 90 achievements (2/5)");
+		player.ac.achievements = ['11','12','13','14','15','16','17','18','19','21','22','23','24','25','26','27','28','29','31','32','33','34','35','36','37','38','39','41','42','43','44','45','46','47','48','49','51','52','53','54','55','56','57','58','59','61','62','63','64','65','66','67','68','69','71','72','73','74','75','76','77','78','79','81','82','83','84','85','86','87','88','89','91','92','93','94','95','96','97','98','99','101','102','103','104','105','106','107','108','109']
+		alert("and some starting resource (3/5)")
+		player.r.bestmastery = new Decimal("36000")
+		player.a.unlocked = true
+		player.m.unlocked = true
+		player.d.unlocked = true
+		player.s.unlocked = true
+		player.e.unlocked = true
+		player.r.tetration = new Decimal(10)
+		player.r.best = new Decimal(10)
+		player.r.metaresearch = new Decimal(40)
+		player.r.prestigetime = new Decimal("1e9")
+		player.t.points = new Decimal("1e10")
+		player.e.points = new Decimal(10)
+		player.r.points = new Decimal(10)
+		player.r.challengeshard = new Decimal(8)
+		autobuyUpgrades('r')
+		alert("Since you skip content . I'm not gonna explain anything else (4/5)")
+		alert("Good luck! (5/5)")
+	} else {
+		if (!confirm("In order to skip to the end of Graduation 1 , you must WIPE your current save . Are you sure? (Click this again after wiping to skip progress)")) return
+		player = null
+		options.earlyskip = options.earlyskip + 1
+		save(true);
+		window.location.reload();
+	}
+	}
+	function betatest() {
+		if(!options.betatest) {	
+			if (!confirm("You will be beta testing unstable feature or broken feature . Are you sure? ")) return
+			options.betatest = !options.betatest
+			alert("You have unlocked the ability to Graduate")
+			alert("You have unlocked Artifacts in Graduation")
+
+		} else {
+			if (!confirm("This will force a Graduation reset and wipe your artifact . IGNORE THE NaN , JUST REFRESH YOUR PAGE.")) return
+			options.betatest = !options.betatest
+			buyBuyable('g',15)
+			save()
+			window.location.reload()
+		}
+		}

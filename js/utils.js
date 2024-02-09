@@ -410,3 +410,283 @@ function gridRun(layer, func, data, id) {
 	else
 		return layers[layer].grid[func];
 }
+//additional utility
+//graduation
+function RandomArtifactID(index) {
+	let array = [0,0,0,0]
+	const usedNumbers = new Set(); 
+  
+	for (let i = 0; i < array.length; i++) {
+	  while (true) {
+		const randomNumber = Math.floor(Math.random() * 8) + 1 + 8 * index;
+  
+		if (!usedNumbers.has(randomNumber)) {
+		  array[i] = randomNumber;
+		  usedNumbers.add(randomNumber); 
+		  break;
+		}
+	  }
+	}
+	return array;
+  }
+function RandomArtifactQuality() {  
+	let array = [0,0,0,0]
+	for (let i = 0; i < 4; i++) {
+	  while (true) {
+		const randomNumber = (Math.floor(Math.random() * 10000) + 1) /100;
+		array[i] = randomNumber;
+		break;
+		}
+	  }	
+	return array;
+}
+function maxEffect(id) {
+	switch (id) {
+		case 1:
+		  return 1.25;
+		case 2:
+		  return 1.6;
+		case 3:
+		  return 1.6;	  
+		case 4:
+		  return 1.2;
+		case 5:
+		  return 1.2;
+		case 6:
+		  return 1.25;
+		case 7:
+		  return 2;
+		case 8:
+		  return 1.5;
+		case 9:
+		  return 16;
+		case 10:
+		  return 0.5;
+		 case 11:
+		  return 0.75;	  
+		case 12:
+		  return 0.25;
+		case 13:
+		  return 2.5;
+		 case 14:
+		  return 2.5;
+		case 15:
+		  return 1.4;
+		case 16:
+		  return 1.4;
+		case 17:
+		  return 1.15;
+		case 18:
+		  return 1.2;
+		 case 19:
+		  return 1.25;	  
+		case 20:
+		  return 1.2;
+		case 21:
+		  return 2;
+		 case 22:
+		  return 1.6;
+		case 23:
+		  return 10000;
+		case 24:
+		  return 40;
+		case 25:
+		  return 100;
+		case 26:
+		  return 2;
+		 case 27:
+		  return 100;	  
+		case 28:
+		  return 40;
+		case 29:
+		  return 20;
+		 case 30:
+		  return 0.65;
+		case 31:
+		  return 1.25;
+		case 32:
+		  return 10;
+		//if error
+		default:
+		  return 1;
+	}
+}
+function getArtifactEffect(idarray,qualityarray,a) {
+	let id = idarray
+	let quality = qualityarray
+	let effect = [1]
+
+	for (let i = 0; i < 4; i++) {
+		while (true) {
+		  let max = maxEffect(id[i]) 
+		  let eff = Math.pow(max,quality[i] / 100)
+		  effect[i] = eff;
+		  break;
+		  }
+		}	
+	return effect
+	
+}
+//Yes! there is 32 different artifact id , oh no
+function DisplayArtifactEffect(id,effect) {
+	let e = effect
+  switch (id) {
+	//1-8 : Resource booster
+    case 1:
+      return "Number gained is ^"+format(e)+"";
+    case 2:
+      return "Additive gained (before cost scaling) is x"+format(e)+"";
+ 	case 3:
+      return "Subtractive gained (before cost scaling) is x"+format(e)+"";	  
+	case 4:
+      return "Multiplicative gained is ^"+format(e)+"";
+    case 5:
+      return "Divisive gained is ^"+format(e)+"";
+ 	case 6:
+      return "Effective exponent is x"+format(e)+"";
+    case 7:
+      return "Perk power gained is x"+format(e)+"";
+    case 8:
+      return "Research gained is x"+format(e)+"";
+	//9-16 : Reduce the cost of sth or weaken cost scaling
+    case 9:
+      return "Research cost is /"+format(e)+"";
+    case 10:
+      return "'Point Boost' (Multiplicative) cost is ^"+format(e)+"";
+ 	case 11:
+      return "All improvement cost is ^"+format(e)+"";	  
+	case 12:
+      return "Energy booster (Twilight) cost is ^"+format(e)+"";
+    case 13:
+      return "Light additive (Twilight) cost scaling is "+format(e)+"x weaker";
+ 	case 14:
+      return "Dark subtractive (Twilight) cost scaling is "+format(e)+"x weaker";
+    case 15:
+      return "Additive cost scaling is "+format(e)+"x weaker";
+    case 16:
+      return "Subtractive cost scaling is "+format(e)+"x weaker";
+	//17-24 : Buyables
+	case 17:
+      return "'Perk Power 1' (Exponent) effect is ^"+format(e)+"";
+    case 18:
+      return "'Perk Power 2' (Exponent) effect is ^"+format(e)+"";
+ 	case 19:
+      return "'Point Boost' (Multiplicative) effect is ^"+format(e)+"";	  
+	case 20:
+      return "All improvement (Research) effect is ^"+format(e)+"";
+    case 21:
+      return "Light additive and Dark subtractive (Twilight) generator are "+format(e)+"x stronger";
+ 	case 22:
+      return "'Discount' (Exponent) effect is ^"+format(e)+"";
+    case 23:
+      return "'Number Booster' (Exponent) base is multiplied by "+format(e)+"";
+    case 24:
+      return "Add +"+format(e)+"% to Twilight perk strength";
+	//24-32 : Other
+	case 25:
+      return "Multiply Gamespeed by x"+format(e)+"";
+    case 26:
+      return "Raise Tickspeed by ^"+format(e)+"";
+ 	case 27:
+      return "Prestige Time gained is multiplied by "+format(e)+"";	  
+	case 28:
+      return "Weaken all Meta-research challenge modifier by "+format(e)+"%";
+    case 29:
+      return "Reduce Exponent cost scaling by "+format(e)+"%";
+ 	case 30:
+      return "Raise All Pre-Research challenge goal by ^"+format(e)+"";
+    case 31:
+      return "Boost Exponent effect by ^"+format(e)+"";
+    case 32:
+      return "Add "+format(e)+" to base Perk Power gained";
+	//if error
+    default:
+      return "";
+  }
+}
+// 16 more for unique ID  
+function DisplayUniqueArtifactEffect(id) {
+  switch (id) {
+    case 1:
+      return "Gain free Additive and Subtractive based on 'Point Boost' level";
+    case 2:
+      return "'Perk Power 2' add free 'Perk Power 1' level";
+ 	case 3:
+      return "'Perk Power 1' add free 'Point Boost' level";	  
+	case 4:
+      return "'Point Boost' add free 'Perk Power 2' level at a very reduced rate";
+    case 5:
+      return "Improvement boost their respective challenge reward";
+ 	case 6:
+      return "Tickspeed boost from Research is stronger based on Prestige Time";
+    case 7:
+      return "Challenge shard grant additional free Research";
+    case 8:
+      return "Reduce the cost of Research based on unspent Meta-research";
+    case 9:
+      return "Operation effect also weaken Energy reduction at a heavily reduced rate";
+    case 10:
+      return "Energy effect also affect Light Additive and Dark Subtractive at a severely reduced rate";
+ 	case 11:
+      return "Exponent effect additionally affect Number at a insanely reduced rate";	  
+	case 12:
+      return "Mastery boost Prestige Time gained at a greatly reduced rate";
+    case 13:
+      return "Operation gained is boosted based on current Twilight at a slightly reduced rate";
+ 	case 14:
+      return "Challenge shard boost the reward of all Pre-Research challenge at a reduced rate";
+    case 15:
+      return "Decrease the cost increase to other Improvement when buying any Improvement";
+    case 16:
+      return "Perk Power gained is increased based on Subtractive";
+	case 17:
+	  return "Gamespeed is boosted based on Tickspeed";
+	case 18: 
+	  return "Additive cost scaling start later based on Research";
+	case 19:
+	  return "Subtractive cost scaling start later based on Research";
+	case 20:
+	  return "Boost Light additive gained based on Challenge shard";
+	//if error
+    default:
+      return "Unique Artifact ID is invalid";
+  }
+}
+function updateArtifactEffect() {
+	for (let i = 0; i < 4; i++) {
+		while (true) {
+		  player.g.artifact1d[i] = DisplayArtifactEffect(player.g.artifact1[i],player.g.artifact1eff[i])
+		  player.g.artifact2d[i] = DisplayArtifactEffect(player.g.artifact2[i],player.g.artifact2eff[i])
+		  player.g.artifact3d[i] = DisplayArtifactEffect(player.g.artifact3[i],player.g.artifact3eff[i])
+		  player.g.artifact4d[i] = DisplayArtifactEffect(player.g.artifact4[i],player.g.artifact4eff[i])
+		  break;
+		  }
+		}	
+}  
+function AllArtifactEffect(id, effect, index) {
+    let b1 = id
+    let array = [];
+    let v = 1 + 8 * index;
+
+    for (let i = 0; i < 8; i++) {
+        if (!b1.includes(v)) {
+            b1.push(v);
+        }
+        v++;
+    }
+
+    for (let i = 0; i < 8; i++) {
+        array[id[i] - 1] = effect[i] || 1; // Use 0 for missing effects
+    }
+
+    return array.slice(index * 8, (index + 1) * 8);
+}
+function updateAllAritfactEffect() { 
+
+	player.g.artifactset1 = AllArtifactEffect(player.g.artifact1,player.g.artifact1eff,0)
+	player.g.artifactset2 = AllArtifactEffect(player.g.artifact2,player.g.artifact2eff,1)
+	player.g.artifactset3 = AllArtifactEffect(player.g.artifact3,player.g.artifact3eff,2)
+	player.g.artifactset4 = AllArtifactEffect(player.g.artifact4,player.g.artifact4eff,3)
+
+
+}

@@ -9,13 +9,13 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal(10), // Used for hard resets and new players
-	offlineLimit:24  
+	offlineLimit:24  //48h since upgrade rework ...
 }
 
 // Set your version in num and name
 let VERSION = {
 	num: "0.0.3",
-	name: "Graduation I",
+	name: "Graduation I ",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -32,7 +32,7 @@ let changelog = `<h1>Changelog:</h1><br>
 	- Removed default offline progress <br>
 	- Rebalanced some tickspeed upgrade effect and cost <br>
 	- Fixed various bug </br>
-	- Endgame : Graduation unlocked (35k Mastery)<br>
+	- Endgame : Graduation unlocked (~38k Mastery)<br>
 	<h3>v0.0.2</h3><br>
 	- Algebric field part 1 is done.<br>
 	- Reduced difficulty of verious resource and challenge.<br>
@@ -47,7 +47,7 @@ let winText = `Congratulations! You have reached the end of Graduation I .`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything","RandomArtifactID","RandomArtifactQuality","maxEffect","getArtifactEffect","DisplayArtifactEffect","DisplayUniqueArtifactEffect","updateArtifactEffect","updateAllAritfactEffect"]
 
 function getStartPoints(){
     return new Decimal(modInfo.initialStartPoints)
@@ -55,13 +55,11 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	return !player.points.gt(player.g.corruptpoints[0])
 }
 
 // Calculate points/sec!
 function getPointGen() {
-	if(!canGenPoints())
-		return new Decimal(0)
 	//multiplier
 	let gain = new Decimal(1).times(buyableEffect('m',11).max(1)).times(buyableEffect('al',33).max(1)).times(player.r.la1.max(1))
 	if (hasUpgrade('n', 11) &&player.r.tetration.lt(9)) gain = gain.times(upgradeEffect('n',11))
@@ -151,7 +149,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.r.bestmastery.gte(35000)
+	return player.r.bestmastery.gte(38591)
 }
 
 
