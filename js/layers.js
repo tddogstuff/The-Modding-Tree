@@ -890,9 +890,12 @@ addLayer("ac", {
             tooltip: "Goal : Have exactly 5 Subtractive and 5 Additive . Reward : x1.1 to Number gained",
         },
         19: {
-            name: "What's Mastery",
+            name() {return options.hidemastery?"???":"What's Mastery"},
             done() { return player.r.bestmastery.gte("10") },
-            tooltip() {return "Goal : Reach 10 Mastery . Reward : x2 to Points gained"},
+            tooltip() {
+                let a = "Reach 10 mastery"
+                if(options.hidemastery) a = "Reach something"
+                return "Goal : "+a+" . Reward : x2 to Points gained"},
         },
         21: {
             name: "Subtractive lord",
@@ -1043,7 +1046,10 @@ addLayer("ac", {
         49: {
             name: "What the hell",
             done() { return   inChallenge('e',12) && inChallenge('d',12) && player.t.tickspeedcontrol.eq(0) && player.r.mastery.gte(1000) && player.points.lte(25000) },
-            tooltip() {return "Reach "+format(1000)+" Mastery inside 'No Number' and 'Worsen Condition' while disabling Tickspeed with less than 25000 Point . Reward : x1.1 Effective Exponent , x1.25 Perk Power , x5 Tickspeed"},
+            tooltip() {
+                let a = "Reach "+format(1000)+" Mastery"
+                if(options.hidemastery) a = "Do something"
+                return ""+a+" inside 'No Number' and 'Worsen Condition' while disabling Tickspeed with less than 25000 Point . Reward : x1.1 Effective Exponent , x1.25 Perk Power , x5 Tickspeed"},
 
         },
         51: {
@@ -1055,13 +1061,19 @@ addLayer("ac", {
         52: {
             name: "True Equality",
             done() { return   player.points.floor().eq(player.n.points.floor()) && inChallenge('e',11)},
-            tooltip() {return "Get Number equal to Point amount while in 'Equality' challenge . Reward : Number to Mastery formula is better"},
+            tooltip() {
+                let a = ". Reward : Number to Mastery formula is better"
+                if(options.hidemastery) a = ""
+                return "Get Number equal to Point amount while in 'Equality' challenge "+a+""},
 
         },
         53: {
             name: "Real Equality",
             done() { return   player.m.points.floor().eq(player.d.points.floor()) && player.m.points.gte(1) && player.d.points.gte(1) && inChallenge('e',11)},
-            tooltip() {return "Get Multiplicative amount equal to Divisive amount while both of them is above 1 inside 'Equality' challenge. Reward : Multiplicative to Mastery formula is better"},
+            tooltip() {
+                let a = ". Reward : Multiplicative to Mastery formula is better"
+                if(options.hidemastery) a = ""
+                return "Get Multiplicative amount equal to Divisive amount while both of them is above 1 inside 'Equality' challenge "+a+""},
 
         },
         54: {
@@ -1126,13 +1138,19 @@ addLayer("ac", {
         64: {
             name: "Its Metain' time",
             done() { return   player.r.mastery.gte(10000)},
-            tooltip() {return "Get "+format(10000)+" Mastery . Reward : Perk power effect is increased ^1.05"},
+            tooltip() {
+                let a = "Get "+format(10000)+" Mastery"
+                if(options.hidemastery) a = ""
+                return ""+a+". Reward : Perk power effect is increased ^1.05"},
 
         },
         65: {
             name: "Slightly more ...",
             done() { return   player.r.mastery.gte(10830)},
-            tooltip() {return "Get "+format(10830)+" Mastery  . Reward : Gain 1 Meta-research instantly"},
+            tooltip() {
+                let a = "Get "+format(10830)+" Mastery"
+                if(options.hidemastery) a = ""
+                return ""+a+". Reward : Gain 1 Meta-research instantly"},
             onComplete() {
                 player.r.metaresearch = player.r.metaresearch.add(1)
             },
@@ -1302,9 +1320,12 @@ addLayer("ac", {
             },
         }, 
         88: {
-            name: "Altered mastery",
+            name() {options.hidemastery?"Altered power":"Altered mastery"},
             done() {return player.r.mastery.gte(7500) && inChallenge('al',11) && player.r.tetration.gte(6)},
-            tooltip() {return "Reach "+format(7500)+" Mastery . Reward : Best altered mastery ever ("+format(player.r.mabest)+") boost Ticks gained by "+format(this.effect(),4)+"x"},
+            tooltip() {
+                let a = "Reach "+format(7500)+" Mastery . Reward : Best altered mastery ever ("+format(player.r.mabest)+") boost"
+                if(options.hidemastery) a = "Reach something . Reward : Boost"
+                return ""+a+" ticks gained by "+format(this.effect(),4)+"x"},
             effect() {
             let eff = player.r.mabest
             let eff1 = eff.add(1).pow(0.75)
@@ -1593,7 +1614,6 @@ metaresearch: {
 },
 
     tabFormat: [
-        ["raw-html", function () { return "<h3>Achievement can be earned by reaching specfic goal or requirement " }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h3>Achievement may also spoil next content" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
 
         ["microtabs", "stuff", { 'border-width': '0px' }],
@@ -1613,7 +1633,9 @@ addLayer("t", {
         lore: {
             title: "Tickspeed & Ticks",
             body() {          
-                return "Tickspeed : Tickspeed boost point generation and Row 1 , Row 2 resource passive production (apply after exponents , etc) </br> Ticks : You have "+format(player.t.total)+" total , You are gaining +"+format(tmp.t.passiveGeneration)+" ticks/s (Based on best Mastery)"},
+                let a = "???"
+                if(!options.hidemastery) a = "Best mastery"
+                return "Tickspeed : Tickspeed boost point generation and Row 1 , Row 2 resource passive production (apply after exponents , etc) </br> Ticks : You have "+format(player.t.total)+" total , You are gaining +"+format(tmp.t.passiveGeneration)+" ticks/s (Based on "+a+")"},
         },
 
         
@@ -2027,6 +2049,7 @@ addLayer("n", {
         let multi = numpas.times(tmp.t.effect.times(0.001))
         if (hasUpgrade('al',32)) multi = multi.add(1)
         if (hasUpgrade('r',12)) multi = multi.add(1)
+        if (hasUpgrade('s',41) && player.r.buyables[121].lt(1)) multi = multi.times(upgradeEffect('s',41))
         if (inChallenge('d',13)) multi = multi.min(1)
         let multi1 = multi.times(player.r.truegamespeed)
         return multi1     },
@@ -2053,9 +2076,11 @@ addLayer("n", {
             title: "Counting faster",
             description() {
                 let a = "Points gained is x2 "
-                let b = hasUpgrade('al',43)?" . Empowered by Mastery":""
+                let d = options.hidemastery?"":"Empowered by Mastery"
+                let e = options.hidemastery?"something":"???"
+                let b = hasUpgrade('al',43)?" "+d+"":""
                 let c =  a+b
-                return player.r.tetration.gte(9)?"Points gained is raised based on Mastery":c
+                return player.r.tetration.gte(9)?"Points gained is raised based on "+e+"":c
             },
             cost: new Decimal(1),
             effect() {
@@ -2200,7 +2225,9 @@ addLayer("n", {
     ],},
 },},
     tabFormat: [
-        ["raw-html", function () { return "<h3>You have  " + format(player.n.points)+" Number => +"+format(player.r.basemastery)+" Mastery"}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { 
+            let a = options.hidemastery?"":"=> +"+format(player.r.basemastery)+" Mastery"
+            return "<h3>You have  " + format(player.n.points)+" Number "+a+""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return tmp.n.passiveGeneration.times(getResetGain(this.layer)).gt(0)?"<h3>You are currently gaining " + format(tmp.n.passiveGeneration.times(getResetGain(this.layer)))+" Number/s":"" }, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],    
         ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
@@ -2488,10 +2515,9 @@ infoboxes: {
     ],},
 },},
     tabFormat: [
-        ["raw-html", function () { return "<h3>You have  " + format(player.a.points)+" Additive => x"+format(player.r.additivemastery)+" Mastery"}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return player.r.buyables[121].lt(1)?"<h3>Current 'addition' base is " + format(tmp.a.effect)+" , which boost Points gained by x"+format(upgradeEffect('a',21))+" (after unlocking 'Addition' upgrade)":""}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
-        ["raw-html", function () { return player.r.buyables[121].gte(1)?"<h3>Current 'addition' base is " + format(tmp.a.effect)+" , which boost 'Condensed Points Upgrade' effect by x"+format(upgradeEffect('a',21))+"":""}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
-
+        ["raw-html", function () { 
+            let a = !options.hidemastery?"=> x"+format(player.r.additivemastery)+" Mastery":""
+            return "<h3>You have  " + format(player.a.points)+" Additive "+a+""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
         ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
     layerShown() { return true }
@@ -2739,7 +2765,9 @@ addLayer("s", {
     ],},
 },},
     tabFormat: [
-        ["raw-html", function () { return "<h3>You have  " + format(player.s.points)+" Subtractive => x"+format(player.r.subtractivemastery)+" Mastery"}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { 
+            let a = options.hidemastery?"":"=> x"+format(player.r.subtractivemastery)+" Mastery"
+            return "<h3>You have  " + format(player.s.points)+" Subtractive "+a+""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
 })
@@ -3076,7 +3104,9 @@ addLayer("m", {
     ],},
 },},
     tabFormat: [
-        ["raw-html", function () { return "<h3>You have  " + format(player.m.points)+" Multiplicative => x"+format(player.r.multiplicativemastery)+" Mastery"}, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () {  
+            let a = options.hidemastery?"":"=> x"+format(player.r.multiplicativemastery)+" Mastery"
+            return "<h3>You have  " + format(player.m.points)+" Multiplicative "+a+""}, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return tmp.m.passiveGeneration.times(getResetGain(this.layer)).gt(0)?"<h3>You are currently gaining " + format(tmp.m.passiveGeneration.times(getResetGain(this.layer)))+" Multiplicative/s":"" }, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }], 
                 ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
@@ -3286,7 +3316,9 @@ addLayer("d", {
         ],},
     },},
         tabFormat: [
-            ["raw-html", function () { return "<h3>You have  " + format(player.d.points)+" Divisive => x"+format(player.r.divisivemastery)+" Mastery"}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { 
+                let a = options.hidemastery?"":"=> x"+format(player.r.divisivemastery)+" Mastery"
+                return "<h3>You have  " + format(player.d.points)+" Divisive "+a+""}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Divisive provide x"+format(tmp.d.effect)+" to Points and Numbers gained"}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return tmp.d.passiveGeneration.times(getResetGain(this.layer)).gt(0)?"<h3>You are currently gaining " + format(tmp.d.passiveGeneration.times(getResetGain(this.layer)))+" Divisive/s":"" }, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],    
             ["microtabs", "stuff", { 'border-width': '0px' }],
@@ -4176,7 +4208,8 @@ addLayer("e", {
 
             ["raw-html", function () { 
                 let a = !player.e.perkpower.eq(0)?"("+format(player.e.effective)+" Effective)":""
-                return "<h3>You have  " + format(player.e.points)+" "+a+" Exponent => x"+format(player.r.exponentmastery)+" Mastery"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
+                let b = options.hidemastery?"":"=> x"+format(player.r.exponentmastery)+" Mastery"
+                return "<h3>You have  " + format(player.e.points)+" "+a+" Exponent "+b+""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Exponent provide these bonuses :  ^"+format(tmp.e.expeffect,4)+" and x"+format(tmp.e.effect)+" to Points gained"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
             ["microtabs", "stuff", { 'border-width': '0px' }],
         ],
@@ -6332,7 +6365,7 @@ addLayer("r", {
                 return player.r.mastery.gte(10000)},
 
             challengeDescription: "Various resource are reduced based on Modifier selection" ,
-            goalDescription: "Reach 10,000 Mastery",
+            goalDescription() {return options.hidemastery?"":"Reach 10,000 Mastery"},
             rewardDescription: "Gain 1 challenge shard for each modifier level (max:64). Replace your current challenge shard if higher",
             unlock() {return true},
             onEnter() {
@@ -6419,6 +6452,7 @@ microtabs: {
         },
         "Mastery breakdown": {
             buttonStyle() {return {'color':'#8a00a9'}},
+            unlocked() {return !options.hidemastery},
             content :     [
                 ["blank", "25px"],
                 ["raw-html", function () { return "<h3>Basic Mathmatic " }, { "color": "white", "font-size": "24px", "font-family": "helvetica" }],
@@ -6537,7 +6571,7 @@ microtabs: {
         },
         "Harden Challenge" : {
             content : [
-                ["raw-html", function () { return "<h2> Harden challenge : Pre-Research challenge goal are ^"+format(player.r.chi)+" and raise their reward by ^"+format(player.r.chj)+" . Each incomplete Pre-Research challenge additionally reduce your Mastery by /"+format(player.r.chk)+"." }, { "color": "pink", "font-size": "14px", "font-family": "helvetica" }],
+                ["raw-html", function () { return options.hidemastery?"<h2> Harden challenge : Pre-Research challenge goal are ^"+format(player.r.chi)+" and raise their reward by ^"+format(player.r.chj)+"":"<h2> Harden challenge : Pre-Research challenge goal are ^"+format(player.r.chi)+" and raise their reward by ^"+format(player.r.chj)+" . Each incomplete Pre-Research challenge additionally reduce your Mastery by /"+format(player.r.chk)+"." }, { "color": "pink", "font-size": "14px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h2> Difficulty : "+format(player.r.c7,0)+"/8" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
 
@@ -6569,7 +6603,7 @@ microtabs: {
             ["raw-html", function () { return "<h2> Weaken exponent : Exponent effect and Perk Power is raised ^"+format(player.r.chd)+"" }, { "color": "lime", "font-size": "14px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h2> Cost superscaler : Additive , Subtractive cost scaling start "+format(player.r.che)+"x earlier and their strength are increased by "+format(player.r.chf)+"x" }, { "color": "cyan", "font-size": "14px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h2> Algebric failure : base of A,B,C,X are ^"+format(player.r.chg)+" and base Extension , Operation gained are ^"+format(player.r.chh)+"" }, { "color": "purple", "font-size": "14px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h2> Harden challenge : Pre-Research challenge goal are ^"+format(player.r.chi)+" and raise their reward by ^"+format(player.r.chj)+" . Each incomplete Pre-Research challenge additionally reduce your Mastery by /"+format(player.r.chk)+"." }, { "color": "pink", "font-size": "14px", "font-family": "helvetica" }],
+            ["raw-html", function () { return options.hidemastery?"<h2> Harden challenge : Pre-Research challenge goal are ^"+format(player.r.chi)+" and raise their reward by ^"+format(player.r.chj)+"":"<h2> Harden challenge : Pre-Research challenge goal are ^"+format(player.r.chi)+" and raise their reward by ^"+format(player.r.chj)+" . Each incomplete Pre-Research challenge additionally reduce your Mastery by /"+format(player.r.chk)+"." }, { "color": "pink", "font-size": "14px", "font-family": "helvetica" }],
             ["blank", "25px"],
             ["raw-html", function () { return "<h2> Entering this challenge will also reset row 1-3 and reset your research , tetration . Also disable Altered realm" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h2> Research and Tetration can be gained in this challenge" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
@@ -6642,7 +6676,7 @@ microtabs: {
             content: [
                 ["blank", "25px"],
                 ["raw-html", function () { return "<h2>You currently have : " + format(player.r.metaresearch)+ " Meta research" }, { "color": "lime", "font-size": "14px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h2>Reset now to gain "+format(player.r.nextmetaresearch) +" Meta research (based on Mastery)" }, { "color": "lime", "font-size": "14px", "font-family": "helvetica" }],
+                ["raw-html", function () { return options.hidemastery?"<h2>Reset now to gain "+format(player.r.nextmetaresearch) +" Meta research":"<h2>Reset now to gain "+format(player.r.nextmetaresearch) +" Meta research (based on Mastery)" }, { "color": "lime", "font-size": "14px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h2>Meta-research reset will force an Research reset and reset your Research , Improvement , Current Field . Meta resetting require at least 10K current Mastery" }, { "color": "red", "font-size": "18px", "font-family": "helvetica" }],
                             ["blank", "25px"],
                             ["row", [["buyable", 110]]],
@@ -6655,7 +6689,7 @@ microtabs: {
             unlocked() { return true },
             content: [
                 ["blank", "25px"],
-                ["raw-html", function () { return "<h2> Select your field here (Selecting require 308.25 Current Mastery)" }, { "color": "orange", "font-size": "14px", "font-family": "helvetica" }],
+                ["raw-html", function () { return options.hidemastery?"<h2> Select your field here":"<h2> Select your field here (Selecting require 308.25 Current Mastery)" }, { "color": "orange", "font-size": "14px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h2> Research progress is RESETED everytime you perform a Research reset" }, { "color": "red", "font-size": "14px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h2> Meta-research reset is the only way to exit current field" }, { "color": "pink", "font-size": "14px", "font-family": "helvetica" }],
                 ["row", [["buyable", 111]]],
@@ -6710,7 +6744,7 @@ microtabs: {
                 unlocked() { return hasAchievement('ac',69) },
                 content: [
                     ["blank", "25px"],
-                    ["raw-html", function () { return "<h2> You have "+format(player.r.tetration,0)+" Tetration => x"+format(player.r.tetrationmastery)+" Mastery" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
+                    ["raw-html", function () { return options.hidemastery?"<h2> You have "+format(player.r.tetration,0)+" Tetration":"<h2> You have "+format(player.r.tetration,0)+" Tetration => x"+format(player.r.tetrationmastery)+" Mastery" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
                     ["raw-html", function () { return player.r.tetration.lt(10)?"<h2> Tetration reset force an Meta research but do not give Meta research":""}, { "color": "red", "font-size": "14px", "font-family": "helvetica" }],
                     ["raw-html", function () { return player.r.tetration.lt(10)?"<h2> Next tetration require "+format(player.r.tetrationcost,0)+" effective exponent":""}, { "color": "white", "font-size": "10px", "font-family": "helvetica" }],
                     ["blank","25px"],
@@ -7586,7 +7620,7 @@ addLayer("al", {
 
         43: {
             title: "More Quickly",
-            description: "Empowered Number upgrade 'Counting faster' based on Mastery",
+            description: "Empowered Number upgrade 'Counting faster'",
             cost: new Decimal("128000"),
             currencyLocation() { return player.al },
             currencyDisplayName: "Operation",
@@ -7604,7 +7638,7 @@ addLayer("al", {
         },
         51: {
             title: "Better Conversion",
-            description: "Improve Operation to Mastery conversion",
+            description() {return options.hidemastery?"No effect":"Improve Operation to Mastery conversion"},
             cost: new Decimal("1e10"),
             currencyLocation() { return player.al },
             currencyDisplayName: "Operation",
@@ -8335,7 +8369,7 @@ microtabs: {
                 ["raw-html", function () { return player.g.req[1].gte(1)?"<h3> Status : Completed":"<h3> Status : Incomplete" }, { "color": function(){return player.g.req[1].gte(1)?"cyan":"purple"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 1 : Have 1e60 Operation ("+format(player.al.operation)+")" }, { "color": function(){return player.al.operation.gte("1e60")?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 2 : Complete 'Chaotic Division' divisive challenge" }, { "color": function(){return (hasChallenge('d',13) && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3>Task 3 : Reach 22500 Mastery ("+format(player.r.mbest)+")" }, { "color": function(){return (player.r.mastery.gte("22500") && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return options.hidemastery?"<h3>Task 3 : Require/reach something ("+format(player.r.mbest.div(225))+"% to done)":"<h3>Task 3 : Reach 22500 Mastery ("+format(player.r.mbest)+")" }, { "color": function(){return (player.r.mastery.gte("22500") && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 4 : Buy 'Point Boost' buyable at least 3000 times ("+format(player.m.buyables[11])+")" }, { "color": function(){return (player.m.buyables[11].gte(3000) && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 5 : Have 1e1250 number ("+format(player.r.nbest)+")" }, { "color": function(){return (player.n.points.gte("1e1250") && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Task 6 : Have 64 perk power ("+format(player.r.perkpower)+")" }, { "color": function(){return (player.e.perkpower.gte(64) && inChallenge('al',11))?"green":"white"}, "font-size": "22px", "font-family": "helvetica" }],

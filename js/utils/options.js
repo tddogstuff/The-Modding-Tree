@@ -18,6 +18,7 @@ function getStartOptions() {
 		betatest: false,
 		modernstyle: false,
 		mixedsci:false,
+		hidemastery:false,
 		 
 	}
 }
@@ -130,4 +131,7 @@ function earlyskip() {
 		} 
 		function mixedsci() {			
 			options.mixedsci = !options.mixedsci
+			} 
+		function hidemastery() {			
+			options.hidemastery = !options.hidemastery
 			} 

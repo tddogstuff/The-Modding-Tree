@@ -173,6 +173,10 @@ var systemComponents = {
 				<td><button class="opt" onclick="earlyskip()">Skip to End of Grad 1</button></td>
 				<td><button class="opt" onclick="betatest()">Beta test : {{options.betatest?"TRUE":"FALSE"}}</button></td>
 				<td><button class="opt" onclick="mixedsci()">Mixed scientific : {{options.mixedsci?"TRUE":"FALSE"}}</button></td>
+			</tr>
+			<tr> 
+				<td><button class="opt" onclick="hidemastery()">Hide mastery : {{options.hidemastery?"TRUE":"FALSE"}}</button></td>
+
 
 
         </table>`

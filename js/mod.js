@@ -122,8 +122,10 @@ var displayThings = [
 		else 
 		return ""
  		},
-	function() {return "Current Mastery : "+format(player.r.mastery)+" (Highest : "+format(player.r.bestmastery)+") "},
+	function() {return !options.hidemastery?"Current Mastery : "+format(player.r.mastery)+" (Highest : "+format(player.r.bestmastery)+")":""},
 	function() {
+	if (options.hidemastery) 
+	return ""
 	if (!player.r.bestmastery.gte(100)) 
     return "Unlock Tickspeed Upgrade at 100 Best Mastery"
     if (!player.r.bestmastery.gte(308.25)) 
