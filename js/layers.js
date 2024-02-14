@@ -59,8 +59,33 @@ function getNumberCondensereffect_MUL() {
     let product = eff1.times(eff2).times(eff3).times(eff4).times(13.5)
     return product
 }
+/*"Point gained":{
+    content: [["display-text", function(){return "Base Point gained : +1.00"}],
+    ["display-text",function(){return hasAchievement('ac',19)?"What's Mastery (Achievement) : x2.00":""}],
+    ["display-text",function(){return hasUpgrade('n', 11)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"Counting Faster (Number) : x"+format(upgradeEffect('n',11))+"":""}],
+    ["display-text",function(){return hasUpgrade('n', 12)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"Headstart (Number) : x"+format(upgradeEffect('n',12))+"":""}],
+    ["display-text",function(){return hasUpgrade('n', 14)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"1st Grade (Number) : x1.20":""}],
+    ["display-text",function(){return hasUpgrade('a', 21)&&!player.r.buyables[121].gte(1)?"Addition (Additive) : x"+format(upgradeEffect('a',21))+"":""}],
+    ["display-text",function(){return hasUpgrade('n', 13)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"Effective Counting (Number) : x"+format(upgradeEffect('n',13))+"":""}],
+    ["display-text",function(){return hasUpgrade('n', 24)&&!player.r.buyables[121].gte(1)?"3rd Grade (Number) : x1.20":""}],
+    ["display-text",function(){return buyableEffect('m', 11)>1?"Point Boost (Multiplicative) : x"+format(buyableEffect('m',11))+"":""}],
+    ["display-text",function(){return hasChallenge('m', 11)?"Square root challenge (Multiplicative) : x"+format(challengeEffect('m',11))+"":""}],
+    ["display-text",function(){return player.d.points.gt(0)?"Divisive Effect (Divisive) : x"+format(tmp.d.effect)+"":""}],
+    ["display-text",function(){return player.e.points.gt(0)?"Exponent Effect (Exponent) : x"+format(tmp.e.effect)+"":""}],
+    ["display-text",function(){return buyableEffect('al',33).gt(1)?"Algebric Point boost (Algebra - Field) : x"+format(buyableEffect('al',33))+"":""}],
+    ["display-text",function(){return player.r.lightadd.gt(1)?"Light Additive (Twilight research) : x"+format(player.r.la1)+"":""}],
+    ["display-text",function(){return player.r.buyables[121].gte(1)&&hasUpgrade('n',31)?"Condensed Point upgrade : x"+format(getPointCondensereffect_MUL())+" and ^"+format(getPointCondensereffect_POW())+"":""}],
+    
+    ["display-text", function(){return hasUpgrade('m',43)?"Glazed Point (Multiplicative) : ^1.05":""}],
+    ["display-text", function(){return player.e.points.gt(0)?"Exponent effect (Exponent) : ^"+format(tmp.e.expeffect)+"":""}],
+    ["display-text", function(){return player.r.tetration.gt(0)?"1 Tetration reward (Research) : ^1.10":""}],
+    ["display-text",function(){return hasUpgrade('n', 11)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"Counting Faster (Number) : ^"+format(upgradeEffect('n',11))+"":""}],
+    ["display-text",function(){return hasUpgrade('n', 12)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"Headstart (Number) : ^"+format(upgradeEffect('n',12))+"":""}],
+    ["display-text",function(){return hasUpgrade('n', 14)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"1st Grade (Number) : ^1.01":""}],
+    ["display-text",function(){return hasUpgrade('n', 13)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"Effective Counting (Number) : ^"+format(upgradeEffect('n',13))+"":""}],
 
-
+    ]
+   */
 //start layer
 addLayer("o", {
     startData() { return {         
@@ -334,19 +359,11 @@ addLayer("o", {
             player.o.rerolltime = player.o.rerolltime.add(60)
             gameLoop(60)
         } else {
-
+            alert("You don't have enough real time to warp")
         }
     },
     style() {
-        if (!player.o.gamespeed.eq(1) || (player.o.realtime.lt(60) && player.o.buyables[31].eq(0))) {
-            return {
-                'border-radius': '0%',
-                'color':'white',
-                'background-color':'red',
-                'border':'2px solid',
-                'height':'125px'
-            } 
-        }    else return {
+         return {
             'border-radius': '0%',
             'color':'white',
             'background-color':'green',
@@ -380,6 +397,7 @@ addLayer("o", {
             player.o.rerolltime = player.o.rerolltime.add(600)
             gameLoop(600)
         } else {
+            alert("You don't have enough real time to warp")
 
         }
     },
@@ -417,6 +435,7 @@ addLayer("o", {
             player.o.rerolltime = player.o.rerolltime.add(3600)
             gameLoop(3600)
         } else {
+            alert("You don't have enough real time to warp")
 
         }
     },
@@ -888,12 +907,12 @@ addLayer("ac", {
         23: {
             name: "1 million",
             done() { return player.n.points.gte("1e6") },
-            tooltip: "Goal : Get 1e6 Number",
+            tooltip: "Goal : Get "+format(1e6)+" Number",
         },
         24: {
             name: "Nice number!",
             done() { return player.n.points.gte("6.9e7") },
-            tooltip: "Goal : Get 6.9e7 Number . Reward : Subtractive cost /10",
+            tooltip: "Goal : Get "+format(6.9e7)+" Number . Reward : Subtractive cost /10",
         },
         25: {
             name: "Multipling",
@@ -908,7 +927,7 @@ addLayer("ac", {
         27: {
             name: "Tenth Doubling",
             done() { return player.m.points.gte("1024") },
-            tooltip: "Goal : Get 1 024 Multiplicative",
+            tooltip: "Goal : Get "+format(1024)+" Multiplicative",
         },
         28: {
             name: "+30 would be insane",
@@ -923,18 +942,18 @@ addLayer("ac", {
         31: {
             name: "A lot of Multiplicative",
             done() { return player.m.points.gte("40000") },
-            tooltip: "Goal : Reach 40 000 Multiplicative . Reward : Additive cost /5",
+            tooltip: "Goal : Reach "+format(4e4)+" Multiplicative . Reward : Additive cost /5",
         },
         32: {
             name: "A lot of Divisive!",
             done() { return player.d.points.gte("1e20") },
-            tooltip: "Goal : Get 1e20 Divisive . Reward : x2 Number gained",
+            tooltip: "Goal : Get "+format(1e20)+" Divisive . Reward : x2 Number gained",
 
         },
         33: {
             name: "Actually Multiplin'",
             done() { return player.m.points.gte("1e25") },
-            tooltip: "Goal : Get 1e25 Multiplicative",
+            tooltip: "Goal : Get "+format(1e25)+" Multiplicative",
         },
         34: {
             name: "EXPONENTATION!",
@@ -950,7 +969,7 @@ addLayer("ac", {
         36: {
             name: "More like Google",
             done() { return player.points.gte("1e100") },
-            tooltip: "Goal : Have 1e100 Points . Reward : Automaticly buy 'Point Boost' multiplicative buyable for free .",
+            tooltip: "Goal : Have "+format(1e100)+" Points . Reward : Automaticly buy 'Point Boost' multiplicative buyable for free .",
         },
         37: {
             name: "Third one",
@@ -970,7 +989,7 @@ addLayer("ac", {
         41: {
             name: "Not tired at all",
             done() { return player.points.gte("1e90") && inChallenge('m',11) },
-            tooltip() {return "Reach 1e90 Points in 'Fatigue' challenge . Reward : 'Fatigue' Challenge reward ^"+format(this.effect())+" (based on Multiplicative)"},
+            tooltip() {return "Reach "+format(1e90)+" Points in 'Fatigue' challenge . Reward : 'Fatigue' Challenge reward ^"+format(this.effect())+" (based on Multiplicative)"},
             effect() {
                 let a = player.m.points.add(10).slog()
                 return a.pow(1.5)
@@ -979,7 +998,7 @@ addLayer("ac", {
         42: {
             name: "Not even halted",
             done() { return player.n.points.gte("1e90") && inChallenge('m',12) },
-            tooltip() {return "Reach 1e90 Number in 'Halted Counter' challenge . Reward : 'Halted Counter' Challenge reward ^"+format(this.effect())+" (based on Multiplicative)"},
+            tooltip() {return "Reach "+format(1e90)+" Number in 'Halted Counter' challenge . Reward : 'Halted Counter' Challenge reward ^"+format(this.effect())+" (based on Multiplicative)"},
             effect() {
                 let a = player.m.points.add(10).slog()
                 return a.pow(2)
@@ -988,19 +1007,19 @@ addLayer("ac", {
         43: {
             name: "Why",
             done() { return player.points.gte("1.78e308") && inChallenge('d',11) },
-            tooltip() {return "Reach 1.78e308 Points in 'No Counting' challenge . Reward : x1.2 Effective Exponent "},
+            tooltip() {return "Reach "+format(new Decimal("1.78e308"))+" Points in 'No Counting' challenge . Reward : x1.2 Effective Exponent "},
 
         },
         44: {
             name: "NOT ENOUGH??",
             done() { return player.points.gte("1e20") && inChallenge('d',12) },
-            tooltip() {return "Reach 1e20 Points in 'Worsen Condition' challenge . Reward : x1.2 Effective Exponent "},
+            tooltip() {return "Reach "+format(1e20)+" Points in 'Worsen Condition' challenge . Reward : x1.2 Effective Exponent "},
 
         },
         45: {
             name: "Toture",
             done() { return  player.points.gte("1e100") && inChallenge('e',11) },
-            tooltip() {return "Reach 1e100 Points in 'Equality' challenge . Reward : x1.08 Perk Power"},
+            tooltip() {return "Reach "+format(1e20)+" Points in 'Equality' challenge . Reward : x1.08 Perk Power"},
 
         },
         46: {
@@ -1012,19 +1031,19 @@ addLayer("ac", {
         47: {
             name: "Impossible Challenge",
             done() { return   inChallenge('e',12) && inChallenge('d',12) && player.points.gte("1e9") },
-            tooltip() {return "Reach 1e9 Points while inside 'No Number' and 'Worsen Condition' challenge  . Reward : Point Boost (x) buyable effect ^1.5"},
+            tooltip() {return "Reach "+format(1e9)+" Points while inside 'No Number' and 'Worsen Condition' challenge  . Reward : Point Boost (x) buyable effect ^1.5"},
 
         },
         48: {
             name: "Specfic requirement",
             done() { return   inChallenge('e',12) && inChallenge('d',12) && player.t.tickspeedcontrol.eq(0) && player.points.lte(11000) && player.points.gte(9000) },
-            tooltip() {return "Reach 9000 - 11000 Point inside 'No Number' and 'Worsen Condition' challenge while disabling Tickspeed . Reward : Raise Perk Power gained to 1.1"},
+            tooltip() {return "Reach "+format(9000)+" - "+format(11000)+" Point inside 'No Number' and 'Worsen Condition' challenge while disabling Tickspeed . Reward : Raise Perk Power gained to 1.1"},
 
         },
         49: {
             name: "What the hell",
             done() { return   inChallenge('e',12) && inChallenge('d',12) && player.t.tickspeedcontrol.eq(0) && player.r.mastery.gte(1000) && player.points.lte(25000) },
-            tooltip() {return "Reach 1000 Mastery inside 'No Number' and 'Worsen Condition' while disabling Tickspeed with less than 25000 Point . Reward : x1.1 Effective Exponent , x1.25 Perk Power , x5 Tickspeed"},
+            tooltip() {return "Reach "+format(1000)+" Mastery inside 'No Number' and 'Worsen Condition' while disabling Tickspeed with less than 25000 Point . Reward : x1.1 Effective Exponent , x1.25 Perk Power , x5 Tickspeed"},
 
         },
         51: {
@@ -1076,7 +1095,7 @@ addLayer("ac", {
         58: {
             name: "Relativity",
             done() { return   tmp.t.effect.gte("1e15")},
-            tooltip() {return "Reach 1e15 Tickspeed . Reward : Unlock 2 more tickspeed upgrade"},
+            tooltip() {return "Reach "+format(1e15)+" Tickspeed . Reward : Unlock 2 more tickspeed upgrade"},
 
         },
         59: {
@@ -1088,7 +1107,7 @@ addLayer("ac", {
         61: {
             name: "Point Boost++",
             done() { return   player.m.buyables[11].gte(4000)},
-            tooltip() {return "Reach 'Point Boost' level 4000 . Reward : Unlock 4 more Multiplicative upgrade"},
+            tooltip() {return "Reach 'Point Boost' level "+format(4000)+" . Reward : Unlock 4 more Multiplicative upgrade"},
 
         },
         62: {
@@ -1107,13 +1126,13 @@ addLayer("ac", {
         64: {
             name: "Its Metain' time",
             done() { return   player.r.mastery.gte(10000)},
-            tooltip() {return "Get 10000 Mastery . Reward : Perk power effect is increased ^1.05"},
+            tooltip() {return "Get "+format(10000)+" Mastery . Reward : Perk power effect is increased ^1.05"},
 
         },
         65: {
             name: "Slightly more ...",
             done() { return   player.r.mastery.gte(10830)},
-            tooltip() {return "Get 10830 Mastery  . Reward : Gain 1 Meta-research instantly"},
+            tooltip() {return "Get "+format(10830)+" Mastery  . Reward : Gain 1 Meta-research instantly"},
             onComplete() {
                 player.r.metaresearch = player.r.metaresearch.add(1)
             },
@@ -1127,13 +1146,13 @@ addLayer("ac", {
         67: {
             name: "Infinite Ticks",
             done() { return   player.t.total.gte("1e8")},
-            tooltip() {return "Earned a total of 1e8 Ticks . Reward : You may spent ticks to boost gamespeed"},
+            tooltip() {return "Earned a total of "+format(1e8)+" Ticks . Reward : You may spent ticks to boost gamespeed"},
 
         },
         68: {
             name: "Twilight gatherer",
             done() { return   player.r.twilight.gte("1e6")},
-            tooltip() {return "Reach 1e6 Twilight . Reward : Square the tickspeed bonus given by Twilight"},
+            tooltip() {return "Reach "+format(1e6)+" Twilight . Reward : Square the tickspeed bonus given by Twilight"},
 
         },
         69: {
@@ -1174,7 +1193,7 @@ addLayer("ac", {
         75: {
             name: "Very long grind",
             done() { return   player.points.gte("1e25") && inChallenge('al',11)},
-            tooltip() {return "Reach 1e25 points  . Reward : +^0.05 Altered Pre-research resource and cost reduction and unlock more altered upgrade"},
+            tooltip() {return "Reach "+format(1e25)+" points  . Reward : +^0.05 Altered Pre-research resource and cost reduction and unlock more altered upgrade"},
         },
         76: {
             name: "Tedious work",
@@ -1191,7 +1210,7 @@ addLayer("ac", {
         78: {
             name: "Halfway to Exponent",
             done() { return   player.points.gte("1e50") && inChallenge('al',11)},
-            tooltip() {return "Reach 1e50 points . Reward : +^0.1 Altered Tickspeed"},
+            tooltip() {return "Reach "+format(1e50)+" points . Reward : +^0.1 Altered Tickspeed"},
 
         },
         79: {
@@ -1285,7 +1304,7 @@ addLayer("ac", {
         88: {
             name: "Altered mastery",
             done() {return player.r.mastery.gte(7500) && inChallenge('al',11) && player.r.tetration.gte(6)},
-            tooltip() {return "Reach 7500 Mastery . Reward : Best altered mastery ever ("+format(player.r.mabest)+") boost Ticks gained by "+format(this.effect(),4)+"x"},
+            tooltip() {return "Reach "+format(7500)+" Mastery . Reward : Best altered mastery ever ("+format(player.r.mabest)+") boost Ticks gained by "+format(this.effect(),4)+"x"},
             effect() {
             let eff = player.r.mabest
             let eff1 = eff.add(1).pow(0.75)
@@ -1299,7 +1318,7 @@ addLayer("ac", {
         89: {
             name: "Altered tickspeed",
             done() {return tmp.t.effect.gte(1000) && inChallenge('al',11) && player.r.tetration.gte(6)},
-            tooltip() {return "Obtain 1000 Altered Tickspeed . Reward : Best altered tickspeed ever ("+format(player.r.tbest)+") boost Tickspeed by "+format(this.effect())+"x outside of altered"},
+            tooltip() {return "Obtain "+format(1000)+" Altered Tickspeed . Reward : Best altered tickspeed ever ("+format(player.r.tbest)+") boost Tickspeed by "+format(this.effect())+"x outside of altered"},
             effect() {
             let eff = player.r.tbest
             let eff1 = eff.add(1).pow(0.75)
@@ -1358,7 +1377,7 @@ addLayer("ac", {
         99: {
             name: "Slowest game",
             done() {return inChallenge('r',11) && player.r.c3.gte(8) && player.r.mastery.gte(1500)},
-            tooltip() {return "Achieve 1500 Mastery inside of a Meta challenge with Frozen Time 8 . Reward : 2x Gamespeed , Frozen Time modifier will work inside altered realm!"},
+            tooltip() {return "Achieve "+format(1500)+" Mastery inside of a Meta challenge with Frozen Time 8 . Reward : 2x Gamespeed , Frozen Time modifier will work inside altered realm!"},
         },
         101: {
             name: "Insane Age",
@@ -1391,12 +1410,12 @@ addLayer("ac", {
         105: {
             name: "Twilight mastery",
             done() {return player.r.twilight.gte("1e27")},
-            tooltip() {return "Have 1e27 twilight . Reward : Automaticly buy Twilight buyable"},
+            tooltip() {return "Have "+format(1e27)+" twilight . Reward : Automaticly buy Twilight buyable at no cost"},
         },
         106: {
             name: "Almost forgotten!",
             done() {return player.al.points.gte("1e80")},
-            tooltip() {return "Reach 1e80 Algebric (algebra field)"},
+            tooltip() {return "Reach "+format(1e80)+" Algebric (algebra field)"},
 
         },
         107: {
@@ -1601,7 +1620,7 @@ addLayer("t", {
          lore2: {
             title: "Tickspeed Control",
             body() {                
-                return "Current tickspeed is ^"+format(player.t.tickspeedcontrol)+" above 1,000."},
+                return "Current tickspeed is ^"+format(player.t.tickspeedcontrol)+" above 1 000"},
         },        
     },
     symbol:"T",
@@ -1735,6 +1754,7 @@ addLayer("t", {
             tooltip:"Exponent : log20(log10(tickspeed/1000+10)+20)",
             effect() {
                 let multiplier1 = tmp.t.effect.div(1000).add(10).log(10).add(20).log(20)
+                multiplier1 = softcap(multiplier1,new Decimal(1.667),0.25)
                  return multiplier1
             },
             unlocked() {return hasUpgrade('a',41)},
@@ -1913,38 +1933,24 @@ addLayer("t", {
         },
         
     },
+    clickables: {
+        11: {
+            title() {return "Show points production breakdown<br>"},
+            display() {return ""},
+            canClick() {return true},
+            onClick() {
+                showPointBreakdown()
+            },
+        },
+    },
 
     tabFormat:{
         "Main":{
           content: [["main-display","resource-display"],["infobox","lore"],"prestige-button","milestones","upgrades"]
         },
-        "Point gained":{
-          content: [["display-text", function(){return "Base Point gained : +1.00"}],
-          ["display-text",function(){return hasAchievement('ac',19)?"What's Mastery (Achievement) : x2.00":""}],
-          ["display-text",function(){return hasUpgrade('n', 11)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"Counting Faster (Number) : x"+format(upgradeEffect('n',11))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 12)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"Headstart (Number) : x"+format(upgradeEffect('n',12))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 14)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"1st Grade (Number) : x1.20":""}],
-          ["display-text",function(){return hasUpgrade('a', 21)&&!player.r.buyables[121].gte(1)?"Addition (Additive) : x"+format(upgradeEffect('a',21))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 13)&&player.r.tetration.lt(9)&&!player.r.buyables[121].gte(1)?"Effective Counting (Number) : x"+format(upgradeEffect('n',13))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 24)&&!player.r.buyables[121].gte(1)?"3rd Grade (Number) : x1.20":""}],
-          ["display-text",function(){return buyableEffect('m', 11)>1?"Point Boost (Multiplicative) : x"+format(buyableEffect('m',11))+"":""}],
-          ["display-text",function(){return hasChallenge('m', 11)?"Square root challenge (Multiplicative) : x"+format(challengeEffect('m',11))+"":""}],
-          ["display-text",function(){return player.d.points.gt(0)?"Divisive Effect (Divisive) : x"+format(tmp.d.effect)+"":""}],
-          ["display-text",function(){return player.e.points.gt(0)?"Exponent Effect (Exponent) : x"+format(tmp.e.effect)+"":""}],
-          ["display-text",function(){return buyableEffect('al',33).gt(1)?"Algebric Point boost (Algebra - Field) : x"+format(buyableEffect('al',33))+"":""}],
-          ["display-text",function(){return player.r.lightadd.gt(1)?"Light Additive (Twilight research) : x"+format(player.r.la1)+"":""}],
-          ["display-text",function(){return player.r.buyables[121].gte(1)&&hasUpgrade('n',31)?"Condensed Point upgrade : x"+format(getPointCondensereffect_MUL())+" and ^"+format(getPointCondensereffect_POW())+"":""}],
-          
-          ["display-text", function(){return hasUpgrade('m',43)?"Glazed Point (Multiplicative) : ^1.05":""}],
-          ["display-text", function(){return player.e.points.gt(0)?"Exponent effect (Exponent) : ^"+format(tmp.e.expeffect)+"":""}],
-          ["display-text", function(){return player.r.tetration.gt(0)?"1 Tetration reward (Research) : ^1.10":""}],
-          ["display-text",function(){return hasUpgrade('n', 11)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"Counting Faster (Number) : ^"+format(upgradeEffect('n',11))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 12)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"Headstart (Number) : ^"+format(upgradeEffect('n',12))+"":""}],
-          ["display-text",function(){return hasUpgrade('n', 14)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"1st Grade (Number) : ^1.01":""}],
-          ["display-text",function(){return hasUpgrade('n', 13)&&player.r.tetration.gte(9)&&!player.r.buyables[121].gte(1)?"Effective Counting (Number) : ^"+format(upgradeEffect('n',13))+"":""}],
-
-          ]
-        },
+    /*    "Point gained":{
+          content: ["clickables"]
+        },*/
         "Tickspeed Control": {
             content: [["infobox", "lore2"],"buyables"]
         }
@@ -2407,7 +2413,7 @@ infoboxes: {
             unlocked() { return buyableEffect("e",33).gte(1) },},
         42: {
             title: "Delay additive ",
-            description: "Additive cost scaling started later based on Perk Power",
+            description: "Additive cost scaling start later based on Perk Power",
             cost() {
                 let base = new Decimal(160)
                 if(hasUpgrade('a',41)) base = base.add(4)
@@ -2418,7 +2424,7 @@ infoboxes: {
             },
             unlocked() { return buyableEffect("e", 33).gte(1) && !player.r.buyables[121].gte(1) },
             effect() {
-                let eff = player.e.perkpower.add(2).pow(1.2).times(1/2).max(1)
+                let eff = player.e.perkpower.add(2).pow(1.2).times(1/2).max(1).min(250)
                 if(player.r.buyables[121].gte(1)) eff = eff.times(0)
                 return eff
             },
@@ -3496,7 +3502,7 @@ addLayer("e", {
             },
             cost: new Decimal(7),
             effect() {
-                let a = player.e.perkpower.add(2).pow(1.2).times(1/2).max(1)
+                let a = player.e.perkpower.add(2).pow(1.2).times(1/2).max(1).min(350)
                 if(player.r.buyables[121].lt(1)) a = a.times(0)
                 let eff = player.e.effective.times(0.5).add(1).pow(1.5).min(500)
                 return eff.add(a)
@@ -3721,7 +3727,7 @@ addLayer("e", {
         },
         21: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Cheaper Subtractive"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Cheaper Subtractive"
                } ,
             cost(x) { return (x.times(0.04).add(1)).pow(1.3) },
             display() { return "Subtractive cost is /" + format(this.effect()) +" </br> Cost : " + format(this.cost()) + " Perk Power " },
@@ -3757,7 +3763,7 @@ addLayer("e", {
         },
         22: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Cheaper Additive"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Cheaper Additive"
                } ,
             cost(x) { return (x.times(0.04).add(1)).pow(1.3) },
             display() { return "Additive cost is /" + format(this.effect()) +" </br> Cost : " + format(this.cost()) + " Perk Power " },
@@ -3794,7 +3800,7 @@ addLayer("e", {
         },
         23: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Cheaper Exponent"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Cheaper Exponent"
                } ,
             cost(x) { return (x.times(0.1).add(1)).pow(1.5) },
             display() { return "Exponent cost is /" + format(this.effect()) +" <br/> Cost : " + format(this.cost()) + " Perk Power " },
@@ -3830,7 +3836,7 @@ addLayer("e", {
         },
         24: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Discounted"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Discounted"
                } ,
             cost(x) { return (x.times(0.2).add(1)).pow(1.5) },
             display() { return "Subtractive , Additive and Exponent cost are /" + format(this.effect()) +" <br/> Cost : " + format(this.cost()) + " Perk Power " },
@@ -3867,7 +3873,7 @@ addLayer("e", {
         },
         25: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Number Booster"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Number Booster"
                } ,
             cost(x) { return (x.times(0.8).add(1)).pow(1.1) },
             display() { return "Multiply Number by x" + format(this.effect()) +" <br/> Cost : " + format(this.cost()) + " Perk Power " },
@@ -3904,7 +3910,7 @@ addLayer("e", {
         },
         31: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Subtractive Booster"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Subtractive Booster"
                } ,
             cost(x) { return (x.times(0.14).add(1)).pow(1.4) },
             display() { return "The effect of Subtract? upgrade is raised ^" + format(this.effect()) +" </br> Cost : " + format(this.cost()) + " Perk Power " },
@@ -3939,7 +3945,7 @@ addLayer("e", {
         },
         32: {
             title() {
-                return +getBuyableAmount(this.layer, this.id) + "<br/> Additive Booster"
+                return +format(getBuyableAmount(this.layer, this.id)) + "<br/> Additive Booster"
                } ,
             cost(x) { return (x.times(0.1).add(1)).pow(1.2) },
             display() { return "The effect of Numberic Increase upgrade is raised ^" + format(this.effect()) +" </br> Cost : " + format(this.cost()) + " Perk Power " },
@@ -4591,19 +4597,20 @@ addLayer("r", {
 
         }
         //challenge stuff 
+            let weaken = (100 - (player.g.artifactset4[3] - 1 ) * 20/19) / 100
             player.r.potshard = player.r.c1.add(player.r.c2).add(player.r.c3).add(player.r.c4).add(player.r.c5).add(player.r.c6).add(player.r.c7).add(player.r.c8)
-            let ulti = player.r.c8.times(0.5)
-            player.r.cha = new Decimal(0.85).pow(player.r.c1.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chb = new Decimal(0.92).pow(player.r.c2.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chc = player.r.c3.add(ulti).add(1).tetrate(2).pow(player.g.artifactset4[3])
-            player.r.chd = new Decimal(0.8).pow(player.r.c4.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.che = new Decimal(1.2).pow(player.r.c5.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chf = new Decimal(1.1).pow(player.r.c5.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chg = new Decimal(0.93).pow(player.r.c6.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chh = new Decimal(0.95).pow(player.r.c6.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chi = new Decimal(1.15).pow(player.r.c7.add(ulti)).pow(player.g.artifactset4[3])
-            player.r.chj = new Decimal(1).sub(player.r.c7.add(ulti).div(2.5)).pow(player.g.artifactset4[3])
-            player.r.chk = new Decimal(1.015).pow(player.r.c7.add(ulti)).pow(player.g.artifactset4[3])
+            let ulti = player.r.c8.pow(weaken).times(0.5)
+            player.r.cha = new Decimal(0.85).pow(player.r.c1.add(ulti)).pow(weaken)
+            player.r.chb = new Decimal(0.92).pow(player.r.c2.add(ulti)).pow(weaken)
+            player.r.chc = player.r.c3.add(ulti).add(1).tetrate(2).pow(weaken)
+            player.r.chd = new Decimal(0.8).pow(player.r.c4.add(ulti)).pow(weaken)
+            player.r.che = new Decimal(1.2).pow(player.r.c5.add(ulti)).pow(weaken)
+            player.r.chf = new Decimal(1.1).pow(player.r.c5.add(ulti)).pow(weaken)
+            player.r.chg = new Decimal(0.93).pow(player.r.c6.add(ulti)).pow(weaken)
+            player.r.chh = new Decimal(0.95).pow(player.r.c6.add(ulti)).pow(weaken)
+            player.r.chi = new Decimal(1.15).pow(player.r.c7.add(ulti)).pow(weaken)
+            player.r.chj = new Decimal(1).sub(player.r.c7.pow(weaken).add(ulti).div(2.5))
+            player.r.chk = new Decimal(1.015).pow(player.r.c7.add(ulti)).pow(weaken)
 
 
             if(inChallenge('r',11)| inChallenge('al',11) ) {
@@ -4825,12 +4832,21 @@ addLayer("r", {
         },
         101: {
             title() {
-                let a = player.r.buyables[101].gte(10)?"Super":"More"
+                let l = player.r.buyables[101]
+                let a = ""
+                if(l.gte(10) && l.lt(20)) a = a += 'Super'
+                if(l.gte(20) && l.lt(30)) a = a += 'Hyper'
+                if(l.gte(30) && l.lt(50)) a = a += 'Extremely'
+                if(l.gte(50)) a = a += 'Insanely'
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> "+a+" Fatigued  "
                } ,
             cost(x) { 
                 let level = x
                 if(player.r.buyables[101].gte(10)) level = (level.div(10)).pow(3).times(10)
+                if(player.r.buyables[101].gte(20)) level = level.times(new Decimal(1.2).pow(level.div(80))) 
+                if(player.r.buyables[101].gte(30)) level = level.times(new Decimal(10).pow((level.div(400).log(10)).pow(2)))
+                if(player.r.buyables[101].gte(50)) level = (level.div(8829727.26)).tetrate(1.05).times(8829727.26)
+
                 let extralevel = player.r.improvementfactor
                 let cost = level.add(extralevel)
                 let basecost = new Decimal("1e6").pow(cost.pow(1.45)).times("1e100") 
@@ -4880,12 +4896,20 @@ addLayer("r", {
         },
         102: {
             title() {
-                let a = player.r.buyables[102].gte(10)?"Super":"More"
+                let l = player.r.buyables[102]
+                let a = ""
+                if(l.gte(10) && l.lt(20)) a = a += 'Super'
+                if(l.gte(20) && l.lt(30)) a = a += 'Hyper'
+                if(l.gte(30) && l.lt(50)) a = a += 'Extremely'
+                if(l.gte(50)) a = a += 'Insanely'
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> "+a+" Hardness  "
                } ,
             cost(x) {
                 let level = x
                 if(player.r.buyables[102].gte(10)) level = (level.div(10)).pow(3).times(10)
+                if(player.r.buyables[102].gte(20)) level = level.times(new Decimal(1.2).pow(level.div(80))) 
+                if(player.r.buyables[102].gte(30)) level = level.times(new Decimal(10).pow((level.div(400).log(10)).pow(2)))
+                if(player.r.buyables[102].gte(50)) level = (level.div(8829727.26)).tetrate(1.05).times(8829727.26)                
                 let extralevel = player.r.improvementfactor
                 let cost = level.add(extralevel)
                 let basecost = new Decimal(10).pow(cost.pow(1.225)).times("1e9")
@@ -4934,12 +4958,20 @@ addLayer("r", {
         },
         103: {
             title() {
-                let a = player.r.buyables[103].gte(10)?"Super":"More"
+                let l = player.r.buyables[103]
+                let a = ""
+                if(l.gte(10) && l.lt(20)) a = a += 'Super'
+                if(l.gte(20) && l.lt(30)) a = a += 'Hyper'
+                if(l.gte(30) && l.lt(50)) a = a += 'Extremely'
+                if(l.gte(50)) a = a += 'Insanely'
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> "+a+" Equality  "
                } ,
             cost(x) { 
                let level = x
                if(player.r.buyables[103].gte(10)) level = (level.div(10)).pow(3).times(10)
+               if(player.r.buyables[103].gte(20)) level = level.times(new Decimal(1.2).pow(level.div(80))) 
+               if(player.r.buyables[103].gte(30)) level = level.times(new Decimal(10).pow((level.div(400).log(10)).pow(2)))
+               if(player.r.buyables[103].gte(50)) level = (level.div(8829727.26)).tetrate(1.05).times(8829727.26)                        
                let extralevel = player.r.improvementfactor
                 let cost = level.add(extralevel)
                 let basecost = new Decimal("1e5").pow(cost.pow(1.7)).times("1e10")
@@ -4989,12 +5021,20 @@ addLayer("r", {
         },
         104: {
             title() {
-                let a = player.r.buyables[104].gte(10)?"Super":"More"
+                let l = player.r.buyables[104]
+                let a = ""
+                if(l.gte(10) && l.lt(20)) a = a += 'Super'
+                if(l.gte(20) && l.lt(30)) a = a += 'Hyper'
+                if(l.gte(30) && l.lt(50)) a = a += 'Extremely'
+                if(l.gte(50)) a = a += 'Insanely'
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> "+a+" Letter  "
                } ,
             cost(x) { 
                 let level = x
                 if(player.r.buyables[104].gte(10)) level = (level.div(10)).pow(3).times(10)
+                if(player.r.buyables[104].gte(20)) level = level.times(new Decimal(1.2).pow(level.div(80))) 
+                if(player.r.buyables[104].gte(30)) level = level.times(new Decimal(10).pow((level.div(400).log(10)).pow(2)))
+                if(player.r.buyables[104].gte(50)) level = (level.div(8829727.26)).tetrate(1.05).times(8829727.26)                         
                 let extralevel = player.r.improvementfactor
                 let cost = level.add(extralevel)
                 let basecost =  new Decimal(10).pow(cost.pow(1.05)).times("1e3")
@@ -5049,12 +5089,16 @@ addLayer("r", {
         },
         105: {
             title() {
-                let a = player.r.buyables[105].gte(10)?"Super":"More"
+                let l = player.r.buyables[105]
+                let a = ""
+                if(l.gte(10) && l.lt(20)) a = a += 'Super'
+                if(l.gte(20) && l.lt(30)) a = a += 'Hyper'
                 return format(getBuyableAmount(this.layer, this.id),0) + "<br/> "+a+" Operation  "
                } ,
             cost(x) { 
                  let level = x
                  if(player.r.buyables[105].gte(10)) level = (level.div(10)).pow(3).times(10)
+                 if(player.r.buyables[105].gte(20)) level = level.times(new Decimal(1.2).pow(level.div(80))) 
                  let extralevel = player.r.improvementfactor
                 let cost = level.add(extralevel)
                 let basecost = new Decimal(10).pow(cost.pow(1.5)).times("1e3") 
@@ -5367,7 +5411,10 @@ addLayer("r", {
                 return "Generate x"+format(this.effect())+" more Light Additive . Cost : "+format(this.cost())+" Light Additive " },
             canAfford() { return player.r.lightadd.gte(this.cost())},
             buy() {
-                player.r.lightadd = player.r.lightadd.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.lightadd = player.r.lightadd.sub(this.cost())
+                }
+                
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5401,7 +5448,9 @@ addLayer("r", {
                 return "Generate ^"+format(this.effect())+" more Light Additive . Cost : "+format(this.cost())+" Light Additive " },
             canAfford() { return player.r.lightadd.gte(this.cost())},
             buy() {
-                player.r.lightadd = player.r.lightadd.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.lightadd = player.r.lightadd.sub(this.cost())
+                }           
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5472,7 +5521,9 @@ addLayer("r", {
                 return "Generate x"+format(this.effect())+" more Dark Subtractive . Cost : "+format(this.cost())+" Dark Subtractive " },
             canAfford() { return player.r.darksub.gte(this.cost())},
             buy() {
-                player.r.darksub = player.r.darksub.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.darksub = player.r.darksub.sub(this.cost())
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5506,7 +5557,9 @@ addLayer("r", {
                 return "Generate ^"+format(this.effect())+" more Dark Subtractive . Cost : "+format(this.cost())+" Dark Subtractive " },
             canAfford() { return player.r.darksub.gte(this.cost())},
             buy() {
-                player.r.darksub = player.r.darksub.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.darksub = player.r.darksub.sub(this.cost())
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5540,7 +5593,9 @@ addLayer("r", {
                 return "x"+format(this.effect())+" Light Additive and Dark Subtractive gained . Cost : "+format(this.cost())+" Twilight " },
             canAfford() { return player.r.twilight.gte(this.cost())},
             buy() {
-                player.r.twilight = player.r.twilight.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.twilight = player.r.twilight.sub(this.cost())
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5574,7 +5629,9 @@ addLayer("r", {
                 return "Increase the effect of Light Additive and Dark Subtractive primary bonus by +"+format(this.base())+"% . Cost : "+format(this.cost())+" Twilight " },
             canAfford() { return player.r.twilight.gte(this.cost())},
             buy() {
-                player.r.twilight = player.r.twilight.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.twilight = player.r.twilight.sub(this.cost())
+                }                
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5618,7 +5675,9 @@ addLayer("r", {
                 return "Gain x"+format(this.effect())+" Effective Exponent . Cost : "+format(this.cost())+" Twilight " },
             canAfford() { return player.r.twilight.gte(this.cost())},
             buy() {
-                player.r.twilight = player.r.twilight.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.twilight = player.r.twilight.sub(this.cost())
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -5664,7 +5723,9 @@ addLayer("r", {
                 return "x"+format(this.effect())+" Energy gained . Cost : "+format(this.cost())+" Energy " },
             canAfford() { return player.r.energy.gte(this.cost())},
             buy() {
-                player.r.energy = player.r.energy.sub(this.cost())
+                if(!hasAchievement('ac',105)) {
+                    player.r.energy = player.r.energy.sub(this.cost())
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
 
             },
@@ -6485,7 +6546,7 @@ microtabs: {
         },
         "Ultimatum" : {
             content : [
-                ["raw-html", function () { return "<h2> Ultimatium : +"+format(player.r.c8.times(0.5),1)+" to all modifier difficulty" }, { "color": "rgb(192,192,192)", "font-size": "14px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h2> Ultimatium : +"+format(player.r.c8.pow((100 - (player.g.artifactset4[3] - 1 ) * 20/19) / 100).times(0.5),1)+" to all modifier difficulty" }, { "color": "rgb(192,192,192)", "font-size": "14px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h2> Difficulty : "+format(player.r.c8,0)+"/8" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
 
@@ -6497,10 +6558,10 @@ microtabs: {
         "Main" : {
             content : [
             ["blank", "25px"],
-            ["raw-html", function () { return "<h2> You have "+format(player.r.challengeshard,0)+" challenge shard , which boost various resource gain" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h2> You have "+format(player.r.challengeshard,0)+" challenge shard , making" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h2> Reach 10,000 Mastery to complete the Meta Research challenge." }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h2> Total modifier level : "+format(player.r.potshard,0)+"" }, { "color": "white", "font-size": "14px", "font-family": "helvetica" }],
-            ["raw-html", function () { return player.r.c8.gt(0)?"<h2> Ultimatium : +"+format(player.r.c8.times(0.5),1)+" to all modifier difficulty":"" }, { "color": "rgb(192,192,192)", "font-size": "14px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.r.c8.gt(0)?"<h2> Ultimatium : +"+format(player.r.c8.pow((100 - (player.g.artifactset4[3] - 1 ) * 20/19) / 100).times(0.5),1)+" to all modifier difficulty":"" }, { "color": "rgb(192,192,192)", "font-size": "14px", "font-family": "helvetica" }],
             ["blank", "25px"],
             ["raw-html", function () { return "<h2> Point shredder : Point gained are ^"+format(player.r.cha)+"" }, { "color": "red", "font-size": "14px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h2> Resource reduction : Pre-Research resource gained and cost reduction (except Points gained) are ^"+format(player.r.chb)+"" }, { "color": "orange", "font-size": "14px", "font-family": "helvetica" }],
@@ -6564,7 +6625,6 @@ microtabs: {
                     ["blank", "25px"],
         ["raw-html", function () { return "<h2>Prestige time : " + formatTime(player.r.prestigetime) + " (+"+formatTime(player.r.deltatime)+" per real life second)" }, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h2>Each improvement bought increase the cost of all other improvement (including itself)" }, { "color": "red", "font-size": "18px", "font-family": "helvetica" }],
-        ["raw-html", function () { return "<h2>Improvement requirement increase significantly faster above level 10" }, { "color": "red", "font-size": "18px", "font-family": "helvetica" }],
                     ["blank", "25px"],
                     ["row", [["buyable", 11]]],
                     ["row", [["buyable", 101], ["buyable", 102], ["buyable", 103], ["buyable", 104],["buyable",105]]],
@@ -7833,14 +7893,14 @@ addLayer("g", {
         
         player.g.rankreq = (player.g.rank.add(1)).pow(2).times(10000)
 
-        if(player.n.points.gt(tmp.n.passiveGeneration.times(getResetGain('n')))) {
-            player.n.points = tmp.n.passiveGeneration.times(getResetGain('n'))
+        if(player.n.points.gt(player.g.corruption[0])) {
+            player.n.points = (player.n.points.times(tmp.n.passiveGeneration.max(1).times(getResetGain('n')))).pow(0.5)
         }
-        if(player.m.points.gt(tmp.m.passiveGeneration.times(getResetGain('m')))) {
-            player.m.points = tmp.m.passiveGeneration.times(getResetGain('m'))
+        if(player.m.points.gt(player.g.corruption[3])) {
+            player.m.points = (player.m.points.times(tmp.m.passiveGeneration.max(1).times(getResetGain('m')))).pow(0.5)
         }
-        if(player.d.points.gt(tmp.d.passiveGeneration.times(getResetGain('d')))) {
-            player.d.points = tmp.d.passiveGeneration.times(getResetGain('d'))
+        if(player.d.points.gt(player.g.corruption[4])) {
+            player.d.points = (player.d.points.times(tmp.d.passiveGeneration.max(1).times(getResetGain('d')))).pow(0.5)
         }
         if(player.points.gt(player.g.corruptpoints[0])) {
             player.points = getPointGen()

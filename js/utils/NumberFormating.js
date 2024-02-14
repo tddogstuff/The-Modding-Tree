@@ -56,8 +56,10 @@ function format(decimal, precision = 2, small) {
     }
     else if (decimal.gte("1e1000000")) return exponentialFormat(decimal, 0, false)
     else if (decimal.gte("1e10000")) return exponentialFormat(decimal, 0)
-    else if (decimal.gte(1e9)) return exponentialFormat(decimal, precision)
-    else if (decimal.gte(1e3)) return commaFormat(decimal, 0)
+    else if (decimal.gte(1e100) && options.mixedsci) return exponentialFormat(decimal, precision)
+    else if (decimal.gte(1e9) && !options.mixedsci) return exponentialFormat(decimal, precision)
+    else if (decimal.gte(1e3) && options.mixedsci) return MixedSciformat(decimal)
+    else if (decimal.gte(1e3) && !options.mixedsci) return commaFormat(decimal, 0)
     else if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision)
     else if (decimal.eq(0)) return (0).toFixed(precision)
 
@@ -124,7 +126,57 @@ function convertToRoman(num) {
   
     return romanNumeral
   }
-// Will also display very small numbers
+  function MixedSciformat(num) {
+    num = new Decimal(num)
+    const units = {
+      "DT": new Decimal("1e99"),
+      "UT": new Decimal("1e96"),
+      "Tg": new Decimal("1e93"),
+      "NV": new Decimal("1e90"),
+      "OV": new Decimal("1e87"),
+      "SpV": new Decimal("1e84"),
+      "SxV": new Decimal("1e81"),
+      "QiV": new Decimal("1e78"),
+      "QaV": new Decimal("1e75"),
+      "TV": new Decimal("1e72"),
+      "DV": new Decimal("1e69"),
+      "UV": new Decimal("1e66"),
+      "V": new Decimal("1e63"),
+      "ND": new Decimal("1e60"),
+      "OD": new Decimal("1e57"),
+      "SpD": new Decimal("1e54"),
+      "SxD": new Decimal("1e51"),
+      "QiD": new Decimal("1e48"),
+      "QaD": new Decimal("1e45"),
+      "Td": new Decimal("1e42"),
+      "Dd": new Decimal("1e39"),
+      "Ud": new Decimal("1e36"),
+      "Dc": new Decimal("1e33"),
+      "No": new Decimal("1e30"),
+      "Oc": new Decimal("1e27"),
+      "Sp": new Decimal("1e24"),
+      "Sx": new Decimal("1e21"),
+      "Qi": new Decimal("1e18"),
+      "Qa": new Decimal("1e15"),
+      "T": new Decimal("1e12"),
+      "B": new Decimal("1e9"),
+      "M": new Decimal("1e6"),
+      "k": new Decimal("1e3"),
+    };
+  
+    for (const unit in units) {
+      const threshold = units[unit];
+      if (num.gte(threshold)) {
+        const value = num.div(threshold);
+        const formattedValue = value.toFixed(2); 
+        return formattedValue + unit;
+      }
+    }
+      return num.toStringWithDecimalPlaces();
+  }  
+
+
+
 function formatSmall(x, precision=2) { 
     return format(x, precision, true)    
 }

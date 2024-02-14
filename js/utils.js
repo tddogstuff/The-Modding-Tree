@@ -497,7 +497,7 @@ function maxEffect(id) {
 		 case 27:
 		  return 100;	  
 		case 28:
-		  return 40;
+		  return 20;
 		case 29:
 		  return 20;
 		 case 30:
@@ -533,13 +533,13 @@ function DisplayArtifactEffect(id,effect) {
   switch (id) {
 	//1-8 : Resource booster
     case 1:
-      return "Number gained is ^"+format(e)+"";
+      return "Number gained is ^"+format(e)+""; 
     case 2:
       return "Additive gained (before cost scaling) is x"+format(e)+"";
  	case 3:
-      return "Subtractive gained (before cost scaling) is x"+format(e)+"";	  
+      return "Subtractive gained (before cost scaling) is x"+format(e)+""; 	  
 	case 4:
-      return "Multiplicative gained is ^"+format(e)+"";
+      return "Multiplicative gained is ^"+format(e)+""; 
     case 5:
       return "Divisive gained is ^"+format(e)+"";
  	case 6:
@@ -547,7 +547,7 @@ function DisplayArtifactEffect(id,effect) {
     case 7:
       return "Perk power gained is x"+format(e)+"";
     case 8:
-      return "Research gained is x"+format(e)+"";
+      return "Research gained is x"+format(e)+"";  
 	//9-16 : Reduce the cost of sth or weaken cost scaling
     case 9:
       return "Research cost is /"+format(e)+"";
@@ -602,54 +602,6 @@ function DisplayArtifactEffect(id,effect) {
 	//if error
     default:
       return "";
-  }
-}
-// 16 more for unique ID  
-function DisplayUniqueArtifactEffect(id) {
-  switch (id) {
-    case 1:
-      return "Gain free Additive and Subtractive based on 'Point Boost' level";
-    case 2:
-      return "'Perk Power 2' add free 'Perk Power 1' level";
- 	case 3:
-      return "'Perk Power 1' add free 'Point Boost' level";	  
-	case 4:
-      return "'Point Boost' add free 'Perk Power 2' level at a very reduced rate";
-    case 5:
-      return "Improvement boost their respective challenge reward";
- 	case 6:
-      return "Tickspeed boost from Research is stronger based on Prestige Time";
-    case 7:
-      return "Challenge shard grant additional free Research";
-    case 8:
-      return "Reduce the cost of Research based on unspent Meta-research";
-    case 9:
-      return "Operation effect also weaken Energy reduction at a heavily reduced rate";
-    case 10:
-      return "Energy effect also affect Light Additive and Dark Subtractive at a severely reduced rate";
- 	case 11:
-      return "Exponent effect additionally affect Number at a insanely reduced rate";	  
-	case 12:
-      return "Mastery boost Prestige Time gained at a greatly reduced rate";
-    case 13:
-      return "Operation gained is boosted based on current Twilight at a slightly reduced rate";
- 	case 14:
-      return "Challenge shard boost the reward of all Pre-Research challenge at a reduced rate";
-    case 15:
-      return "Decrease the cost increase to other Improvement when buying any Improvement";
-    case 16:
-      return "Perk Power gained is increased based on Subtractive";
-	case 17:
-	  return "Gamespeed is boosted based on Tickspeed";
-	case 18: 
-	  return "Additive cost scaling start later based on Research";
-	case 19:
-	  return "Subtractive cost scaling start later based on Research";
-	case 20:
-	  return "Boost Light additive gained based on Challenge shard";
-	//if error
-    default:
-      return "Unique Artifact ID is invalid";
   }
 }
 function updateArtifactEffect() {

@@ -16,6 +16,9 @@ function getStartOptions() {
 		tooltipForcing: true,
 		earlyskip: 0,
 		betatest: false,
+		modernstyle: false,
+		mixedsci:false,
+		 
 	}
 }
 function toggleOpt(name) {
@@ -77,6 +80,7 @@ function milestoneShown(layer, id) {
 	}
 	return false;
 }
+// no testing for now ... 
 function earlyskip() {
 	if(options.earlyskip !== 0) {	
 		options.earlyskip = options.earlyskip * 0
@@ -123,4 +127,7 @@ function earlyskip() {
 			save()
 			window.location.reload()
 		}
-		}
+		} 
+		function mixedsci() {			
+			options.mixedsci = !options.mixedsci
+			} 
