@@ -245,7 +245,7 @@ function NaNcheck(data) {
 			if (!NaNalert) {
 				clearInterval(interval);
 				NaNalert = true;
-				alert("Invalid value found in player, named '" + item + "'. Please let the creator of this mod know! You can refresh the page, and you will be un-NaNed.")
+				alert("NaN (not a number) error found at variable " + item + "'")
 				return
 			}
 		}
@@ -267,13 +267,24 @@ function exportSave() {
 	el.setSelectionRange(0, 99999);
 	document.execCommand("copy");
 	document.body.removeChild(el);
+	showModal('Copied save to clipboard' , '' , {textColor: 'aqua'})
+}
+function ImportSave() {
+	showModal('Paste your save here', '' , { textBox: true , confirmButton: true , textColor: 'green'} , importSave)
 }
 function importSave(imported = undefined, forced = false) {
 	if (imported === undefined)
-		imported = prompt("Paste your save here");
+		imported = modal.textBox.value
+		if(imported === "save" && !hasAchievement('ac',1011)) {
+			player.ac.achievements.push(1011)
+			doPopup("achievement", tmp.ac.achievements[1011].name, "Achievement Gotten!", 3, tmp.ac.color);
+		}
+		if(imported === "https://www.youtube.com/watch?v=dQw4w9WgXcQ" && !hasAchievement('ac',1015)) {
+			addAchievement('ac',1015)
+		}
 	try {
 		tempPlr = Object.assign(getStartPlayer(), JSON.parse(atob(imported)));
-		if (tempPlr.versionType != modInfo.id && !forced && !confirm("This save appears to be for a different mod! Are you sure you want to import?")) // Wrong save (use "Forced" to force it to accept.)
+		if (tempPlr.versionType != modInfo.id && !forced ) // Wrong save (use "Forced" to force it to accept.)
 			return;
 		player = tempPlr;
 		player.versionType = modInfo.id;

@@ -19,6 +19,7 @@ function canAffordUpgrade(layer, id) {
 
 	return true
 }
+document.title = modInfo.name
 
 function canBuyBuyable(layer, id) {
 	let b = temp[layer].buyables[id]
@@ -261,7 +262,7 @@ function updateMilestones(layer) {
 		if (!(hasMilestone(layer, id)) && layers[layer].milestones[id].done()) {
 			player[layer].milestones.push(id)
 			if (layers[layer].milestones[id].onComplete) layers[layer].milestones[id].onComplete()
-			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup("milestone", tmp[layer].milestones[id].requirementDescription, "Milestone Gotten!", 3, tmp[layer].color);
+			if (tmp[layer].milestonePopups || tmp[layer].milestonePopups === undefined) doPopup("milestone", tmp[layer].milestones[id].requirementDescription, tmp[layer].layerName+" Milestone", 3, tmp[layer].color);
 			player[layer].lastMilestone = id
 		}
 	}
@@ -273,7 +274,7 @@ function updateAchievements(layer) {
 		if (isPlainObject(layers[layer].achievements[id]) && !(hasAchievement(layer, id)) && layers[layer].achievements[id].done()) {
 			player[layer].achievements.push(id)
 			if (layers[layer].achievements[id].onComplete) layers[layer].achievements[id].onComplete()
-			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup("achievement", tmp[layer].achievements[id].name, "Achievement Gotten!", 3, tmp[layer].color);
+			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup("achievement", tmp[layer].achievements[id].name, "Achievement reached", 3, tmp[layer].color);
 		}
 	}
 }
@@ -302,12 +303,34 @@ function addTime(diff, layer) {
 	else data.timePlayed = time
 }
 
-shiftDown = false
-ctrlDown = false
 
+
+let shiftDown = false
+let ctrlDown = false
+
+//Not used
+function isUsingMobile() {
+	if (
+	  navigator.userAgent.match(/Android/i) ||
+	  navigator.userAgent.match(/webOS/i) ||
+	  navigator.userAgent.match(/iPhone/i) ||
+	  navigator.userAgent.match(/iPad/i) ||
+	  navigator.userAgent.match(/iPod/i) ||
+	  navigator.userAgent.match(/BlackBerry/i) ||
+	  navigator.userAgent.match(/Windows Phone/i) 
+	) {
+	  return true;
+	} else {
+	  return false;
+	}
+  }
 document.onkeydown = function (e) {
 	if (player === undefined) return;
+	if(options.autoshift) {
+	shiftDown = true
+	} else {
 	shiftDown = e.shiftKey
+	}
 	ctrlDown = e.ctrlKey
 	if (tmp.gameEnded && !player.keepGoing) return;
 	let key = e.key
@@ -316,16 +339,19 @@ document.onkeydown = function (e) {
 	if (ctrlDown && hotkeys[key]) e.preventDefault()
 	if (hotkeys[key]) {
 		let k = hotkeys[key]
-		if (player[k.layer].unlocked && tmp[k.layer].hotkeys[k.id].unlocked)
+		if (player[k.layer].unlocked && tmp[k.layer].hotkeys[k.id].unlocked && !modal.isOpen)
 			k.onPress()
 	}
 }
 
 document.onkeyup = function (e) {
-	shiftDown = e.shiftKey
-	ctrlDown = e.ctrlKey
+	if(options.autoshift) {
+		shiftDown = true
+	} else {
+		shiftDown = e.shiftKey
+	}	
+		ctrlDown = e.ctrlKey
 }
-
 var onFocused = false
 function focused(x) {
 	onFocused = x
@@ -336,11 +362,11 @@ function isFunction(obj) {
 	return !!(obj && obj.constructor && obj.call && obj.apply);
 };
 
+
 function isPlainObject(obj) {
 	return (!!obj) && (obj.constructor === Object)
 }
 
-document.title = modInfo.name
 
 // Converts a string value to whatever it's supposed to be
 function toValue(value, oldValue) {
@@ -368,6 +394,10 @@ function doPopup(type = "none", text = "This is a test popup.", title = "", time
 		case "challenge":
 			popupTitle = "Challenge Complete";
 			popupType = "challenge-popup"
+			break;
+		case "Machine":
+			popupTitle = "Machine";
+			popupType = "machine-popup"
 			break;
 		default:
 			popupTitle = "Something Happened?";
@@ -410,13 +440,25 @@ function gridRun(layer, func, data, id) {
 	else
 		return layers[layer].grid[func];
 }
+//sacrifice
+function unlockSAch(layer , id) {
+	if(!player[layer].unlocked) return
+	if(!tmp[layer].achievements[id].unlocked) return
+	if(player[layer].super.includes(id)) return
+	if(!tmp[layer].achievements[id].chargeUnl) return
+	if(!tmp[layer].achievements[id].chargeCan) return
+	player[layer].super.push(id)
+}
 //additional utility
 //graduation
-function RandomArtifactID(index) {
+function RandomArtifactID(index,binding) {
+	if(binding === undefined) binding = []
 	let array = [0,0,0,0]
 	const usedNumbers = new Set(); 
-  
-	for (let i = 0; i < array.length; i++) {
+	for (let j = 0 ; j < binding.length ; j++) {
+		usedNumbers.add(binding[j])
+	}
+	for (let i = 0; i < array.length - binding.length; i++) {
 	  while (true) {
 		const randomNumber = Math.floor(Math.random() * 8) + 1 + 8 * index;
   
@@ -427,85 +469,93 @@ function RandomArtifactID(index) {
 		}
 	  }
 	}
+	for (let k = 0 ; k < binding.length ; k++) {
+		array[array.length - k - 1] = binding[k]
+	}
+
 	return array;
   }
-function RandomArtifactQuality() {  
+function RandomArtifactQuality(quality) {  
+	if(quality === undefined) quality = d(0)
+	quality = quality.add(100)
 	let array = [0,0,0,0]
 	for (let i = 0; i < 4; i++) {
 	  while (true) {
-		const randomNumber = (Math.floor(Math.random() * 10000) + 1) /100;
+		const randomNumber = (Math.floor(Math.random() ** (100 / (toNumber(quality) + 100)) * 10000) + 1) /100;
 		array[i] = randomNumber;
 		break;
 		}
 	  }	
 	return array;
 }
-function maxEffect(id) {
+function maxEffect(id , level) {
+	if(level === undefined) level = 1
+	level = toNumber(level)
 	switch (id) {
 		case 1:
-		  return 1.25;
+		  return 1.245 + 0.005 * level; //Number
 		case 2:
-		  return 1.6;
+		  return 1.73 + 0.02 * level; //Additive
 		case 3:
-		  return 1.6;	  
+		  return 1.73 + 0.02 * level; //Subtractive
 		case 4:
-		  return 1.2;
+		  return 1.194 + 0.006 * level; //Multiplicative
 		case 5:
-		  return 1.2;
+		  return 1.196 + 0.004 * level; //Divisive
 		case 6:
-		  return 1.25;
+		  return 1.146 + 0.004 * level; //Exponent
 		case 7:
-		  return 2;
+		  return 1.96 + 0.04 * level; //Perk power
 		case 8:
-		  return 1.5;
+		  return 1.1475 + 0.0025 * level; //Research
 		case 9:
-		  return 16;
+		  return 4.8 + 0.2 * level; //Research cost
 		case 10:
-		  return 0.5;
+		  return Math.pow(0.75 , 1 + (level - 1) / 90); // Points boost cost
 		 case 11:
-		  return 0.75;	  
+		  return Math.pow(0.25 , 1 + (level - 1) / 40); // Improvement cost	  
 		case 12:
-		  return 0.25;
+		  return Math.pow(0.15 , 1 + (level - 1) / 40); // Energy booster cost
 		case 13:
-		  return 2.5;
+		  return 2.97 + 0.03 * level; //LA cost scaling
 		 case 14:
-		  return 2.5;
+		  return 2.97 + 0.03 * level; //DA cost scaling
 		case 15:
-		  return 1.4;
+		  return 1.392 + 0.008 * level; //Additive softcap strength
 		case 16:
-		  return 1.4;
+		  return 1.392 + 0.008 * level; //Subtractive softcap strength
 		case 17:
-		  return 1.15;
+		  return 1.144 + 0.006 * level; // Perk power from Exponent
 		case 18:
-		  return 1.2;
-		 case 19:
-		  return 1.25;	  
+		  return 1.192 + 0.008 * level; // Perk power from Research
+		case 19:
+		  return 1.195 + 0.005 * level;	 //Points boost effect
 		case 20:
-		  return 1.2;
+		  return 1.195 + 0.005 * level; //Improvement effect
 		case 21:
-		  return 2;
-		 case 22:
-		  return 1.6;
+		  return 1.73 + 0.02 * level; //Generator strength
+		case 22:
+		  return 3.6 + 0.4 * level; //Perk power effect , boosting ASE cost reduction 
 		case 23:
-		  return 10000;
+		  return 10; //10th Perk
 		case 24:
-		  return 40;
+		  return 72 + 4 * level; //Twilight perk strength
 		case 25:
-		  return 100;
+		  return 9.85 + 0.15 * level; //Gamespeed
 		case 26:
-		  return 2;
+		  return 1.49 + 0.01 * level; //Tickspeed
 		 case 27:
-		  return 100;	  
+		  return 9.85 + 0.15 * level; //Prestige time
 		case 28:
-		  return 20;
+		  return 21; //Challenge reward weaken , cannot scale with level
 		case 29:
-		  return 20;
+		  return 100 - ((100 - 80 / ((level - 1) / 2500 + 1)) + 1); //Exponent cost scaling base reduction
 		 case 30:
-		  return 0.65;
+		  return Math.pow(0.5 , 1 + (level - 1)/25); //Lower all Pre-research challenge goal
 		case 31:
-		  return 1.25;
+		  return 1.19 + 0.01 * level; //Exponent boost multiplier
 		case 32:
-		  return 10;
+		  return 9.75 + 0.25 * level; //Base max Perk power
 		//if error
 		default:
 		  return 1;
@@ -527,32 +577,31 @@ function getArtifactEffect(idarray,qualityarray,a) {
 	return effect
 	
 }
-//Yes! there is 32 different artifact id , oh no
 function DisplayArtifactEffect(id,effect) {
 	let e = effect
   switch (id) {
 	//1-8 : Resource booster
     case 1:
-      return "Number gained is ^"+format(e)+""; 
+      return "Number gain is ^"+format(e)+""; 
     case 2:
-      return "Additive gained (before cost scaling) is x"+format(e)+"";
+      return "Additive gain is x"+format(e)+"";
  	case 3:
-      return "Subtractive gained (before cost scaling) is x"+format(e)+""; 	  
+      return "Subtractive gain is x"+format(e)+""; 	  
 	case 4:
-      return "Multiplicative gained is ^"+format(e)+""; 
+      return "Multiplicative gain is ^"+format(e)+""; 
     case 5:
-      return "Divisive gained is ^"+format(e)+"";
+      return "Divisive gain is ^"+format(e)+"";
  	case 6:
       return "Effective exponent is x"+format(e)+"";
     case 7:
-      return "Perk power gained is x"+format(e)+"";
+      return "Max Perk power gain is x"+format(e)+"";
     case 8:
-      return "Research gained is x"+format(e)+"";  
+      return "Research gain is x"+format(e)+"";  
 	//9-16 : Reduce the cost of sth or weaken cost scaling
     case 9:
       return "Research cost is /"+format(e)+"";
     case 10:
-      return "'Point Boost' (Multiplicative) cost is ^"+format(e)+"";
+      return "'Points Boost' (Multiplicative) cost is ^"+format(e)+"";
  	case 11:
       return "All improvement cost is ^"+format(e)+"";	  
 	case 12:
@@ -567,39 +616,38 @@ function DisplayArtifactEffect(id,effect) {
       return "Subtractive cost scaling is "+format(e)+"x weaker";
 	//17-24 : Buyables
 	case 17:
-      return "'Perk Power 1' (Exponent) effect is ^"+format(e)+"";
+      return "Perk Power from Exponent is ^"+format(e)+"";
     case 18:
-      return "'Perk Power 2' (Exponent) effect is ^"+format(e)+"";
+      return "Perk Power from Research is ^"+format(e)+"";
  	case 19:
-      return "'Point Boost' (Multiplicative) effect is ^"+format(e)+"";	  
+      return "'Points Boost' (Multiplicative) effect is ^"+format(e)+" (Applied after Tetration reward)";	  
 	case 20:
       return "All improvement (Research) effect is ^"+format(e)+"";
-    case 21:
+    case 21: 
       return "Light additive and Dark subtractive (Twilight) generator are "+format(e)+"x stronger";
  	case 22:
-      return "'Discount' (Exponent) effect is ^"+format(e)+"";
+      return "Additive , Subtractive , Exponent cost reduction from Perk Power is ^"+format(e)+"";
     case 23:
-      return "'Number Booster' (Exponent) base is multiplied by "+format(e)+"";
+      return "Unlock the 10th boost from Perk Power";
     case 24:
-      return "Add +"+format(e)+"% to Twilight perk strength";
+      return "Add +"+format(e - 1)+"% to Twilight reward strength";
 	//24-32 : Other
 	case 25:
-      return "Multiply Gamespeed by x"+format(e)+"";
+      return "Multiply Gamepeed by x"+format(e)+"";
     case 26:
       return "Raise Tickspeed by ^"+format(e)+"";
  	case 27:
-      return "Prestige Time gained is multiplied by "+format(e)+"";	  
+      return "Prestige Time gain is multiplied by "+format(e)+"";	  
 	case 28:
-      return "Weaken all Meta-research challenge modifier by "+format(e)+"%";
+      return "Weaken the first 7 Meta-research challenge modifier by "+format(e - 1)+"%";
     case 29:
-      return "Reduce Exponent cost scaling by "+format(e)+"%";
+      return "Reduce Exponent cost scaling base by "+format(e - 1)+"%";
  	case 30:
       return "Raise All Pre-Research challenge goal by ^"+format(e)+"";
     case 31:
-      return "Boost Exponent effect by ^"+format(e)+"";
+      return "Increase Exponent boost by "+format(e)+"x";
     case 32:
-      return "Add "+format(e)+" to base Perk Power gained";
-	//if error
+      return "Add "+format(e - 1)+" to max Perk Power";
     default:
       return "";
   }
@@ -628,11 +676,12 @@ function AllArtifactEffect(id, effect, index) {
     }
 
     for (let i = 0; i < 8; i++) {
-        array[id[i] - 1] = effect[i] || 1; // Use 0 for missing effects
+        array[id[i] - 1] = effect[i] || 1; 
     }
 
     return array.slice(index * 8, (index + 1) * 8);
 }
+//DO NOT CALL THIS
 function updateAllAritfactEffect() { 
 
 	player.g.artifactset1 = AllArtifactEffect(player.g.artifact1,player.g.artifact1eff,0)
@@ -641,4 +690,203 @@ function updateAllAritfactEffect() {
 	player.g.artifactset4 = AllArtifactEffect(player.g.artifact4,player.g.artifact4eff,3)
 
 
+}
+/** 
+*Change the color , height of a box (buyables , challenges , clickables , upgrades)
+**/
+function Qcolor(bgcolor,height,color) {
+	if (bgcolor === undefined) {
+		bgcolor = 'black'
+	}
+	if (height === undefined) {
+		height = 120
+	} 
+	if (color === undefined) {
+		color = 'white'
+	}
+	 return {
+		'border-radius': '0%',
+		'color':'white',
+		'background-color': bgcolor,
+		'border':'2px solid',
+		'border-color':color,
+		'height': height+'px'
+	} 
+}
+/** 
+*Change a color of an html elements
+**/
+function Qcolor2(layercode,text) {
+	if(!options.coloredtext) {
+		return text
+	} else {
+	let c = text
+	switch(layercode) {
+		case 'n': //number
+		return "<span style='color:#8efdfc'>" + c + "</span>"
+		case 'a': //addtive
+		return "<span style='color:#93fd8e'>" + c + "</span>"
+		case 's': //subtractive
+		return "<span style='color:#fd8e8e'>" + c + "</span>"
+		case 'm': //multiplicative
+		return "<span style='color:#2487da'>" + c + "</span>"
+		case 'd': //divisive
+		return "<span style='color:#b90e0e'>" + c + "</span>"
+		case 'e': //exponent
+		return "<span style='color:#d968f6'>" + c + "</span>"
+		case 'r': //research
+		return "<span style='color:#9168f6'>" + c + "</span>"
+		case 't': //ticks
+		return "<span style='color:#ffffff'>" + c + "</span>"
+		case 'g': //graduation
+		return "<span style='color:#dcdac4'>" + c + "</span>"
+		case 'la': //light additive
+		return "<span style='color:#6eb23c'>" + c + "</span>"
+		case 'ds': //dark subtractive
+		return "<span style='color:#b23c3c'>" + c + "</span>"
+		case 'tw': //twilight
+		return "<span style='color:#7006be'>" + c + "</span>"
+		case 'en': //energy
+		return "<span style='color:#6cd9dd'>" + c + "</span>"
+		case 'tt': //tetration
+		return "<span style='color:#54a23b'>" + c + "</span>"
+		case 'off': //offline time
+		return "<span style='color:#ff00ff'>" + c + "</span>"
+		case 'y' : //yellow color
+		return "<span style='color:#ffff00'>" + c + "</span>" 
+		case 'red1' : 
+		return "<span style='color:#cd5c5c'>" + c + "</span>" 
+		case 'red2' : 
+		return "<span style='color:#f08080'>" + c + "</span>" 
+		case 'red3' : 
+		return "<span style='color:#e9967a'>" + c + "</span>" 
+		case 'red4' : 
+		return "<span style='color:#b22222'>" + c + "</span>" 
+		case 'red5' : 
+		return "<span style='color:#bb0000'>" + c + "</span>" 
+		case 'pink1' : 
+		return "<span style='color:#ffc0cb'>" + c + "</span>" 
+		case 'pink2' : 
+		return "<span style='color:#ffb6c1'>" + c + "</span>" 
+		case 'pink3' : 
+		return "<span style='color:#ff69b4'>" + c + "</span>" 
+		case 'pink4' : 
+		return "<span style='color:#ff1493'>" + c + "</span>" 
+		case 'pink5' : 
+		return "<span style='color:#db7093'>" + c + "</span>" 
+		case 'orange1' : 
+		return "<span style='color:#ffa07a'>" + c + "</span>" 
+		case 'orange2' : 
+		return "<span style='color:#ff7f50'>" + c + "</span>" 
+		case 'orange3' : 
+		return "<span style='color:#ff6347'>" + c + "</span>" 
+		case 'orange4' : 
+		return "<span style='color:#ff4500'>" + c + "</span>" 
+		case 'orange5' : 
+		return "<span style='color:#ffa500'>" + c + "</span>" 
+		case 'yellow1' : 
+		return "<span style='color:#ffd700'>" + c + "</span>" 
+		case 'yellow2' : 
+		return "<span style='color:#ffffe0'>" + c + "</span>" 
+		case 'yellow3' : 
+		return "<span style='color:#ffe4b5'>" + c + "</span>" 
+		case 'yellow4' : 
+		return "<span style='color:#eee8aa'>" + c + "</span>" 
+		case 'yellow5' : 
+		return "<span style='color:#f0e68c'>" + c + "</span>" 
+		case 'purple1' : 
+		return "<span style='color:#e6e6fa'>" + c + "</span>" 
+		case 'purple2' : 
+		return "<span style='color:#dda0dd'>" + c + "</span>" 
+		case 'purple3' : 
+		return "<span style='color:#ee82ee'>" + c + "</span>" 
+		case 'purple4' : 
+		return "<span style='color:#663399'>" + c + "</span>" 
+		case 'purple5' : 
+		return "<span style='color:#9400d3'>" + c + "</span>" 
+		case 'green1' : 
+		return "<span style='color:#adf2ff'>" + c + "</span>" 
+		case 'green2' : 
+		return "<span style='color:#7cfc00'>" + c + "</span>" 
+		case 'green3' : 
+		return "<span style='color:#00ff7f'>" + c + "</span>" 
+		case 'green4' : 
+		return "<span style='color:#808000'>" + c + "</span>" 
+		case 'green5' : 
+		return "<span style='color:#66cdaa'>" + c + "</span>" 
+		case 'blue1' : 
+		return "<span style='color:#e0ffff'>" + c + "</span>" 
+		case 'blue2' : 
+		return "<span style='color:#e4d0d0'>" + c + "</span>" 
+		case 'blue3' : 
+		return "<span style='color:#00ced1'>" + c + "</span>" 
+		case 'blue4' : 
+		return "<span style='color:#4682b4'>" + c + "</span>" 
+		case 'blue5' : 
+		return "<span style='color:#7b68ee'>" + c + "</span>" 
+		default: 
+		return c
+	}}
+}
+
+function Qcolor3(color) {
+return {
+	'border-color' : color,
+}
+}
+function Qcolor4(color,text) {
+	if(!options.coloredtext) {
+		return text
+	} else {
+		return `<span style='color:${color}'>" +c + "</span>`
+	}
+}
+
+ /** 
+*Perform an Meta-research reset (very obvious)
+**/
+function MRreset() {
+	player.al.x = new Decimal(0)
+	player.al.deltax = new Decimal(0)
+if(!player.g.sacrificeactive[3].gte(1)) {
+	player.al.extension = player.al.extension.add(player.al.extensiongain)
+	player.al.points = player.al.points.times(0)
+	player.al.upgrades.filter(x => x>60)
+	
+		for (let i = 0 ; i < 12 ; i++) {
+			let j = i % 4 + 1
+			let k = Math.floor(i / 4) * 10 + 10
+			let l = j + k 
+			player.al.buyables[l] = new Decimal(0)
+		}
+  
+	//reset algebra (extension phase)
+	player.al.extension = new Decimal(0)
+	player.al.operation = new Decimal(0)    
+	}
+	for (let i = 0; i < player.r.milestones.length; i++) {
+		
+		player.r.milestones.splice(i, 1);
+		i--;
+	
+}
+	player.al.resetcooldown = new Decimal(4)
+
+	//reset Research
+	player.r.points = new Decimal(0)
+	if(!hasMilestone('g',1)) {
+	buyBuyable('r',11)
+	}
+	if(!hasMilestone('g',2)) {
+	player.r.prestigetime = new Decimal(0)
+	}
+	doReset('r',true)
+}
+/** 
+*Add an achievement (obviously)
+**/
+function addAchievement(layer , id) {
+	if(hasAchievement(layer , id)) return 
+ 	player[layer].achievements = [... new Set(player[layer].achievements.concat(String(id)))]
+	doPopup("achievement", tmp[layer].achievements[id].name, "Achievement reached", 3, tmp[layer].color)
 }

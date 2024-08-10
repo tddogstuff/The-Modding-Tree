@@ -1,12 +1,16 @@
 var player;
 var needCanvasUpdate = true;
+var backgroundHeatUpdate = true;
+var playTimeUpdate = true;
 
 // Don't change this
 const TMT_VERSION = {
 	tmtNum: "2.6.6.2",
 	tmtName: "Fixed Reality"
 }
-
+/** 
+* Retrieve how much resources gain in a reset
+**/
 function getResetGain(layer, useType = null) {
 	let type = useType
 	if (!useType){ 
@@ -34,7 +38,9 @@ function getResetGain(layer, useType = null) {
 		return decimalZero
 	}
 }
-
+/** 
+* Calculate the amount of prior resource to gain 1 of that resource
+**/
 function getNextAt(layer, canMax=false, useType = null) {
 	let type = useType
 	if (!useType) {
@@ -58,7 +64,7 @@ function getNextAt(layer, canMax=false, useType = null) {
 		if (tmp[layer].roundUpCost) cost = cost.ceil()
 		return cost;
 	} else if (type=="normal"){
-		let next = tmp[layer].resetGain.add(1).div(tmp[layer].directMult)
+		let next = new Decimal(tmp[layer].resetGain).add(1).div(tmp[layer].directMult)
 		if (next.gte(tmp[layer].softcap)) next = next.div(tmp[layer].softcap.pow(decimalOne.sub(tmp[layer].softcapPower))).pow(decimalOne.div(tmp[layer].softcapPower))
 		next = next.root(tmp[layer].gainExp).div(tmp[layer].gainMult).root(tmp[layer].exponent).times(tmp[layer].requires).max(tmp[layer].requires)
 		if (tmp[layer].roundUpCost) next = next.ceil()
@@ -68,24 +74,29 @@ function getNextAt(layer, canMax=false, useType = null) {
 	} else {
 		return decimalZero
 	}}
-
+/** 
+* Normal softcap 
+**/
 function softcap(value, cap, power ) {
 	if (value.lte(cap)) return value
 	else
-		return value.pow(power).times(cap.pow(decimalOne.sub(power)))
+		return value.pow(power).times(new Decimal(cap).pow(decimalOne.sub(power)))
 }
+/** 
+* Exponental softcap
+**/
 function softcap2(value , cap , power) {
 	if (value.lte(cap)) return value
 	else 
 		return cap.times(new Decimal(10).pow(value.div(cap.max(1)).max(1).log(10).pow(power)))
 }
-
-// Return true if the layer should be highlighted. By default checks for upgrades only.
-function shouldNotify(layer){
+// Return true if the layer should be highlighted. By default checks for upgrades only
+function shouldNotify(layer) {
 	for (id in tmp[layer].upgrades){
 		if (isPlainObject(layers[layer].upgrades[id])){
 			if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
-				return true
+				if(layer === 't' && (id === '42' || id === '43')) return false
+				else return true
 			}
 		}
 	}
@@ -105,6 +116,7 @@ function shouldNotify(layer){
 			}
 		}
 	}
+
 
 	for (family in tmp[layer].microtabs) {
 		for (subtab in tmp[layer].microtabs[family]){
@@ -141,7 +153,9 @@ function rowReset(row, layer) {
 			if(tmp[layer].row > tmp[lr].row && !isNaN(row)) layerDataReset(lr)
 	}
 }
-
+/** 
+* Reset the layer data , like buyables/clickables/challenge/upgrades , etc
+**/
 function layerDataReset(layer, keep = []) {
 	let storedData = {unlocked: player[layer].unlocked, forceTooltip: player[layer].forceTooltip, noRespecConfirm: player[layer].noRespecConfirm, prevTab:player[layer].prevTab} // Always keep these
 
@@ -175,6 +189,10 @@ function addPoints(layer, gain) {
 
 function generatePoints(layer, diff) {
 	addPoints(layer, tmp[layer].resetGain.times(diff).times(tmp[layer].passiveGeneration))
+}
+//return the amount of resource generated in a second
+function generateAmount(layer) {
+	return new Decimal(tmp[layer].resetGain).times(tmp[layer].passiveGeneration)
 }
 
 function doReset(layer, force=false) {
@@ -261,6 +279,7 @@ function startChallenge(layer, x) {
 		run(layers[layer].challenges[x].onEnter, layers[layer].challenges[x])
 	}
 	updateChallengeTemp(layer)
+	player.points = getStartPoints()
 }
 
 function canCompleteChallenge(layer, x)
@@ -376,38 +395,75 @@ function gameLoop(diff) {
 	}
 
 }
-function hardReset(resetOptions) {
-	if (!confirm("Are you sure you want to do this? You will lose all your progress!")) return
+function HardReset() {
+	if(!hasAchievement('ac',1014)) {
+		showModal("Do you want to hard reset , type exactly 'I AM WILLING TO DELETE MY SAVE' (case-sensitive)","",{ textBox: true , confirmButton: true , textColor: "green"} , hardReset)
+	} else {
+		showModal("DO you really want to HARD RESET for real , no more jokes . Carefully type exactly 'I AM WILLING TO DELETE MY SAVE' (case-sensitive)","",{ textBox: true , confirmButton: true , textColor: "red"} , hardReset)
+	}
+}
+function hardReset(resetOptions,forced) {
+	if(forced) {
+		player = null
+		save(true);
+		window.location.reload()
+	}
+	if(modal.textBox.value === 'I AM WILLING TO DELETE MY SAVE' && !hasAchievement('ac',1014)) {
+		addAchievement('ac',1014)
+		return
+	}
+	if(modal.textBox.value !== 'I AM WILLING TO DELETE MY SAVE' && hasAchievement('ac',1014)) {
+		return
+	}
 	player = null
-	if(resetOptions) options = null
 	save(true);
 	window.location.reload();
 }
 
 var ticking = false
+//Performance test
+var pastTickTimes = []
+
 
 var interval = setInterval(function() {
 	if (player===undefined||tmp===undefined) return;
 	if (ticking) return;
 	if (tmp.gameEnded&&!player.keepGoing) return;
 	ticking = true
+	if(options.autoshift && !shiftDown) shiftDown = true
 	let now = Date.now()
 	let diff = (now - player.time) / 1000
-	let trueDiff = diff
+	let trueDiff = shiftDown?diff * 10:diff
+	if(!options.popup) trueDiff = trueDiff * 1000000
 	if (player.offTime !== undefined) {
-		if (player.offTime.remain > (modInfo.offlineLimit * 7200)) player.offTime.remain = (modInfo.offlineLimit * 7200)
+		if (player.offTime.remain > (modInfo.offlineLimit * 3600)) player.offTime.remain = modInfo.offlineLimit * 3600
 		if (player.offTime.remain > 0) {
-			let offlineDiff = Math.max(player.offTime.remain / 10, diff)
+			let offlineDiff = shiftDown?Math.max(player.offTime.remain / 2 , diff):Math.max(player.offTime.remain / 10, diff)
 			player.offTime.remain -= offlineDiff
-			player.o.rerolltime = player.o.rerolltime.sub(offlineDiff)
 			player.o.time = player.o.time.add(offlineDiff)
 
 		}
 		if (!options.offlineProd || player.offTime.remain <= 0) player.offTime = undefined
 	}
 	player.time = now
-	if (needCanvasUpdate){ resizeCanvas();
+	if (needCanvasUpdate){ 
+		resizeCanvas();
 		needCanvasUpdate = false;
+	}
+	if (backgroundHeatUpdate) {
+		backgroundHeat();
+		backgroundHeatUpdate = false;
+	}
+	if(playTimeUpdate) {
+		if(options.DD === "None") {
+			document.title = modInfo.name
+		} else {
+			document.title = modInfo.name+" | "+updateDDdisplay()
+		}
+		playTimeUpdate = false
+	}
+	if (!options.flashingWarned && player.o.heat.div(player.o.maxHeat).gte(0.5)) {
+		flashingWarned()
 	}
 	tmp.scrolled = document.getElementById('treeTab') && document.getElementById('treeTab').scrollTop > 30
 	updateTemp();
@@ -418,7 +474,10 @@ var interval = setInterval(function() {
 	fixNaNs()
 	adjustPopupTime(trueDiff)
 	updateParticles(trueDiff)
+	pastTickTimes = [Date.now() - now].concat(pastTickTimes.slice(0, 9))
 	ticking = false
 }, 50)
 
 setInterval(function() {needCanvasUpdate = true}, 500)
+setInterval(function() {backgroundHeatUpdate = true} , 1000)
+setInterval(function() {playTimeUpdate = true}, 400);

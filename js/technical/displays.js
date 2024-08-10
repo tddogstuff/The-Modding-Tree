@@ -32,7 +32,7 @@ function challengeStyle(layer, id) {
 }
 
 function challengeButtonText(layer, id) {
-    return (player[layer].activeChallenge==(id)?(canCompleteChallenge(layer, id)?"Finish":"Exit Early"):(hasChallenge(layer, id)?"Completed":"Start"))
+    return (player[layer].activeChallenge==(id)?(canCompleteChallenge(layer, id)?"Complete":"Exit"):(hasChallenge(layer, id)?"Start":"Start"))
 
 }
 
@@ -46,7 +46,39 @@ function achievementStyle(layer, id){
     style.push(ach.style)
     return style
 }
-
+function achievementTooltipStyle(layer, id){
+    ach = tmp[layer].achievements[id]
+	let style = []
+    style.push(ach.ttStyle)
+    return style
+}
+function upgradeTooltipStyle(layer, id) {
+	upg = tmp[layer].upgrades[id]
+	let style = []
+	if(upg.ttStyle === undefined) {
+	style.push(tmp[layer].ttStyle)
+	} 
+	style.push(upg.ttStyle)
+	return style
+}
+function buyableTooltipStyle(layer, id) {
+	bb = tmp[layer].buyables[id]
+	let style = []
+	if(bb.ttStyle === undefined) {
+		if(layer === 'n') {
+			style.push({
+                    "width":"250px",
+                    "border":"2px solid",
+                    "border-color":"aqua",
+					"color":"aqua",
+                })
+			return style
+		}
+	style.push(tmp[layer].ttStyle)
+	}
+	style.push(bb.ttStyle)
+	return style
+}
 
 
 function updateWidth() {

@@ -1,5 +1,5 @@
 var layoutInfo = {
-    startTab: "none",
+    startTab: "p",
     startNavTab: "tree-tab",
 	showTree: true,
 
@@ -14,7 +14,6 @@ addNode("blank", {
     layerShown: "ghost",
 }, 
 )
-
 
 addLayer("tree-tab", {
     tabFormat: [["tree", function() {return (layoutInfo.treeLayout ? layoutInfo.treeLayout : TREE_LAYERS)}]],

@@ -45,8 +45,41 @@ function changeTheme() {
 function getThemeName() {
 	return "CANNOT BE CHANGED"
 }
-// Did anyone actually switch
 function switchTheme() {
 	changeTheme();
 	resizeCanvas();
+}
+
+function backgroundHeat() {
+    const heatRatio = toNumber(player.o.heat.div(player.o.maxHeat));
+ // Set CSS attribute to Black if false
+  if (heatRatio <= 0.5 || options.noHeatColor) {
+	document.body.style.setProperty('--background', `black`);
+	return;
+   }	    
+// Calculate alpha/opacity
+  const opacity = Math.min(0.75, Math.max(0, 0.25 + 1 * (heatRatio - 0.5)));
+  let edgeSize = Math.max(0, Math.min(50, 50 - (Math.max(0, heatRatio - 0.5)) * 100));
+
+
+  const gradientCSS = `
+	  radial-gradient(
+		  ellipse at center,
+		  black ${edgeSize}%,
+		  rgba(255, 128, 0, ${opacity}) 100%
+	  ),
+	  linear-gradient(
+		  to right,
+		  black ${edgeSize}%,
+		  rgba(255, 128, 0, ${opacity}) 100%
+	  ),
+	  linear-gradient(
+		  to bottom,
+		  black ${edgeSize}%,
+		  rgba(255, 128, 0, ${opacity}) 100%
+	  )
+  `;
+  
+  document.body.style.setProperty('--background', gradientCSS);
+
 }

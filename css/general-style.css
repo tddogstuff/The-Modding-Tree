@@ -5,13 +5,13 @@ body {
 	--background: #0f0f0f;
 	--color: #dfdfdf;
 	--points: #ffffff;
-	background: var(--background)
+	background: var(--background);
 }
 
 /* General text */
 h1, h2, h3, b, input {
 	display: inline;
-	font-family: "Lucida Console", "Courier New", monospace
+	font-family: "Lucida Console", "Courier New", "monospace";
 }
 
 /* These are styles for different states of components. You can make layer-specific versions with .c.locked, for example */
@@ -20,7 +20,7 @@ h1, h2, h3, b, input {
 	cursor: not-allowed;
 }
 
-/* Can meens can be clicked/bought/etc */
+/*can be clicked/bought/etc */
 .can {
 	cursor: pointer;
 }
@@ -34,8 +34,75 @@ h1, h2, h3, b, input {
 	background-color: #77bf5f;
 	cursor: default;
 }
-
+.charge {
+	background-color: gold;
+	cursor: default;
+}
 #points {
 	color: var(--points);
 	text-shadow: 0 0 10px var(--points);
 }
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100000; /* it is just to be displayed first */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+	color: red;
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 10px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.modal-textbox, .modal-confirm {
+	display: none;
+  }
+  .modal-textbox {
+	font-size: 20px;
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	background-color: #f8f8f8;
+	resize: none;
+  }
+  
+  .modal-confirm {
+	z-index: 100002;
+	background-color: #4CAF50;
+	font-size: 28px;
+	color: white;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	float: right; 
+  }

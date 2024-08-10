@@ -1,18 +1,56 @@
 
-function exponentialFormat(num, precision, mantissa = true) {
+
+function exponentialFormat(num, precision, mantissa = true , mantissaPrecision = 2) {
     let e = num.log10().floor()
     let m = num.div(Decimal.pow(10, e))
     if (m.toStringWithDecimalPlaces(precision) == 10) {
         m = decimalOne
         e = e.add(1)
     }
-    e = (e.gte(1e9) ? format(e, 3) : (e.gte(10000) ? commaFormat(e, 0) : e.toStringWithDecimalPlaces(0)))
-    if (mantissa)
-        return m.toStringWithDecimalPlaces(precision) + "e" + e
+    e = (e.gte(1e9) ? format(e, 3) : (e.gte(1000) ? format(e, precision , 0) : e.toStringWithDecimalPlaces(precision)))
+    if (mantissa && options.unit !== "Logarithm")
+        return m.toStringWithDecimalPlaces(mantissaPrecision) + "e" + e
     else return "e" + e
 }
 
-function commaFormat(num, precision) {
+function logFormat(num , precision = 2) {
+    if(num.lt(1000)) return format(num , precision , true , 0)
+    let e = num.log10()
+    let m = num.div(Decimal.pow(10, e))
+    if (m.toStringWithDecimalPlaces(precision) == 10) {
+        m = decimalOne
+        e = e.add(1)
+    }
+    e = (e.gte(1e9) ? format(e, 3) : (e.gte(1000) ? format(e, precision , 100) : e.toStringWithDecimalPlaces(precision)))
+    return "e" + e
+
+}
+function infinityFormat(num , precision = 4) {
+    if(num.lt(1000) && num.gte("0.001")) return format(num , precision , true ,0)
+    if(num.eq(0)) return "0"
+    let sign = 1 
+    if(num.lt("0.001")) sign = -1
+    if(num.lt("0.001")) num = invertOOM(num)
+    let power = 0
+    let symbol = "∞"
+    let a = ""
+    while (num.gte(d(2).pow(1024))) {
+        num = num.log(2).div("1024")
+        power++
+    }
+    if(sign === -1) a = "1/"
+    power = power * sign
+    if(power !== 1) symbol = "∞^"+power
+    if(power === 0) symbol = ""
+    if(num.lt(1024)) num = regularFormat(num ,precision)
+    else if(num.lt("1e9")) num = commaFormat(num)
+    else num = exponentialFormat(num)
+    if (sign === 1) return num+""+symbol
+    else if (sign === -1 && power === 0) return "(1/"+num+")"
+    else if (sign === -1 && power !== 0) return num+""+symbol
+}
+
+function commaFormat(num, precision = 2) {
     if (num === null || num === undefined) return "NaN"
     if (num.mag < 0.001) return (0).toFixed(precision)
     let init = num.toStringWithDecimalPlaces(precision)
@@ -23,7 +61,7 @@ function commaFormat(num, precision) {
 }
 
 
-function regularFormat(num, precision) {
+function regularFormat(num, precision = 2) {
     if (num === null || num === undefined) return "NaN"
     if (num.mag < 0.0001) return (0).toFixed(precision)
     if (num.mag < 0.1 && precision !==0) precision = Math.max(precision, 4)
@@ -40,7 +78,10 @@ function sumValues(x) {
     return x.reduce((a, b) => Decimal.add(a, b))
 }
 
-function format(decimal, precision = 2, small) {
+/**
+ *Format the number (order is to prevent infinite loops)
+*/
+function format(decimal, precision = 2, small , order = 100) {
     small = true
     decimal = new Decimal(decimal)
     if (isNaN(decimal.sign) || isNaN(decimal.layer) || isNaN(decimal.mag)) {
@@ -54,36 +95,39 @@ function format(decimal, precision = 2, small) {
         if (slog.gte(1e6)) return "F" + format(slog.floor())
         else return Decimal.pow(10, slog.sub(slog.floor())).toStringWithDecimalPlaces(3) + "F" + commaFormat(slog.floor(), 0)
     }
-    else if (decimal.gte("1e1000000")) return exponentialFormat(decimal, 0, false)
+    else if (options.unit === "Blind") return ""
+    else if (options.unit === "Infinity" && order === 100) return infinityFormat(decimal , precision)
+    else if (options.unit === "Logarithm" && order === 100) return logFormat(decimal , 2)
+    else if (decimal.gte("1e1000000")) return exponentialFormat(decimal, 0 , false)
     else if (decimal.gte("1e10000")) return exponentialFormat(decimal, 0)
-    else if (decimal.gte(1e100) && options.mixedsci) return exponentialFormat(decimal, precision)
-    else if (decimal.gte(1e9) && !options.mixedsci) return exponentialFormat(decimal, precision)
-    else if (decimal.gte(1e3) && options.mixedsci) return MixedSciformat(decimal)
-    else if (decimal.gte(1e3) && !options.mixedsci) return commaFormat(decimal, 0)
-    else if (decimal.gte(0.0001) || !small) return regularFormat(decimal, precision)
+    else if (decimal.gte(1e9) && order === 0) return exponentialFormat(decimal, 0)
+    else if (decimal.gte(1e3) && order === 0) return commaFormat(decimal, 0)
+    else if (decimal.gte(1e123) && options.unit === "Mixed scientific") return exponentialFormat(decimal, 0)
+    else if (decimal.gte(1e9) && options.unit === "Scientific") return exponentialFormat(decimal, 0)
+    else if (decimal.gte(1e3) && options.unit === "Mixed scientific") return MixedSciformat(decimal)
+    else if (decimal.gte(1e3) && options.unit === "Scientific") return commaFormat(decimal, 0)
+    else if ((decimal.lte(1e3) && decimal.gte("0.001")) || !small) return regularFormat(decimal, precision)
     else if (decimal.eq(0)) return (0).toFixed(precision)
 
-    decimal = invertOOM(decimal)
-    let val = ""
-    if (decimal.lt("1e1000")){
-        val = exponentialFormat(decimal, precision)
-        return val.replace(/([^(?:e|F)]*)$/, '-$1')
-    }
-    else   
-        return format(decimal, precision) + "⁻¹"
+    else if (decimal.lt("0.001")) return "(1/"+format(invertOOM(decimal), precision , true , 100) + ")"
 
 }
-
-function formatWhole(decimal) {
+/** 
+*format , but without fractional content
+**/
+function formatWhole(decimal , order = 100) {
     decimal = new Decimal(decimal)
-    if (decimal.gte(1e9)) return format(decimal, 2)
-    if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 2)
-    return format(decimal, 0)
+    if (decimal.gte(1e9)) return format(decimal, 2 , true , 10)
+    if (decimal.lte(0.99) && !decimal.eq(0)) return format(decimal, 2 , true , 10)
+    return format(decimal, 0 , true , 0)
 }
 
+/** 
+*Time formatting , convert a number to time (in second) and convert them
+**/
 function formatTime(s) {
     if (s < 60) return format(s) + "s"
-    else if (s < 3600) return formatWhole(Math.floor(s / 60)) + "m " + format(Math.floor(s % 60)) + "s"
+    else if (s < 3600) return formatWhole(Math.floor(s / 60)) + "m " + format(Math.floor(s % 60),0) + "s"
     else if (s < 86400) return formatWhole(Math.floor(s / 3600)) + "h " + formatWhole(Math.floor(s / 60) % 60) + "m " + format(s % 60,0) + "s"
     else if (s < 31536000) return formatWhole(Math.floor(s / 86400) % 365) + "d " + formatWhole(Math.floor(s / 3600) % 24) + "h " + formatWhole(Math.floor(s / 60) % 60) + "m " + format(s % 60,0) + "s"
     else if (s < 3153600000) return formatWhole(Math.floor(s / 31536000)) + "y " + formatWhole(Math.floor(s / 86400) % 365) + "d"
@@ -98,6 +142,9 @@ function toPlaces(x, precision, maxAccepted) {
     }
     return result
 }
+/** 
+*Convert a number into roman
+**/
 function convertToRoman(num) {
     const romanNumerals = [
       { value: 1000, symbol: 'M' },
@@ -126,28 +173,39 @@ function convertToRoman(num) {
   
     return romanNumeral
   }
+/** 
+*Mixed scientific notation , ranging from 1k to 1Nt
+**/
   function MixedSciformat(num) {
     num = new Decimal(num)
+    if(num.gte("1e123")) return 
     const units = {
-      "DT": new Decimal("1e99"),
-      "UT": new Decimal("1e96"),
+      "Nt": new Decimal("1e120"),
+      "Ot": new Decimal("1e117"),
+      "Spt": new Decimal("1e114"),
+      "Sxt": new Decimal("1e111"),
+      "Qit": new Decimal("1e108"),
+      "Qat": new Decimal("1e105"),
+      "Tt": new Decimal("1e102"),
+      "Dt": new Decimal("1e99"),
+      "Ut": new Decimal("1e96"),
       "Tg": new Decimal("1e93"),
-      "NV": new Decimal("1e90"),
-      "OV": new Decimal("1e87"),
-      "SpV": new Decimal("1e84"),
-      "SxV": new Decimal("1e81"),
-      "QiV": new Decimal("1e78"),
-      "QaV": new Decimal("1e75"),
-      "TV": new Decimal("1e72"),
-      "DV": new Decimal("1e69"),
-      "UV": new Decimal("1e66"),
+      "Nv": new Decimal("1e90"),
+      "Ov": new Decimal("1e87"),
+      "Spv": new Decimal("1e84"),
+      "Sxv": new Decimal("1e81"),
+      "Qiv": new Decimal("1e78"),
+      "Qav": new Decimal("1e75"),
+      "Tv": new Decimal("1e72"),
+      "Dv": new Decimal("1e69"),
+      "Uv": new Decimal("1e66"),
       "V": new Decimal("1e63"),
-      "ND": new Decimal("1e60"),
-      "OD": new Decimal("1e57"),
-      "SpD": new Decimal("1e54"),
-      "SxD": new Decimal("1e51"),
-      "QiD": new Decimal("1e48"),
-      "QaD": new Decimal("1e45"),
+      "Nd": new Decimal("1e60"),
+      "Od": new Decimal("1e57"),
+      "Spd": new Decimal("1e54"),
+      "Sxd": new Decimal("1e51"),
+      "Qid": new Decimal("1e48"),
+      "Qad": new Decimal("1e45"),
       "Td": new Decimal("1e42"),
       "Dd": new Decimal("1e39"),
       "Ud": new Decimal("1e36"),

@@ -49,7 +49,7 @@ var systemComponents = {
 			v-bind:style="constructNodeStyle(layer)">
 			<span class="nodeLabel" v-html="(abb !== '' && tmp[layer].image === undefined) ? abb : '&nbsp;'"></span>
 			<tooltip
-      v-if="tmp[layer].tooltip != ''"
+      v-if="tmp[layer].tooltip != ''" v-bind:style="tmp[layer].ttStyle"
 			:text="(tmp[layer].isLayer) ? (
 				player[layer].unlocked ? (tmp[layer].tooltip ? tmp[layer].tooltip : formatWhole(player[layer].points) + ' ' + tmp[layer].resource)
 				: (tmp[layer].tooltipLocked ? tmp[layer].tooltipLocked : 'Reach ' + formatWhole(tmp[layer].requires) + ' ' + tmp[layer].baseResource + ' to unlock (You have ' + formatWhole(tmp[layer].baseAmount) + ' ' + tmp[layer].baseResource + ')')
@@ -105,18 +105,19 @@ var systemComponents = {
 	'overlay-head': {
 		template: `			
 		<div class="overlayThing" style="padding-bottom:7px; width: 90%; z-index: 1000; position: relative">
-		<span v-if="player.devSpeed && player.devSpeed != 1" class="overlayThing">
-			<br>Dev Speed: {{format(player.devSpeed)}}x<br>
 		</span>
 		<span v-if="player.offTime !== undefined"  class="overlayThing">
-			<br>Offline Time: {{formatTime(player.offTime.remain)}}<br>
+			<br>Offline Time: {{formatTime(player.offTime.remain)}} (Hold [shift] to speed up)<br>
 		</span>
 		<br>
-		<span v-if="player.points.lt('1e1000')"  class="overlayThing">You have </span>
-		<h2  class="overlayThing" id="points">{{format(player.points)}}</h2>
+		<span v-if="player.points.lt('1e1000') && !inChallenge('e',13)"  class="overlayThing">You have </span>
+		<span v-if="inChallenge('e',13)"  class="overlayThing"> You gain </span>
+		<h2 v-if="!inChallenge('e',13)" class="overlayThing" id="points">{{format(player.points)}}</h2>
+		<h2 v-if="inChallenge('e',13)" class="overlayThing" id="points">{{format(getPointGen())}}</h2>
 		<span v-if="player.points.lt('1e1e6')"  class="overlayThing"> {{modInfo.pointsName}}</span>
+		<span v-if="inChallenge('e',13)"  class="overlayThing"> per second </span>
 		<br>
-		<span v-if="canGenPoints()"  class="overlayThing">({{tmp.other.oompsMag != 0 ? format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s" : formatSmall(getPointGen())}}/sec)</span>
+		<span v-if="canGenPoints() && !inChallenge('e',13)"  class="overlayThing">({{tmp.other.oompsMag != 0 ? format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s" : formatSmall(getPointGen())}}/sec)</span>
 		<div v-for="thing in tmp.displayThings" class="overlayThing"><span v-if="thing" v-html="thing"></span></div>
 	</div>
 	`
@@ -141,7 +142,7 @@ var systemComponents = {
         <span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
         <a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
 		<br><br>
-        Time Played: {{ formatTime(player.timePlayed) }}<br><br>
+        Real time played : {{ formatTime(player.timePlayed) }}<br><br>
         <h3>Hotkeys</h3><br>
         <span v-for="key in hotkeys" v-if="player[key.layer].unlocked && tmp[key.layer].hotkeys[key.id].unlocked"><br>{{key.description}}</span></div>
     `
@@ -153,30 +154,28 @@ var systemComponents = {
             <tr>
                 <td><button class="opt" onclick="save()">Save</button></td>
                 <td><button class="opt" onclick="toggleOpt('autosave')">Autosave: {{ options.autosave?"ON":"OFF" }}</button></td>
-                <td><button class="opt" onclick="hardReset()">HARD RESET</button></td>
+                <td><button class="opt" onclick="HardReset()">HARD RESET</button></td>
+				<td><button class="opt" onclick="exportSave()">Export to clipboard</button></td>
+                <td><button class="opt" onclick="ImportSave()">Import save</button></td>
             </tr>
             <tr>
-                <td><button class="opt" onclick="exportSave()">Export to clipboard</button></td>
-                <td><button class="opt" onclick="importSave()">Import</button></td>
-                <td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod: {{ options.offlineProd?"ON":"OFF" }}</button></td>
-            </tr>
-            <tr>
-                <td><button class="opt" onclick="switchTheme()">Theme: {{ getThemeName() }}</button></td>
                 <td><button class="opt" onclick="adjustMSDisp()">Show Milestones: {{ MS_DISPLAYS[MS_SETTINGS.indexOf(options.msDisplay)]}}</button></td>
                 <td><button class="opt" onclick="toggleOpt('hqTree')">High-Quality Tree: {{ options.hqTree?"ON":"OFF" }}</button></td>
-            </tr>
-            <tr>
-                <td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: {{ options.hideChallenges?"HIDDEN":"SHOWN" }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: {{ options.hideChallenges?"HIDDEN":"SHOWN" }}</button></td>
                 <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: {{ options.forceOneTab?"ALWAYS":"AUTO" }}</button></td>
 				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
-			</tr> 
-				<td><button class="opt" onclick="earlyskip()">Skip to End of Grad 1</button></td>
-				<td><button class="opt" onclick="betatest()">Beta test : {{options.betatest?"TRUE":"FALSE"}}</button></td>
-				<td><button class="opt" onclick="mixedsci()">Mixed scientific : {{options.mixedsci?"TRUE":"FALSE"}}</button></td>
+            </tr>
+			<tr>
+				<td><button class="opt" onclick="unit()">Notation: {{ options.unit}}</button></td>
+				<td><button class="opt" onclick="gamepaused()">Pause game : {{options.gamepaused?"TRUE":"FALSE"}}</button></td>
+				<td><button class="opt" onclick="coloredtext()">Colored text : {{options.coloredtext?"TRUE":"FALSE"}}</button></td>
+				<td><button class="opt" onclick="autoshift()">Always shift : {{options.autoshift?"ON":"OFF"}}</button></td>
+				<td><button class="opt" onclick="popup1()">Show popup : {{options.popup?"TRUE":"FALSE"}}</button></td>
 			</tr>
-			<tr> 
-				<td><button class="opt" onclick="hidemastery()">Hide mastery : {{options.hidemastery?"TRUE":"FALSE"}}</button></td>
-
+				<td><button class="opt" onclick="DD()">Additional display : {{options.DD}}</button></td>
+				<td><button class="opt" onclick="subCurrency()">Display layer sub-currency  : {{options.subCurrency?"ON":"OFF"}}</button></td>
+				<td><button class="opt" onclick="heatPercentage()">Heat display : {{options.heatPercentage?"Percentage":"Numeric"}}</button></td>
+				<td><button class="opt" onclick="noHeatColor()">Background Heat color : {{options.noHeatColor?"OFF":"ON"}}</button></td>
 
 
         </table>`
@@ -194,7 +193,6 @@ var systemComponents = {
 		template: `<div class="tooltip" v-html="text"></div>
 		`
 	},
-
 	'node-mark': {
 		props: {'layer': {}, data: {}, offset: {default: 0}, scale: {default: 1}},
 		template: `<div v-if='data'>
