@@ -3095,7 +3095,7 @@ calc61: {
         unlocked() { return true },
         content: [
         ["raw-html", function () { return "<h3>Base : +1"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasAchievement('ac',141)?"<h3> "+tmp.ac.achievements[141].name+" achievement : +"+player.r.mastery.div(40000).floor()+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return hasAchievement('ac',141)?"<h3> "+tmp.ac.achievements[141].name+" achievement : +"+format(player.r.mastery.div(100000).floor().min(1))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.tetration.gte(23)?"<h3> 23 Tetration reward : +2 then x1.5":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Graduate multiplier : x"+format(buyableEffect('n',91).times(buyableEffect('n',92)).times(buyableEffect('n',93)))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank","25px"],

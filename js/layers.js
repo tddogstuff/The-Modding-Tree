@@ -2882,7 +2882,7 @@ addLayer("ac", {
         141: {
             name: "A brutal world I",
             done() {return (player.g.SacrificeUnlock[0]).gte(1)},
-            tooltip() {return "Unlock the first sacrifice (S1) <br> On reset , gain 1 extra Graduate per "+format(40000)+" Mastery" },
+            tooltip() {return "Unlock the first sacrifice (S1) <br> On reset , gain 1 extra Graduate above "+f(d("e5"))+" Mastery" },
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')

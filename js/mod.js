@@ -23,6 +23,7 @@ let changelog = `<h1>Changelog:</h1><br>
 	*** Balancing changes : <br>
 	- Capped Tetration cost II upgrade effect to -400 raw Tetration <br>
 	- S4 requirement is decreased (1e1000 Operation => 1e850) <br>
+	- Achievement 141 "A brutal world" give a static +1 conditional Graduate instead <br>
 	*** Fixed : <br>
 	- Fixed Graduation milestone 1 and 2 not working <br>
 	*** Others : <br>

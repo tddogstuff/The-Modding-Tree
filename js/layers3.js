@@ -111,7 +111,7 @@ addLayer("g", {
         rank2: {
             title: "Graduation Rank II reward",
             body() { 
-                return ""+Qcolor2('d','Rank II requirement')+" : Graduate for the first time <br> - "+Qcolor2('la','NEW :')+" Unlock a new tab in "+Qcolor2('n','Number')+" <br> - "+Qcolor2('la','NEW :')+" Unlock a new "+Qcolor2('n','Number')+" main currency : "+Qcolor2('n','Bits')+" <br> - "+Qcolor2('ds','???')+" : ??? <br> "+Qcolor2('la',"MORE FEATURE")+" : new upgrade , new buyables that cost "+Qcolor2('n',"Bits")+" <br> "+Qcolor2('a','Rank 2 Reward')+" : Exponent now have +1 additional effect <br> "+Qcolor2('a','Rank 2 Reward')+" : Unlock 1 more Energy buyable and unlock additional tetration reward <br> "+Qcolor2('a','Achievement :')+" 1 more page <br> "+Qcolor2('s','Early game nerf:')+" Points gained and Tickspeed is ^0 , this is increased linearly over 20 minutes <br>"  },
+                return ""+Qcolor2('d','Rank II requirement')+" : Graduate for the first time <br> - "+Qcolor2('la','NEW :')+" Unlock a new tab in "+Qcolor2('n','Number')+" <br> - "+Qcolor2('la','NEW :')+" Unlock a new "+Qcolor2('n','Number')+" main currency : "+Qcolor2('n','Bits')+" <br> - "+Qcolor2('ds','???')+" : You will occasionally recieve hints throughout the structural of this Graduation <br> "+Qcolor2('la',"MORE FEATURE")+" : new upgrade , new buyables that cost "+Qcolor2('n',"Bits")+" <br> "+Qcolor2('a','Rank 2 Reward')+" : Exponent now have +1 additional effect <br> "+Qcolor2('a','Rank 2 Reward')+" : Unlock 1 more Energy buyable and unlock additional tetration reward <br> "+Qcolor2('a','Achievement :')+" 1 more page <br> "+Qcolor2('s','Early game nerf:')+" Points gained and Tickspeed is ^0 , this is increased linearly over 20 minutes <br>"  },
             unlocked() {return true}
         }
     },
@@ -352,7 +352,20 @@ addLayer("g", {
             title() { return "Further explore" },
             canClick() { return player.points.gt("1e10000")},
             unlocked() { return player.g.sacrificeactive[3].gte(1) },
-            tooltip() {return "Require : 1e10,000 Points" },
+            tooltip() {
+                let text = ""
+                let level = player.g.s4best
+                if(level.eq(1)) text = "Exploring depth 2 <br> Going further into the altar , a deep feelings wonder you , was it worth it? "
+                return "Require : "+f(d("e10000"))+" Points <br>"+text 
+            },
+            ttStyle() {
+            return {
+                "width":"300px",
+                "border":"2px solid",
+                "border-color":"red",
+                "color":"red",
+             }
+            },
             onClick() {
             if (!confirm("Do you wish to further explore Altered realm . This action will restart your current Graduation")) return
             player.g.s4best = player.g.s4best.add(1)
@@ -369,6 +382,14 @@ addLayer("g", {
             canClick() { return player.g.s4best.gte(2)},
             unlocked() { return player.g.sacrificeactive[3].gte(1) },
             tooltip() {return "Require : If you really want to"},
+            ttStyle() {
+                return {
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"white",
+                    "color":"white",
+                 }
+                },
             onClick() {
             if (!confirm("Do you want to retreat from Altered realm . This action will restart your current Graduation")) return
             player.g.s4best = player.g.s4best.sub(1)
@@ -409,7 +430,7 @@ addLayer("g", {
             },
             effect() {
                 let base = d(1)
-                if(hasAchievement('ac',141)) base = base.add(player.r.mastery.div(40000).floor())
+                if(hasAchievement('ac',141)) base = base.add(player.r.mastery.div(100000).floor().min(1))
                 if(player.r.tetration.gte(23)) base = base.add(2).times(1.5)
                 if(hasUpgrade('n',74)) base = base.times(buyableEffect('n',91)).times(buyableEffect('n',92)).times(buyableEffect('n',93))
                 return base.floor()
@@ -423,7 +444,18 @@ addLayer("g", {
             title() {
              return "Get a new Orb"
             } ,
-            tooltip() { return player.g.g1?"Get a new orb <br> Always have an quality of 50% <br> Always contains : x1.073 Effective Exponent and ^1.118 Number gain":"Replace your current orb with a randomly chosen orb" },
+            tooltip() { 
+                return player.g.g1?"Get a new orb <br> Always have an quality of 50% <br> Always contains : x1.073 Effective Exponent and ^1.118 Number gain"
+                :"Replace your current orb <br> <i> These orbs are remnants of a primordial force that once existed in balance of the realms . Their light is said to restore harmony , powering one's ability to do simple work efficiently" 
+            },
+            ttStyle() {
+                return {
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"white",
+					"color":"white",
+                }
+            },
             canAfford() { return player.g.points.gte(player.g.costMultiplier) },
             unlocked() {return true},
             buy() {
@@ -458,7 +490,17 @@ addLayer("g", {
             title() {
              return "Get a new Relic"
             } ,
-            tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb":"Replace your current relic with a randomly chosen relic" },
+            tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
+                :"Replace your current relic <br><i> These relics are physical objects left behind by ??? , which were used to resist ??? . However , once ??? happened , the rings was manipulated by ??? to research for further technological domination" 
+            },
+            ttStyle() {
+                return {
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"white",
+					"color":"white",
+                }
+            },
             canAfford() { return player.g.points.gte(player.g.costMultiplier) },
             unlocked() {return true},
             buy() {
@@ -483,7 +525,16 @@ addLayer("g", {
             title() {
              return "Get a new Ring"
             } ,
-            tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb":"Replace your current ring with a randomly chosen ring" },
+            tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
+                :"Replace your current ring <br><i>Rings are widely known to strengthen its wielder to build defensive forces , gathering essential resources . Rings used to manipulate the twilights to foreseen time , predicting enemy movements precisely . But ??? happened , its future effect is suddenly much less accurate"},
+            ttStyle() {
+                return {
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"white",
+					"color":"white",
+                }
+            },
             canAfford() { return player.g.points.gte(player.g.costMultiplier) },
             unlocked() {return true},
             buy() {
@@ -508,7 +559,17 @@ addLayer("g", {
             title() {
              return "Get a new Charm"
             } ,
-            tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb":"Replace your current charm with a randomly chosen charm" },
+            tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
+                :"Replace your current charm <br> <i> Charms are miniature artifacts that resonate with the wearer's soul , they can offers deep time acceleration and insights onto one's research . Charms are usually much harder to find and collect , that why they cost more" 
+            },
+            ttStyle() {
+                return {
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"white",
+					"color":"white",
+                }
+            },
             canAfford() { return player.g.points.gte(player.g.costMultiplier.times(2)) },
             unlocked() {return true },
             buy() {
@@ -1020,7 +1081,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Artifacts provide permeant buff"}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Artifacts is assigned 4 out of 8 different effect <br> Each effect have a random quality determining their strength"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Artifacts have 4 out of 8 different effect , each having a random quality determining their strength"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3><i>Current Artifact quality is "+format(player.g.artifactquality,0)+" , averaging : "+format((d(0.5).pow(d(100).div(d(100).add(player.g.artifactquality)))).times(100))+"% quality"}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3><i>Current Artifact level is "+format(player.g.artifactlevel,0)+""}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
 
@@ -1073,7 +1134,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Orb"}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Boost to pre-MR resources . Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact1d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact1q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact1d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact1q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact1d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact1q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1087,7 +1148,7 @@ microtabs: {
             unlocked() { return true },  
             content: [
             ["raw-html", function () { return "<h3>Relic"}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Enhancing Perk Power , Twilights and Improvements . Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact2d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact2q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact2d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact2q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact2d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact2q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1101,7 +1162,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Ring"}, { "color": "orange", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Good for stronger buyables . Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact3d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact3q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact3d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact3q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact3d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact3q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1115,7 +1176,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Charm provide various buff"}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Good boost to Exponent and Research features and speed . Cost "+formatWhole(player.g.costMultiplier.times(2))+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier.times(2))+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact4d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact4q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact4d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact4q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact4d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact4q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
