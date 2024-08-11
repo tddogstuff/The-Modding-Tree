@@ -2,3 +2,5 @@
 .vscode/settings.json
 /docs
 /docs
+docs/upgrades.md
+*.md

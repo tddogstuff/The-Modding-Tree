@@ -849,7 +849,6 @@ function MRreset() {
 	player.al.x = new Decimal(0)
 	player.al.deltax = new Decimal(0)
 if(!player.g.sacrificeactive[3].gte(1)) {
-	player.al.extension = player.al.extension.add(player.al.extensiongain)
 	player.al.points = player.al.points.times(0)
 	player.al.upgrades.filter(x => x>60)
 	
@@ -864,23 +863,24 @@ if(!player.g.sacrificeactive[3].gte(1)) {
 	player.al.extension = new Decimal(0)
 	player.al.operation = new Decimal(0)    
 	}
-	for (let i = 0; i < player.r.milestones.length; i++) {
-		
-		player.r.milestones.splice(i, 1);
-		i--;
 	
-}
 	player.al.resetcooldown = new Decimal(4)
 
 	//reset Research
 	player.r.points = new Decimal(0)
 	if(!hasMilestone('g',1)) {
 	buyBuyable('r',11)
+	for (let i = 0; i < player.r.milestones.length; i++) {
+		
+		player.r.milestones.splice(i, 1);
+		i--;
+	
+	}	
 	}
 	if(!hasMilestone('g',2)) {
 	player.r.prestigetime = new Decimal(0)
 	}
-	doReset('r',true)
+	doReset('e',true)
 }
 /** 
 *Add an achievement (obviously)

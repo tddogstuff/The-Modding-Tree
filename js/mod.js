@@ -22,7 +22,14 @@ let changelog = `<h1>Changelog:</h1><br>
 	<h3 style='color: red'> v0.0.4b - Graduation II additions </h3> <br>
 	*** Balancing changes : <br>
 	- Capped Tetration cost II upgrade effect to -400 raw Tetration <br>
-	- (Future v0.0.4 patch note will be appended here) <br>
+	- S4 requirement is decreased (1e1000 Operation => 1e850) <br>
+	*** Fixed : <br>
+	- Fixed Graduation milestone 1 and 2 not working <br>
+	*** Others : <br>
+	- Tweaked number inverting e.x 2e-10 will become 1/(5e10) <br>
+	- Fixed resources NOT being reset again <br>
+	*** Notes : <br>
+	- (Future v0.0.4 patch note will be appended) <br>
 	<h3 style='color: orange'> v0.0.4a - Graduation I balancing </h3> <br>
 	*** Reminder : <br>
 	- Some part of Graduation II is available <br>
@@ -45,7 +52,7 @@ let changelog = `<h1>Changelog:</h1><br>
 	- Research QOL Upg24 "Effortless Research" effect replaced , make Research Tickspeed bonus formula increase another 10% more <br>
 	- Improved all Twilight perk reward scaling <br>
 	- Improvement is now unlocked at 3 Research instead of 1<br>
-	- While Altered , lowered the primary goal for 'Chaotic division' from 1e30 or 1 No => 1e25 or 10 Sp <br>
+	- While Altered , lowered the primary goal for 'Chaotic division' from 1e30 => 1e26 <br>
 	- Increase the cost scaling of Twilight strength after level 100<br>
 	- The Row1 - Row2 autobuyer from Research milestone 3 (3 Research) is pushed to Research milestone 4 (4 Research) <br> 
 	- Energy effect is slightly stronger <br>

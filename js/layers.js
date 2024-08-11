@@ -200,6 +200,10 @@ addLayer("ac", {
         if(hasAchievement('ac',155)) {
             buyBuyable('r',10)
         }
+        if(hasAchievement('ac',156)) {
+            buyBuyable('al',16)
+            buyBuyable('al',17)
+        }
         let highest = player.g.sacrificeactive[0]
         for(let i = 0 ; i < 9 ; i++) {
             if(player.g.sacrificeactive[i].gt(highest)) highest = player.g.sacrificeactive[i]
@@ -3126,26 +3130,16 @@ addLayer("ac", {
             },
         },
         156: {
-            name: "Empowered variables (NYI)",
-            done() {return player.al.y.gte("1e24")},
+            name: "Empowered variables",
+            done() {return player.al.y.gte("1e21")},
             tooltip() {
-            let y = player.al.y
-            let base = "Reach "+f(d("e24"))+" variable Y value <br> Reward : Current Y affects <br> X gain by x"+f(this.effect())+""
-            let requirement1 = "<br> Algebric gain by x"+f(this.effect().pow(10))+" <br> Next reward at "+f(d("e28"))+" Y <br>"
-            let requirement2 = "<br> Algebric gain by x"+f(this.effect().pow(10))+" <br> Extension gain by x"+f(postcorruptiongain(this.effect(),d(1.2),d(10)))+" <br> Next reward at "+f(d("e32"))+" Y <br>"
-            let requirement3 = "<br> Algebric gain by x"+f(this.effect().pow(10))+" <br> Extension gain by x"+f(postcorruptiongain(this.effect(),d(1.2),d(10)))+" <br> Perk power speed by x"+f(this.effect().tetrate(1.07))+" <br> Next reward at "+f(d("e36"))+" Y <br>"
-            let requirement4 = "<br> Algebric gain by x"+f(this.effect().pow(10))+" <br> Extension gain by x"+f(postcorruptiongain(this.effect(),d(1.2),d(10)))+" <br> Perk power speed by x"+f(this.effect().tetrate(1.07))+" <br> Prestige time gain by x"+f(this.effect().add(10).log(10).pow(2))+" <br> Next reward at "+f(d("e40"))+" Y <br>"
-            let requirement5 = "<br> Algebric gain by x"+f(this.effect().pow(10))+" <br> Extension gain by x"+f(postcorruptiongain(this.effect(),d(1.2),d(10)))+" <br> Perk power speed by x"+f(this.effect().tetrate(1.07))+" <br> Prestige time gain by x"+f(this.effect().add(10).log(10).pow(2))+" <br> Bits gain by x"+f(this.effect().pow(3))+""
-            if(y.lt("e28")) return base + requirement1
-            else if(y.lt("e32")) return base + requirement2
-            else if(y.lt("e36")) return base + requirement3
-            else if(y.lt("e40")) return base + requirement4
-            else return base + requirement5
+            let base = "Reach "+f(d("e21"))+" variable Y value <br> QOL : Automate variable Y buyables <br> Reward : Variable Y raises the value of B <br>(Currently : ^"+f(this.effect())+")"
+            return base
             },
             unlocked() {return player.ac.r.eq(6)}, 
             effect() {
                 let a = player.al.y.max(10)
-                let b = a.log(10).pow(a.log(10).root(5)) 
+                let b = a.log(10).div(2).root(3).add(1) 
                 return b
             },
             style() {
@@ -3163,10 +3157,27 @@ addLayer("ac", {
         157: {
             name: "Algebra Mastery I",
             done() {return player.al.points.gte("1e400")},
-            tooltip() {return "Reach "+f(d("e400"))+" Algebric <br> Reward : "},
+            tooltip() {return "Reach "+f(d("e400"))+" Algebric"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
-                return Qcolor3('aqua')
+                return Qcolor3('')
+            },
+            ttStyle() {
+                return {
+                    "color":"#b3c3f5",
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"indigo",
+                }
+            },
+        },
+        158: {
+            name: "Realm Explorer",
+            done() {return false},
+            tooltip() {return "Reach "+f(d("e400"))+" Algebric"},
+            unlocked() {return player.ac.r.eq(6)}, 
+            style() {
+                return Qcolor3('')
             },
             ttStyle() {
                 return {
@@ -4050,7 +4061,7 @@ addLayer("t", {
             }, 
             unlocked() {return player.r.tetration.gte(12)},
             effect() {
-                return player.r.mastery.add(1).pow(0.47)
+                return player.r.mastery.add(1).pow(0.47).min(400)
             }, 
             effectDisplay() {return "-"+format(upgradeEffect(this.layer,this.id),0)+" raw cost"}
         },
@@ -7572,6 +7583,7 @@ addLayer("e", {
         if (hasUpgrade('r',21) && resettingLayer=="r")  keep.push("upgrades")
         if (hasUpgrade('r',22) && resettingLayer=="r")  keep.push("milestones")
         if (hasMilestone('g',5))  keep.push("milestones")
+        if (hasMilestone('g',5))  keep.push("upgrades")
 
         if (layers[resettingLayer].row > this.row) layerDataReset("e", keep)
     },
@@ -11313,6 +11325,7 @@ addLayer("al", {
         if(inChallenge('r',11)) deltaextension = deltaextension.pow(player.r.chh)
         deltaextension1 = softcap(deltaextension,player.r.chh,0.5)
         deltaextension12 = softcap(deltaextension1,limitofext,player.al.operationeffect.div(100).max(0).min(1))
+        if(player.g.timer2.lte(0.5)) deltaextension12 = d(0)
         player.al.extensiongain = deltaextension12.times(buyableEffect('al',24)).times(buyableEffect('al',34))
 
         extensionbuff = player.al.extension.add(1).pow(0.9)
@@ -11336,6 +11349,7 @@ addLayer("al", {
 
         let operationgain = operationgainal2.times(buyableEffect('al',31)).times(buyableEffect('r',105)).times(player.r.truegamespeed)
         if(hasAchievement('ac',145)) operationgain = operationgain.times(achievementEffect('ac',145))
+        if(player.g.timer2.lte(1)) operationgain = d(0)
         player.al.operationgain = operationgain.pow(buyableEffect('al',52))
         //tick
         let tickspeedreduction1eff = d(0.2)
@@ -11419,7 +11433,10 @@ addLayer("al", {
             cost(x) { 
                 return d(1.3).pow(x.pow(1.1)).times(25) },
             tooltip() { 
-                return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Increase "+Qcolor2('a','b')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" <br> "+Qcolor2('n','Coefficient purchase multiplier')+" applied every "+Qcolor2('n',format(player.al.bmilestone,0))+" levels" },
+                let power = d(1)
+                if(hasAchievement('ac',156)) power = power.times(achievementEffect('ac',156))
+                if(power.eq(1)) return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Increase "+Qcolor2('a','b')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" <br> "+Qcolor2('n','Coefficient purchase multiplier')+" applied every "+Qcolor2('n',format(player.al.bmilestone,0))+" levels"
+                else return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect ("+Qcolor2('y','^'+f(power))+") : Increase "+Qcolor2('a','b')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" <br> "+Qcolor2('n','Coefficient purchase multiplier')+" applied every "+Qcolor2('n',format(player.al.bmilestone,0))+" levels" },
             canAfford() { return player.al.points.gte(this.cost())},
             buy() {
                 player.al.points = player.al.points.sub(this.cost())
@@ -11433,7 +11450,9 @@ addLayer("al", {
             effect(x) {
                 let effect1 = x.div(5)
                 let bonus = x.div(player.al.bmilestone.max(1)).floor()
-                return effect1.times(this.multiplier().pow(bonus))         
+                let eff =  effect1.times(this.multiplier().pow(bonus))      
+                if(hasAchievement('ac',156)) eff = eff.pow(achievementEffect('ac',156)) 
+                return eff  
             },
             style() {
 				if (player.al.points.lt(this.cost())) return Qcolor()
@@ -11466,7 +11485,8 @@ addLayer("al", {
             effect(x) {
                 let effect1 = x.div(25)
                 let bonus = x.div(player.al.amilestone.max(1)).floor()
-                return effect1.times(this.multiplier().pow(bonus))         
+                let eff =  effect1.times(this.multiplier().pow(bonus))    
+                return eff     
             },
             style() {
 				if (player.al.points.lt(this.cost())) return Qcolor()

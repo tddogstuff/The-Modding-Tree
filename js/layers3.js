@@ -188,6 +188,9 @@ addLayer("g", {
             player.r.energy = d(0)
             player.r.prestigetime = d(0)
             player.e.perkpower = d(0)
+            player.al.points = d(0)
+            player.al.extension = d(0)
+            player.al.operation = d(0)
         }
         if(!inChallenge('r',11) && hasMilestone('g',3)) {
             player.m.challenges[11] = 1
@@ -272,7 +275,7 @@ addLayer("g", {
         },
         5: {
             requirementDescription() {return options.hidemastery?"Milestone 5":""+format(200000)+" Mastery (5)"},
-            effectDescription() {return ""+Qcolor2('e',"Exponent")+" milestones no longer "+Qcolor2('a','reset')+""},
+            effectDescription() {return ""+Qcolor2('e',"Exponent")+" milestones and upgrades no longer "+Qcolor2('a','reset')+""},
             unlocked() {return player.g.sacrificeactive[2].gte(1)},
             done() {return player.r.mastery.gte("200000") && player.g.sacrificeactive[2].gte(1)},
             style() {
@@ -612,7 +615,7 @@ addLayer("g", {
             buy() {                    
             player.g.timer = d(0)
             player.points = d(10)
-            player.al.upgrades.filter(x => x>60)
+            if(!hasUpgrade('n',92)) player.al.upgrades.filter(x => x>60)
             player.r.points = d(0)
             for (let i = 0; i < player.r.milestones.length; i++) {
             
@@ -638,6 +641,16 @@ addLayer("g", {
             player.r.buyables[402] = d(0)
             player.r.buyables[403] = d(0)
             player.r.buyables[501] = d(0)
+
+            player.al.points = d(0)
+            player.al.extension = d(0)
+            player.al.operation = d(0)    
+            for (let i = 0 ; i < 12 ; i++) {
+                let j = i % 4 + 1
+                let k = Math.floor(i / 4) * 10 + 10
+                let l = j + k 
+                player.al.buyables[l] = new Decimal(0)
+            }
 
             player.r.nbest = d(0)
             player.r.abest = d(0)
@@ -665,6 +678,7 @@ addLayer("g", {
             player.r.metaresearch = d(0)
             player.r.energy = d(0)
             player.e.perkpower = d(0)
+            player.al.operation = d(0)
             doReset('r',true)
             options.theme = themes[0]
             changeTheme()
@@ -801,7 +815,7 @@ addLayer("g", {
             },
             display() {
                 let text2 = "Permeant Altered realm but x3 MR gain <br> After reaching "+format(d("1e10000"))+" points <i>in this sacrifice</i> , you may further explore Altered realm , encountering harsher penalities but yielding more power"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Needing "+format(d("1e1000"))+" Operation <br><i> You have "+format(player.al.operation)+" Operation"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Needing "+format(d("1e850"))+" Operation <br><i> You have "+format(player.al.operation)+" Operation"
             },
             canAfford() { return true },
             buy() {
@@ -809,7 +823,7 @@ addLayer("g", {
                if(player.g.sacrificehover.neq(d(this.id).sub(200))) {
                  player.g.sacrificehover = d(d(this.id).sub(200))
                } else {
-                if(player.g.SacrificeUnlock[this.id-201].eq(0) && player.al.operation.gte("1e1000") && player.g.sacrificehover.eq(d(d(this.id).sub(200)))) {
+                if(player.g.SacrificeUnlock[this.id-201].eq(0) && player.al.operation.gte("1e850") && player.g.sacrificehover.eq(d(d(this.id).sub(200)))) {
                     player.g.SacrificeUnlock[this.id-201] = d(1)
                     return
                }

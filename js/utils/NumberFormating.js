@@ -243,7 +243,7 @@ function invertOOM(x){
     let e = x.log10().ceil()
     let m = x.div(Decimal.pow(10, e))
     e = e.neg()
-    x = new Decimal(10).pow(e).times(m)
+    x = new Decimal(10).pow(e).times(d(10).div(m))
 
     return x
 }
