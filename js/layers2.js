@@ -1687,8 +1687,8 @@ buyables: {
             return effect
         },
         nexteffect() {
-            let effect = d(10).times(d(getBuyableAmount(this.layer,this.id)).add(1).min(50)).pow(1.15).add(0.04)
-            let effect2 = d(10).times(d(getBuyableAmount(this.layer,this.id)).add(10).min(50)).pow(1.15).add(0.04)
+            let effect = d(10).times(d(getBuyableAmount(this.layer,this.id)).add(1).min(50))
+            let effect2 = d(10).times(d(getBuyableAmount(this.layer,this.id)).add(10).min(50))
             if(shiftDown) effect = effect2
             return effect
         },

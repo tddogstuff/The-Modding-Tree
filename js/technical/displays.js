@@ -61,6 +61,15 @@ function upgradeTooltipStyle(layer, id) {
 	style.push(upg.ttStyle)
 	return style
 }
+function clickableTooltipStyle(layer, id) {
+	c = tmp[layer].clickables[id]
+	let style = []
+	if(c.ttStyle === undefined) {
+	style.push(tmp[layer].ttStyle)
+	} 
+	style.push(c.ttStyle)
+	return style
+}
 function buyableTooltipStyle(layer, id) {
 	bb = tmp[layer].buyables[id]
 	let style = []
