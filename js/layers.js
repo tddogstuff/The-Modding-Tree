@@ -4039,7 +4039,7 @@ addLayer("t", {
             title: "Tetration cost II",
             description() {return options.hidemastery?"Slightly reduced Tetration cost":"Current Mastery reduce Tetration cost"},
             cost: d("1e14"),
-            tooltip() {return options.hidemastery?"Reduce Tetration cost":"Cost reduction : (mastery+1)^0.47 , result floored"},
+            tooltip() {return options.hidemastery?"Reduce Tetration cost":"Cost reduction : (mastery+1)^0.47 , result floored , capped at -400 raw Tetration"},
             ttStyle() {
                 return {
                     "color":"#beed72",

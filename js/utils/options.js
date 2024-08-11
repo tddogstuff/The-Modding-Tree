@@ -188,7 +188,7 @@ function earlyskip() {
 			options.mixedsci = !options.mixedsci
 		} 
 	function hidemastery() {			
-			options.hidemastery = !options.hidemastery
+			alert("Disabled")
 		} 
 	function gamepaused() {
 			options.gamepaused = !options.gamepaused

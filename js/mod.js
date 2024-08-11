@@ -14,18 +14,24 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.3",
-	name: "Graduation I ",
+	num: "0.0.4",
+	name: "Graduation I balancing",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3> v0.0.4 (Grad II) </h3> <br>
+	<h3 style='color: red'> v0.0.4b - Graduation II additions </h3> <br>
+	*** Balancing changes : <br>
+	- Capped Tetration cost II upgrade effect to -400 raw Tetration <br>
+	- (Future v0.0.4 patch note will be appended here) <br>
+	<h3 style='color: orange'> v0.0.4a - Graduation I balancing </h3> <br>
+	*** Reminder : <br>
+	- Some part of Graduation II is available <br>
 	*** Balancing changes : <br> 
 	- Tickspeed upgrade is unlocked at 5 best Mastery instead of 100 <br>
 	- Modified Ticks gain formula below 100 Mastery <br>
 	- Changed achievements layer tooltip to display the amount of completed achievements , secret achievements<br>
 	- Improved 'Point boost' buyable autobuyer <br>
-	+ Rebalanced some Achievements goal/rewards<br><i>
+	- Rebalanced some Achievements goal/rewards<br><i>
 	- If you haven't unlocked both Additive or Subtractive yet , 1 of their upgrade costs nothing <br>
 	- Subtractive Upg12 "Negative to Postive" , renamed to "Postive synergy" , now based on Additive instead<br>
 	- Subtractive Upg21 "Faster automation" effect squared<br>
@@ -100,7 +106,7 @@ let changelog = `<h1>Changelog:</h1><br>
 	- Most buyable have better tooltip<br>
 	- You can now buy additive/subtractive beyond their cost scaling using their respective hotkey <br>
 	*** Endgame : <br>
-	- Endgame : Not changed , nothing have happened<br>
+	- Endgame : not possible this patch<br>
 	*** Planet? : <br>
 	- It's a placeholder , currently does nothing yet  <br>
 	<h3> v0.0.3 (fix) </h3><br>
@@ -340,6 +346,7 @@ var displayThings = [
 ]
 
 // Determines when the game "ends"
+// it's not possible right now
 function isEndgame() {
 	return player.r.bestmastery.gte(d("1e6"))
 }
@@ -362,5 +369,8 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
-
+	if(oldVersion <= "0.0.4" && options.hidemastery) {
+		options.hidemastery = false
+		showModal('Your save had Hide Mastery option enabled prior to v0.0.4 , which is now been disabled')
+	}
 }
