@@ -7,6 +7,7 @@ function getCostScaling(layer , amount , strength = d(0.6)) {
     switch (layer) {
         case 'a':
             if(tmp.a.gainExp.eq(0)) return d(1) 
+            if(player.a.points.lte(player.a.startsoftcap)) return d(1)
             let strong = strength
             if (inChallenge('r',11)) strong = strong.div(player.r.chf)
             strong = strong.pow(d(player.g.artifactset2[6]).max(1).pow(-1))
@@ -23,6 +24,7 @@ function getCostScaling(layer , amount , strength = d(0.6)) {
             return diff
         case 's':
             if(tmp.a.gainExp.eq(0)) return d(1) 
+            if(player.s.points.lte(player.s.startsoftcap)) return d(1)
             let strong2 = strength
             if (inChallenge('r',11)) strong2 = strong2.div(player.r.chf)
             strong2 = strong2.pow(d(player.g.artifactset2[7]).max(1).pow(-1))
@@ -2848,7 +2850,7 @@ calc41: {
     //Layer_Ts
     "Light additive": {
         buttonStyle() { return { 'color': 'lime' , "border-color" : "aqua" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',54) },
         content: [
         ["raw-html", function () { return "<h3>Base : +"+format(buyableEffect('r',201))+""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('r',41)?"<h3> Lightness upgrade : x10":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
@@ -3013,7 +3015,7 @@ calc51: {
     },
     "Y gain": {
         buttonStyle() { return { 'color': 'aqua' , "border-color" : "aqua" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',124) },
         content: [
         ["raw-html", function () { return "<h3>Base : +"+format(buyableEffect('al',16))+""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',124)?"<h3>":"<h3> Actually , you haven't unlock this resource yet"}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -3259,28 +3261,28 @@ calc2: {
 calc3: {
     "Exponent": {
         buttonStyle() { return { 'color': 'pink' , "border-color" : "yellow" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',34) },
         content: [
             ["microtabs", "calc31", { 'border-width': '0px' }],
         ]      
     },
     "Perk power": {
         buttonStyle() { return { 'color': 'pink' , "border-color" : "aqua" } },
-        unlocked() { return true },
+        unlocked() { return hasMilestone('e',5) || hasAchievement('ac',38) },
         content: [
             ["microtabs", "calc32", { 'border-width': '0px' }],
         ]      
     },
     "Research": {
         buttonStyle() { return { 'color': 'purple' , "border-color" : "aqua" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',39) },
         content: [
             ["microtabs", "calc33", { 'border-width': '0px' }],
         ]      
     },
     "Prestige time": {
         buttonStyle() { return { 'color': 'purple' , "border-color" : "yellow" } },
-        unlocked() { return true },
+        unlocked() { return hasMilestone('r',4) || hasAchievement('ac',51) || hasAchievement('ac',91)},
         content: [
             ["microtabs", "calc34", { 'border-width': '0px' }],
         ]      
@@ -3289,21 +3291,21 @@ calc3: {
 calc4: {
     "Twilights": {
         buttonStyle() { return { 'color': 'white' , "border-color" : "white" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',54) },
         content: [
             ["microtabs", "calc41", { 'border-width': '0px' }],
         ]      
     },
     "MR gain": {
         buttonStyle() { return { 'color': 'purple' , "border-color" : "yellow" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',91) },
         content: [
             ["microtabs", "calc42", { 'border-width': '0px' }],
         ]      
     },
     "Tetration": {
         buttonStyle() { return { 'color': 'green' , "border-color" : "yellow" } },
-        unlocked() { return true },
+        unlocked() { return player.r.tetration.gte(1) },
         content: [
             ["microtabs", "calc43", { 'border-width': '0px' }],
         ]      
@@ -3326,7 +3328,7 @@ calc5: {
     },
     "Operation": {
         buttonStyle() { return { 'color': 'green' , "border-color" : "yellow" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',51) },
         content: [
             ["microtabs", "calc53", { 'border-width': '0px' }],
         ]      
@@ -3335,14 +3337,14 @@ calc5: {
 calc6: {
     "Graduate": {
         buttonStyle() { return { 'color': 'white' , "border-color" : "lime" } },
-        unlocked() { return true },
+        unlocked() { return player.g.rank.gte(2) },
         content: [
             ["microtabs", "calc61", { 'border-width': '0px' }],
         ]      
     },
     "Bits": {
         buttonStyle() { return { 'color': 'cyan' , "border-color" : "lime" } },
-        unlocked() { return true },
+        unlocked() { return player.g.ud.gte(1) },
         content: [
             ["microtabs", "calc62", { 'border-width': '0px' }],
         ]      
@@ -3386,7 +3388,7 @@ calc: {
     },
     "Research": {
         buttonStyle() { return { 'color': 'purple' , "border-color" : "white" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',39) },
         content: [
             ["microtabs", "calc3", { 'border-width': '0px' }],
         ]
@@ -3395,7 +3397,7 @@ calc: {
     },
     "Meta-research": {
         buttonStyle() { return { 'color': 'gray' , "border-color" : "white" } },
-        unlocked() { return true },
+        unlocked() { return hasAchievement('ac',91) },
         content: [
             ["microtabs", "calc4", { 'border-width': '0px' }],
         ]
@@ -3404,7 +3406,7 @@ calc: {
     },
     "Algebric": {
         buttonStyle() { return { 'color': 'green' , "border-color" : "white" } },
-        unlocked() { return true },
+        unlocked() { return player.r.bestmastery.gte(308.25) },
         content: [
             ["microtabs", "calc5", { 'border-width': '0px' }],
         ]
@@ -3413,7 +3415,7 @@ calc: {
     },
     "Graduation": {
         buttonStyle() { return { 'color': 'white' , "border-color" : "white" } },
-        unlocked() { return true },
+        unlocked() { return player.g.rank.gte(2) },
         content: [
             ["microtabs", "calc6", { 'border-width': '0px' }],
         ]

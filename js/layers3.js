@@ -224,6 +224,28 @@ addLayer("g", {
 
         }
         player.g.chargeToken = player.g.s6best.sub(d(player.ac.super.length))  
+
+        let base1 = d("1e10000")
+        let base2 = d("2048")
+        let base3 = d("2048")
+        let base4 = d("1e10000")
+        let base5 = d("1e10000")
+        let base6 = d("100")
+        if(player.g.s4best.gte(2) && inChallenge('al',11)) {
+            base1 = base1.root(2)
+            base2 = base2.div(2)
+            base3 = base3.div(2)
+            base4 = base4.root(2)
+            base5 = base5.root(2)
+            base6 = base6.div(2)
+        }
+        player.g.corruption[0] = base1
+        player.g.corruption[1] = base2
+        player.g.corruption[2] = base3
+        player.g.corruption[3] = base4
+        player.g.corruption[4] = base5
+        player.g.corruption[5] = base6
+
     },
     update(delta) {
         player.g.bits = player.g.bits.add(player.g.bitspersec.times(delta))
@@ -355,7 +377,7 @@ addLayer("g", {
             tooltip() {
                 let text = ""
                 let level = player.g.s4best
-                if(level.eq(1)) text = "Exploring depth 2 <br> Going further into the altar , a deep feelings wonder you , was it worth it? "
+                if(level.eq(1)) text = "Exploring depth 2 <br> In this depth , Additive , Subtractive and Exponent corruption start 2x sooner while Number , Multiplicative and Divisive corruption start is square rooted <br> In depth 2 : You will be given a total of 30 Exponent weight , assign them to Number/Multiplicative/Divisive to boost them "
                 return "Require : "+f(d("e10000"))+" Points <br>"+text 
             },
             ttStyle() {
@@ -381,7 +403,7 @@ addLayer("g", {
             title() { return "Go back" },
             canClick() { return player.g.s4best.gte(2)},
             unlocked() { return player.g.sacrificeactive[3].gte(1) },
-            tooltip() {return "Require : If you really want to"},
+            tooltip() {return "Require : If you really want to <br> Unlocked powers will be removed"},
             ttStyle() {
                 return {
                     "width":"300px",
@@ -446,7 +468,7 @@ addLayer("g", {
             } ,
             tooltip() { 
                 return player.g.g1?"Get a new orb <br> Always have an quality of 50% <br> Always contains : x1.073 Effective Exponent and ^1.118 Number gain"
-                :"Replace your current orb <br> <i> These orbs are remnants of a primordial force that once existed in balance of the realms . Their light is said to restore harmony , powering one's ability to do simple work efficiently" 
+                :"Replace your current orb <br> <i> Potential Effect : Raise Number , Multiplicative , Divisive gain . Multiply direct Additive , Subtractive , Research gain . Boosts Max Perk power and Effective Exponent" 
             },
             ttStyle() {
                 return {
@@ -491,7 +513,7 @@ addLayer("g", {
              return "Get a new Relic"
             } ,
             tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
-                :"Replace your current relic <br><i> These relics are physical objects left behind by ??? , which were used to resist ??? . However , once ??? happened , the rings was manipulated by ??? to research for further technological domination" 
+                :"Replace your current relic <br><i> Potential Effect : Lowered Research cost , Point Boost cost , Energy booster cost , LA/DS generator requirement , Additive/Subtractive cost scaling effect" 
             },
             ttStyle() {
                 return {
@@ -526,7 +548,7 @@ addLayer("g", {
              return "Get a new Ring"
             } ,
             tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
-                :"Replace your current ring <br><i>Rings are widely known to strengthen its wielder to build defensive forces , gathering essential resources . Rings used to manipulate the twilights to foreseen time , predicting enemy movements precisely . But ??? happened , its future effect is suddenly much less accurate"},
+                :"Replace your current ring <br><i>Potential Effect : Raise Perk power gain , all improvement effect , Perk power effect (A/S/E cost reduction) , Point boost effect . Increase Twilight perk strength , LA and DS generator strength and the 10th boost from Perk power"},
             ttStyle() {
                 return {
                     "width":"300px",
@@ -560,7 +582,7 @@ addLayer("g", {
              return "Get a new Charm"
             } ,
             tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
-                :"Replace your current charm <br> <i> Charms are miniature artifacts that resonate with the wearer's soul , they can offers deep time acceleration and insights onto one's research . Charms are usually much harder to find and collect , that why they cost more" 
+                :"Replace your current charm <br> <i> Potential Effect : Multiply Gamespeed / Prestige time gain . Raise Tickspeed / all Pre-Research challenge goal . Increase Exponent boost / Max perk power . Reduce MR challenge modifier effect , exponent cost scaling base " 
             },
             ttStyle() {
                 return {

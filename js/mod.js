@@ -350,7 +350,7 @@ var displayThings = [
 		let val = Math.round(a/len)
 
 		if(options.dev) return "Avg ms/tick : "+ format(val,0) + " (Peak : "+format(b,0)+" ms/tick)"
-	}
+	},
 ]
 
 // Determines when the game "ends"

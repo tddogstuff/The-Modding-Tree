@@ -37,6 +37,7 @@ function getStartOptions() {
 		randomNumber:0,
 		defaultFont:'monospace',
 		unit: "Scientific",
+		lore:false,
 	}
 }
 function toggleOpt(name) {

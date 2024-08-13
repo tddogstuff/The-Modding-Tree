@@ -274,7 +274,7 @@ function updateAchievements(layer) {
 		if (isPlainObject(layers[layer].achievements[id]) && !(hasAchievement(layer, id)) && layers[layer].achievements[id].done()) {
 			player[layer].achievements.push(id)
 			if (layers[layer].achievements[id].onComplete) layers[layer].achievements[id].onComplete()
-			if (tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) doPopup("achievement", tmp[layer].achievements[id].name, "Achievement reached", 3, tmp[layer].color);
+			if ((tmp[layer].achievementPopups || tmp[layer].achievementPopups === undefined) && (new Decimal(id).lt(2100) || options.lore)) doPopup("achievement", tmp[layer].achievements[id].name, "Achievement reached", 3, tmp[layer].color);
 		}
 	}
 }
@@ -607,9 +607,9 @@ function DisplayArtifactEffect(id,effect) {
 	case 12:
       return "Energy booster (Twilight) cost is ^"+format(e)+"";
     case 13:
-      return "Light additive (Twilight) cost scaling is "+format(e)+"x weaker";
+      return "Light additive (Twilight) generator cost scaling is "+format(e)+"x weaker";
  	case 14:
-      return "Dark subtractive (Twilight) cost scaling is "+format(e)+"x weaker";
+      return "Dark subtractive (Twilight) generator cost scaling is "+format(e)+"x weaker";
     case 15:
       return "Additive cost scaling is "+format(e)+"x weaker";
     case 16:

@@ -159,7 +159,7 @@ addLayer("ac", {
     },
     symbol:"AC",
     color: "#FFFF00",                    
-    tooltip() {return "Achievements <br> ("+formatWhole(player.ac.achievements.filter(x => x<1000).length,0)+" + "+formatWhole(player.ac.achievements.filter(x => x>1000).length,0)+" secret)"},
+    tooltip() {return "Achievements <br> ("+format(player.ac.achievements.filter(x => x<1000).length,0)+" + "+format(-player.ac.achievements.filter(x => x>2100).length + player.ac.achievements.filter(x => x>1000).length,0)+" secret)"},
     ttStyle() {
         return {
             "color":"yellow",
@@ -885,9 +885,9 @@ addLayer("ac", {
             },
             tooltip() {
                 let base = "Reach "+format(d("1.78e308"))+" Points in 'No Counting' challenge <br> Reward : x1.2 Effective Exponent "
-                if(player.ac.super.includes(toNumber(this.id))) base += "<br> (Charged) and Exponent reward is 10% stronger"
+                if(player.ac.super.includes(toNumber(this.id))) base += "<br> (Charged) and Exponent effect is 10% stronger"
                 if(player.ac.super.includes(toNumber(this.id))) return base
-                if(this.chargeUnl() && !player.ac.super.includes(toNumber(this.id))) base += "<br> (ifCharged) and Exponent reward is 10% stronger"
+                if(this.chargeUnl() && !player.ac.super.includes(toNumber(this.id))) base += "<br> (ifCharged) and Exponent effect is 10% stronger"
                 return base
             },
             chargeUnl() {return !player.ac.super.includes(toNumber(this.id)) && player.g.sacrificeactive[5].gte(1) && player.g.chargeToken.gt(0)},
@@ -1366,7 +1366,7 @@ addLayer("ac", {
             name: "What's next",
             done() { return   player.e.effective.gte(75)},
             tooltip() {
-                let base = "Get 75 effective exponent <br> Reward : Exponent effect is 5% stronger"
+                let base = "Get 75 effective exponent <br> Reward : Exponent effect is 5% stronger <i> Only affects the exponental bonus to points"
                 if(player.ac.super.includes(toNumber(this.id))) base += "<br> (Charged) and strengthen Energy effect as well"
                 if(player.ac.super.includes(toNumber(this.id))) return base
                 if(this.chargeUnl() && !player.ac.super.includes(toNumber(this.id))) base += "<br> (ifCharged) and strengthen Energy effect as well"
@@ -1502,7 +1502,7 @@ addLayer("ac", {
             done() { return player.m.points.gte("2") && inChallenge('al',11)},
             
             tooltip() {
-                let base =  "Reach 2 Multiplicative <br> Reward : 'Points Boost' level affects Number gain ,  (Currently : x"+format(this.effect())+")"
+                let base =  "Reach 2 Multiplicative <br> Reward : 'Points Boost' level affects Number gain  (Currently : x"+format(this.effect())+")"
                 if(player.ac.super.includes(toNumber(this.id))) base += "(Charged)"
                 if(player.ac.super.includes(toNumber(this.id))) return base
                 if(this.chargeUnl() && !player.ac.super.includes(toNumber(this.id))) base += "(ifCharged) Effect increased"
@@ -1517,7 +1517,7 @@ addLayer("ac", {
             effect() {
                 let level = player.m.buyables[11]
                 let effect = level.add(1).pow(2)
-                if(hasSuperAchievement(this.layer,this.id)) effect = effect.pow(level.pow(0.33).div(2))
+                if(hasSuperAchievement(this.layer,this.id)) effect = effect.pow(level.pow(0.3).div(2))
                 return effect
             },
             unlocked() {return player.ac.r.eq(3)},
@@ -2592,7 +2592,7 @@ addLayer("ac", {
         123: {
             name: "Meta-challenger 5",
             done() {return player.r.potshard.gte(32) && inChallenge('r',11) && player.r.mastery.gte(10000)},
-            tooltip() {return "Complete a MR challenge with 32 modifier level <br> Reward : All altered realm resource achievement is stronger , bonus may varies"},
+            tooltip() {return "Complete a MR challenge with 32 modifier level <br> Reward : All altered realm resource achievements are stronger , bonus may varies"},
             style() {
                 return Qcolor3('aqua')
             },
@@ -2868,7 +2868,9 @@ addLayer("ac", {
         139: {
             name: "Sacrificial",
             done() {return hasUpgrade('n',71)},
-            tooltip() {return "Unlock Graduation sacrifice <br> Unlock the next page of achievement"},
+            tooltip() {
+                return "Unlock Graduation sacrifice <br> Unlock the next page of achievement "
+            },
             ttStyle() {
                 return {
                     "color":"aqua",
@@ -2882,7 +2884,7 @@ addLayer("ac", {
         141: {
             name: "A brutal world I",
             done() {return (player.g.SacrificeUnlock[0]).gte(1)},
-            tooltip() {return "Unlock the first sacrifice (S1) <br> On reset , gain 1 extra Graduate above "+f(d("e5"))+" Mastery" },
+            tooltip() {return "Unlock the first sacrifice (S1) <br> On reset , gain 1 extra Graduate only if above "+f(d("e5"))+" Mastery" },
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
@@ -3173,11 +3175,11 @@ addLayer("ac", {
         },
         158: {
             name: "Realm Explorer",
-            done() {return false},
-            tooltip() {return "Reach "+f(d("e400"))+" Algebric"},
+            done() {return player.g.s4best.gte(2)},
+            tooltip() {return "Reach depth 2 of Altered realm <br> Reward : All Exponent upgrade cost is 10 less (cannot be negative)"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
-                return Qcolor3('')
+                return Qcolor3('aqua')
             },
             ttStyle() {
                 return {
@@ -3501,7 +3503,7 @@ graduation: {
         
     },
     "Secret/Shadow achievements" : {
-        buttonStyle() {return {'color' : 'white' , 'border-color' : 'white'}},
+        buttonStyle() {return {'color' : 'gray' , 'border-color' : 'gray'}},
         unlocked() {return true},
         content: [
             ["raw-html", function () { return "<h3><i>Secret achievement</i> requirement is hidden until you discovered them (there is hint for them)" }, { "color": "white", "font-size": "18px"}],
@@ -3512,7 +3514,7 @@ graduation: {
             ["row", [["achievement", 1011], ["achievement", 1012], ["achievement", 1013], ["achievement", 1014], ["achievement", 1015], ["achievement", 1016], ["achievement", 1017], ["achievement", 1018], ["achievement", 1019]]],
 
         ]
-    }
+    },
 },
 },
     tabFormat: [
@@ -4489,7 +4491,7 @@ addLayer("n", {
     softcap() {return player.g.corruption[0]},
     softcapPower:0,
     hotkeys: [
-        {key: "n", description: "N: Reset for Numbers", onPress(){if (canReset(this.layer)) buyBuyable('n',10)}},
+        {key: "n", description: "N: Reset for Numbers", onPress(){buyBuyable('n',10)}},
     ],
     layerShown(){return true} ,
     resetDescription:"Count for ",
@@ -4802,7 +4804,7 @@ addLayer("n", {
                 return d(0) },
             tooltip() {return ""},
             canAfford() {
-                return player.points.gte(tmp[this.layer].requires) && getResetGain(this.layer).neq(0)
+                return (player.points.gte(tmp[this.layer].requires) && getResetGain(this.layer).neq(0))
             },
             buy() {
                 player[this.layer].points = player[this.layer].points.add(getResetGain(this.layer))
@@ -5809,9 +5811,7 @@ addLayer("n", {
             ["row", [["upgrade", 21],["upgrade", 22],["upgrade", 24],["upgrade",23]]],
             ["row", [["upgrade", 31],["upgrade",32]]],
             ["blank","25px"],
-            ["row",[["clickable",11],["clickable",21],["clickable",22]]]
-
-
+            ["row",[["clickable",11],["clickable",21],["clickable",22]]],
 
     ],},
     "Bits": {
@@ -7636,7 +7636,11 @@ addLayer("e", {
         51: {
             title: "Power Boost",
             description: "Additives and Subtractive cost are divided based on Number ",
-            cost: d(3),
+            cost() {
+              let base = d(3)
+              if(hasAchievement('ac',158)) base = base.sub(10)
+              return base.max(0)
+            },
             effect() {
                 let eff = player.n.points.pow(0.5).add(1)
                 let eff1 = softcap(eff,d("1e500"),0.25)
@@ -7645,7 +7649,11 @@ addLayer("e", {
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, },
         52: {
             title: "Uncosty Exponent",
-            cost: d(5),
+            cost() {
+                let base = d(5)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+              },            
             description() {
                 let a = player.r.buyables[121].gte(1)?"(real effect : 32.5%)":""
                 return "Exponent cost scaling base is reduced by 25% "+a+""},},
@@ -7655,7 +7663,11 @@ addLayer("e", {
                 let a =  player.r.buyables[121].gte(1)?"and Perk Power":""
                 return "Additive cost scaling is delayed based on exponent "+a+" (Base : 100)"
             },
-            cost: d(7),
+            cost() {
+                let base = d(7)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+            },
             effect() {
                 let a = player.e.perkpower.add(2).pow(1.2).times(1/2).max(1).min(350)
                 if(player.r.buyables[121].lt(1)) a = a.times(0)
@@ -7667,7 +7679,11 @@ addLayer("e", {
         54: {
             title: "Delay subtractitive scaling",
             description: "Subtractive cost scaling is delayed based on exponent (Base : 100)",
-            cost: d(7),
+            cost() {
+                let base = d(7)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+            },            
             effect() {
                 let eff = player.e.effective.times(0.5).add(1).pow(1.4).min(500)
                 return eff
@@ -7677,25 +7693,41 @@ addLayer("e", {
         61: {
             title : "Strong Perk",
             description: "1.08x max Perk Power",
-            cost : d(8),
+            cost() {
+                let base = d(8)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+            },            
             unlocked() {return hasMilestone('e',6) && !player.r.buyables[121].gte(1)},
         },
         62: {
             title : "Powerful Perk",
             description: "Perk Power gain from Exponent is ^1.08",
-            cost : d(8),
+            cost() {
+                let base = d(8)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+            },              
             unlocked() {return hasMilestone('e',6)},
         },
         63: {
             title : "Extra cheap",
             description: "Exponent cost reduction is ^1.25",
-            cost : d(9),
+            cost() {
+                let base = d(9)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+            },              
             unlocked() {return hasMilestone('e',7)},
         },
      64: {
             title : "Strengthen Perk",
             description: "1.07x max Perk Power",
-            cost : d(9),
+            cost() {
+                let base = d(9)
+                if(hasAchievement('ac',158)) base = base.sub(10)
+                return base.max(0)
+            },
             unlocked() {return hasMilestone('e',7) && !player.r.buyables[121].gte(1)},
         }
     },
@@ -8168,7 +8200,7 @@ addLayer("e", {
             name: "No Basics",
             challengeDescription() {
             let a = ctrlDown?"This challenge prevents you from getting All Pre-Exponent resources and Points <br>":""
-            return ctrlDown?a:"(1)"+Qcolor2('y','All Pre-Exponent resources')+" including "+Qcolor2('n','Points')+" is always equal to 10 and cannot be gained <br> (2) "+Qcolor2('d','Points gain/s')+" is reduced to "+Qcolor2('d','log10(gain)^^1.5')+" "+a+" (3) "+Qcolor2('d','Tickspeed')+" becomes "+Qcolor2('d','log(tickspeed)^2')+""} 
+            return ctrlDown?a:"(1)"+Qcolor2('y','All Pre-Exponent resources')+" including "+Qcolor2('n','Points')+" is always equal to 10 and cannot be gained <br> (2) "+Qcolor2('d','Points gain/s')+" is reduced to "+Qcolor2('d','log10(gain)^^1.5')+" "+a+" <br> (3) "+Qcolor2('d','Tickspeed')+" becomes "+Qcolor2('d','log(tickspeed)^2')+""} 
             ,
             goalDescription: function() { 
                 let a = player.r.timer.gte(1)?Qcolor2('green2','Time condition met'):Qcolor2('red1','Please wait for '+formatTime(d(1).sub(player.r.timer),2)+'')
@@ -8197,76 +8229,88 @@ addLayer("e", {
                 player.d.points = d(0)
             },
             style() {
-                if(player.g.ud.gte(2)) return Qcolor('green',360)
-                if(this.canComplete() && inChallenge('e',13)) return Qcolor('rgb(128,128,32)',360)
-                else return Qcolor('black',360)
+                if(player.g.ud.gte(2)) return Qcolor('green',380)
+                if(this.canComplete() && inChallenge('e',13)) return Qcolor('rgb(128,128,32)',380)
+                else return Qcolor('black',368)
             }
         },
         },
 
-        microtabs: {
-            stuff: {
-                "Main": {
-                    unlocked() { return true },
-                    content: 
-        [
-                        ["blank", "25px"],
-                        ["infobox","lore"],
-                        ["blank","25px"],
-                        ["row", [["buyable", 10]]],
-                        ["blank","25px"],
-                        ["row", [["upgrade", 51],["upgrade", 52],["upgrade", 53],["upgrade",54]]],
-                        ["row", [["upgrade", 61],["upgrade", 62],["upgrade", 63],["upgrade",64]]],
-                        ["blank","25px"],
-    
-
-        ],},
-                "Milestone":{
-            unlocked() {return true},
-            content: [
-                ["blank","25px"],
-                "milestones",
-                ["raw-html", function () { 
-                    return "<h3><i>Tip : There is a setting to disable popups or hold [shift] to make them disappear 10x faster"
-                }, { "color": "white", "font-size": "15px"}],
-                ["raw-html", function () { 
-                    return shiftDown?"<h3><i>You are currently holding shift":""
-                }, { "color": "white", "font-size": "15px"}]
-
-            ]
-        },
-        //getBuyableAmount('e',41).gte(1)?"Divide Exponent cost by "+format(1)+"":""
-                "Perk":{
-                    unlocked() {return hasMilestone('e',5)},
-                    content: [
-                        ["blank", "25px"],
-                        ["raw-html", function () { return "<h3>You have "+format(player.e.perkpower)+"/"+format(player.e.maxperkpower)+" ("+format(player.e.perkpowerincrease)+"/s) perk power , which boost Effective Exponent by x"+format(player.e.bonus)+" "}, { "color": "purple", "font-size": "22px"}],
-                        ["raw-html", function () { return "<h3>The difference between <i>current perk power</i> and <i>max perk power</i> is <i>halved</i> every "+formatTime(player.e.perkpowerinterval.max(1))+" <br> The <i>interval</i> is <i>doubled every 10 perk power</i> and can be decreased based on various bonuses "}, { "color": "white", "font-size": "17px"}],
-                        ["raw-html", function () { return "<h3>Perk power also give additional scaling bonuses"}, { "color": "purple", "font-size": "22px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(1)?"<h3>Divide Exponent , Additive and Subtractive cost by /"+format(buyableEffect('e',24))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(2)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Exponent cost by /"+format(buyableEffect('e',23))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(3)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Subtractive cost by /"+format(buyableEffect('e',21))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(4)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Additive cost by /"+format(buyableEffect('e',22))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(5)&&getBuyableAmount('r',121).neq(1)?"<h3>'Subtract?' additive upgrade effect ^"+format(buyableEffect('e',31))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(6)&&getBuyableAmount('r',121).neq(1)?"<h3>'Numberic increase' additive upgrade effect ^"+format(buyableEffect('e',32))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(9)?"<h3>Multiply Number gain by x"+format(buyableEffect('e',25))+"":""}, { "color": "pink", "font-size": "18px"}],
-                        ["raw-html", function () { return getBuyableAmount('e',41).gte(10)?"<h3>x"+format(tmp.e.expeffect.add(1).pow(0.5))+" max Perk Power (Boosted by Exponent instead of Perk Power)":""}, { "color": "pink", "font-size": "18px"}],
+    microtabs: {
+        stuff: {
+            "Main": {
+                unlocked() { return true },
+                content: 
+                    [
+                    ["blank", "25px"],
+                    ["infobox","lore"],
+                    ["blank","25px"],
+                    ["row", [["buyable", 10]]],
+                    ["blank","25px"],
+                    ["row", [["upgrade", 51],["upgrade", 52],["upgrade", 53],["upgrade",54]]],
+                    ["row", [["upgrade", 61],["upgrade", 62],["upgrade", 63],["upgrade",64]]],
+                    ["blank","25px"],
 
 
-                        ["blank","25px"],
-                        ["row", [["buyable", 33],["buyable",34]]],
-                        ["row", [["buyable", 41],["buyable",42]]],
+                ],},
+            "Milestone":{
+                unlocked() {return true},
+                content: [
+                    ["blank","25px"],
+                    "milestones",
+                    ["raw-html", function () { 
+                        return "<h3><i>Tip : There is a setting to disable popups or hold [shift] to make them disappear 10x faster . Holding both do not works properly"
+                    }, { "color": "white", "font-size": "15px"}],
+                    ["raw-html", function () { 
+                        return shiftDown?"<h3><i>You are currently holding shift":""
+                    }, { "color": "white", "font-size": "15px"}]
 
-                    ]
-                },
-                "Challenge":{
-                    unlocked() {return hasMilestone('e',7)},
-                    content: [
-                        ["blank","25px"],
-                        ["row", [["challenge", 11],["challenge", 12],["challenge",13]]],
+                ]
+            },
+            "Perk":{
+                unlocked() {return hasMilestone('e',5)},
+                content: [
+                    ["blank", "25px"],
+                    ["raw-html", function () { return "<h3>You have "+format(player.e.perkpower)+"/"+format(player.e.maxperkpower)+" ("+format(player.e.perkpowerincrease)+"/s) perk power , which boost Effective Exponent by x"+format(player.e.bonus)+" "}, { "color": "purple", "font-size": "22px"}],
+                    ["raw-html", function () { return "<h3>The difference between <i>current perk power</i> and <i>max perk power</i> is <i>halved</i> every "+formatTime(player.e.perkpowerinterval.max(1))+" <br> The <i>interval</i> is <i>doubled every 10 perk power</i> and can be decreased based on various bonuses "}, { "color": "white", "font-size": "17px"}],
+                    ["raw-html", function () { return "<h3>Perk power also give additional scaling bonuses"}, { "color": "purple", "font-size": "22px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(1)?"<h3>Divide Exponent , Additive and Subtractive cost by /"+format(buyableEffect('e',24))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(2)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Exponent cost by /"+format(buyableEffect('e',23))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(3)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Subtractive cost by /"+format(buyableEffect('e',21))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(4)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Additive cost by /"+format(buyableEffect('e',22))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(5)&&getBuyableAmount('r',121).neq(1)?"<h3>'Subtract?' additive upgrade effect ^"+format(buyableEffect('e',31))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(6)&&getBuyableAmount('r',121).neq(1)?"<h3>'Numberic increase' additive upgrade effect ^"+format(buyableEffect('e',32))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(9)?"<h3>Multiply Number gain by x"+format(buyableEffect('e',25))+"":""}, { "color": "pink", "font-size": "18px"}],
+                    ["raw-html", function () { return getBuyableAmount('e',41).gte(10)?"<h3>x"+format(tmp.e.expeffect.add(1).pow(0.5))+" max Perk Power (Boosted by Exponent instead of Perk Power)":""}, { "color": "pink", "font-size": "18px"}],
 
-                    ]
-                }
+
+                    ["blank","25px"],
+                    ["row", [["buyable", 33],["buyable",34]]],
+                    ["row", [["buyable", 41],["buyable",42]]],
+
+                ]
+            },
+            "Challenge":{
+                unlocked() {return hasMilestone('e',7)},
+                content: [
+                    ["blank","25px"],
+                    ["row", [["challenge", 11],["challenge", 12],["challenge",13]]],
+
+                ]
+            },
+            "Effect weight":{
+                unlocked() {return player.g.s4best.gte(2)},
+                content: [
+                    ["blank", "25px"],
+                    ["raw-html", function () { return "<h3>You have 45 Exponent weight remain "}, { "color": "lime", "font-size": "22px"}],
+                    ["raw-html", function () { return "<h3>Assign Exponent weight to resources (Number , Multiplicative , Divisive) to boost them"}, { "color": "white", "font-size": "17px"}],
+                    ["raw-html", function () { return "<h3>Each Exponent weight boost a resource equal to 1% of the Exponent effect <br> Equal to "+f(tmp.e.effect.root(100))+"x and ^"+format(tmp.e.expeffect.root(100),4)+" to that resource gain"}, { "color": "lime", "font-size": "22px"}],
+                    ["blank","25px"],
+                    ["row", [["buyable", 33],["buyable",34]]],
+                    ["row", [["buyable", 41],["buyable",42]]],
+
+                ]
+            },
     },},
         tabFormat: [
 
@@ -8277,10 +8321,13 @@ addLayer("e", {
             ["raw-html", function () { 
                 return "<h3>Exponent provide these bonuses :  ^"+format(tmp.e.expeffect,4)+" and x"+format(tmp.e.effect)+" to Points gain"
             }, { "color": "purple", "font-size": "22px"}],
+            ["raw-html", function () { 
+                return "<h3>Exponent also provide : ^"+format(tmp.e.expeffect.root(4),4)+" Number gain (Altered realm depth 2)"
+            }, { "color": "lime", "font-size": "22px"}],
               ["raw-html", function () { 
-                return player.g.rank.gte(2)?"<h3>[Graduation II] : Exponent boost Energy effect by ^"+format(tmp.e.expeffect.pow(1.5))+"":""
+                return player.g.rank.gte(2)?"<h3>[Graduation II] : Exponent boosts Energy effect by ^"+format(tmp.e.expeffect.pow(1.5))+"":""
             }, { "color": "aqua", "font-size": "22px"}],
-            ["raw-html", function () { return player.e.points.gte(player.g.corruption[5]) && shiftDown?"<h3>Exponent corruption : After "+format(player.g.corruption[5],0)+" Exponent , Exponent cost scaling base is ^"+format((player.e.points.div(player.g.corruption[5])).max(1).root(2),4)+" if above 1 and reversed if below 1":""}, { "color": "red", "font-size": "22px"}],
+            ["raw-html", function () { return player.e.points.gte(player.g.corruption[5]) && shiftDown?"<h3>Exponent corruption : After "+format(player.g.corruption[5],0)+" Exponent , Exponent cost scaling base is ^"+format((player.e.points.div(player.g.corruption[5])).max(1).root(-2),4)+"":""}, { "color": "red", "font-size": "22px"}],
 
             ["microtabs", "stuff", { 'border-width': '0px' }],
         ],
@@ -8906,7 +8953,7 @@ addLayer("r", {
         11: {
             title: "Simple Number",
             description: "'Number QOL' algebric upgrade is always active",
-            cost: d("0.35"),
+            cost: d("1"),
             tooltip:"Effect : Immediately unlock Row 2 Number upgrade and their upgrade cost is ^0.25",
             currencyLocation() { return player.r },
             currencyDisplayName: "Meta research",
@@ -8915,7 +8962,7 @@ addLayer("r", {
          12: {
             title: "Passive Number",
             description() {return "Passive number generation that isn't affected by Tickspeed and increased number gain"},
-            cost: d("0.35"),
+            cost: d("1"),
             tooltip:"Gain 100% of number gain on reset per second (ignoring tickspeed) and additional "+format(d("1e9"))+"x Number gain",
             currencyLocation() { return player.r },
             currencyDisplayName: "Meta research",
@@ -8960,7 +9007,7 @@ addLayer("r", {
          22: {
             title: "Easier Perk",
             description: "Increase max Perk Power and keep Exponent Milestone on Meta research reset or Research reset",
-            cost: d("1.2"),
+            cost: d("1"),
             currencyLocation() { return player.r },
             tooltip:"Exponent provides ~x1.23 more Perk Power and Keep Exponent Milestone on reset (not when entering altered realm)",
             currencyDisplayName: "Meta research",
@@ -8969,7 +9016,7 @@ addLayer("r", {
          23: {
             title: "No mistake",
             description: "Improvement reset do not decrease Prestige Time",
-            cost: d("0.4"),
+            cost: d("1"),
             currencyLocation() { return player.r },
             tooltip:"Resetting Research Improvement do not reduce Prestige Time by 25% . But still force an Exponent reset",
             currencyDisplayName: "Meta research",
@@ -9003,7 +9050,7 @@ addLayer("r", {
          33: {
             title: "Simple Operation",
             description: "Automaticly buy Operation upgrade and buyable",
-            cost: d("2.5"),
+            cost: d("3"),
             currencyLocation() { return player.r },
             currencyDisplayName: "Meta research",
             currencyInternalName: "metaresearch",
