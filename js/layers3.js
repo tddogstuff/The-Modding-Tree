@@ -81,6 +81,10 @@ addLayer("g", {
         enmetalizedbits: d(0),
         storagedbitscap : d(1),
         enmetalizedconvert: d(1),
+        effectWeight: [d(0),d(0),d(0)], //Number / Multiplicative / Divisive /
+        EW:d(45), //Remaining effect weight
+        tEW:d(45), //Total effect weight 
+        EWid:d(10) //rawID 
     }},
     color: "white",                       // The color for this layer, which affects many elements.
     row: 10,                                 // The row this layer is on (0 is the first row).
@@ -137,6 +141,7 @@ addLayer("g", {
         if(hasAchievement('ac',116)) bitpersec = bitpersec.times(achievementEffect('ac',116))
         if(inChallenge('e',13)) bitpersec = bitpersec.times(50)
         if(player.g.ud.gte(2)) bitpersec = bitpersec.times(16777216)
+        if(hasAchievement('ac',139)) bitpersec = bitpersec.times(player.ac.achievements.filter(x => x>=141 && x<=169).length * 0.03 + 1)
         if(true) bitpersec = bitpersec.times(player.r.truegamespeed)
         player.g.bitspersec = bitpersec
 
@@ -144,6 +149,7 @@ addLayer("g", {
 
         player.g.costMultiplier = player.g.costMultiplier1
         let qa = d(0)
+        if(hasAchievement('ac',161)) qa = qa.add(achievementEffect('ac',161))
         if(player.g.costMultiplier1.gt(1)) qa = qa.add(player.g.costMultiplier1.max(1).log(2).times(25))
         if(hasAchievement('ac',144)) qa = qa.add(50)
         player.g.artifactquality = qa
@@ -413,8 +419,10 @@ addLayer("g", {
                  }
                 },
             onClick() {
-            if (!confirm("Do you want to retreat from Altered realm . This action will restart your current Graduation")) return
+            if (!confirm("Do you want to retreat from Altered realm . This action will restart your current Graduation and will remove bonuses reached")) return
             player.g.s4best = player.g.s4best.sub(1)
+            player.g.buyables[17] = d(1)
+            player.subtabs.e.stuff = "Main"
             buyBuyable('g',100)
             player.g.timer = d(1200)
             },
@@ -452,8 +460,10 @@ addLayer("g", {
             },
             effect() {
                 let base = d(1)
-                if(hasAchievement('ac',141)) base = base.add(player.r.mastery.div(100000).floor().min(1))
+                if(hasAchievement('ac',141)) base = base.add(player.r.mastery.div(50000).floor())
                 if(player.r.tetration.gte(23)) base = base.add(2).times(1.5)
+                if(hasAchievement('ac',111)) base = base.times(player.ac.achievements.filter(x => x>=111 && x<=139).length * 0.04 + 1)
+                if(hasAchievement('ac',139)) base = base.times(player.ac.achievements.filter(x => x>=141 && x<=169).length * 0.03 + 1)
                 if(hasUpgrade('n',74)) base = base.times(buyableEffect('n',91)).times(buyableEffect('n',92)).times(buyableEffect('n',93))
                 return base.floor()
             },
@@ -660,6 +670,25 @@ addLayer("g", {
               return Qcolor('red')
         }
         },    
+        17: {
+            title() {
+                return "Respec all Exponent weight spent"
+               } ,
+            cost(x) { 
+                return d(0)},
+            canAfford() { return true},
+            tooltip() {return "Respec spent Exponent weight"},
+            unlocked() {return player.g.s4best.gte(1)},
+            buy() {
+               player.g.buyables[this.id] = player.g.buyables[this.id].sub(1).times(-1)
+
+            },
+            style() {
+                if (player.g.buyables[this.id].eq(0)) {
+                    return Qcolor('green',40)
+                }
+				 else return Qcolor('red',40)}
+        },
         21: {
             title() {
              return "More Expensive"
@@ -696,6 +725,13 @@ addLayer("g", {
             } ,
             canAfford() { return true },
             buy() {                    
+            if(player.g.buyables[17].eq(0)) {
+                player.g.EW = player.g.tEW
+                player.g.effectWeight[0] = d(0)
+                player.g.effectWeight[1] = d(0)
+                player.g.effectWeight[2] = d(0)
+                player.g.buyables[17] = d(1)
+            }
             player.g.timer = d(0)
             player.points = d(10)
             if(!hasUpgrade('n',92)) player.al.upgrades.filter(x => x>60)
@@ -770,6 +806,7 @@ addLayer("g", {
             player.g.timer2 = d(0)
             player.r.timer = d(0)
             player.r.timer2 = d(0)
+            if(options.dev) player.g.timer = d(1200)
             doReset('r',true)
 
             },
@@ -1093,6 +1130,7 @@ microtabs: {
             ["raw-html", function () { return "<h3>Graduation reset mostly everything prior to it (including best Altered resource record) for Graduate"}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3><i> You will keep ticks , challenge shard , all achievements and up to "+format(player.g.s5best.max(4),0)+" tetration on this reset"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
             ["blank" , "25px"],
+            ["row" , [["buyable" , 17]]],
             ["row" , [["buyable" , 10]]],
 
 
@@ -1145,6 +1183,7 @@ microtabs: {
                 ["row" , [["milestone" , 7]]],
                 ["row" , [["milestone" , 8]]],
                 ["blank" , "25px"],
+                ["row" , [["buyable" , 17]]],
                 ["row" , [["buyable" , 16]]],
                 
             ]

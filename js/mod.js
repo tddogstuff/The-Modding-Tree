@@ -23,7 +23,11 @@ let changelog = `<h1>Changelog:</h1><br>
 	*** Balancing changes : <br>
 	- Capped Tetration cost II upgrade effect to -400 raw Tetration <br>
 	- S4 requirement is decreased (1e1000 Operation => 1e850) <br>
-	- Achievement 141 "A brutal world" give a static +1 conditional Graduate instead <br>
+	- <s> Achievement 141 "A brutal world" give a static +1 conditional Graduate instead </s> : Reverted <br>
+	- Completing post Graduation reward grant additional reward <br>
+	- Algebric costs now increase faster above 1e500 <br>
+	- Algebric points boost is now weakened again above 1e500x <br>
+	- Nerfed the Charm Artifact effect 'Exponent cost reduction' , your Artifact will be readjusted <br>
 	*** Fixed : <br>
 	- Fixed Graduation milestone 1 and 2 not working <br>
 	*** Others : <br>
@@ -173,7 +177,7 @@ function getPointGen() {
 	if(inChallenge('e',11)) total = total.min(player.n.points.pow(0.5))
 	if(inChallenge('e',12)) total = new Decimal(10).pow(total.max(10).log(10).pow(new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1))))
 
-	let sum = total.times(tmp.t.effect.times(0.001)) //Tickspeed
+	let sum = total.times(tmp.t.effect.div(1000)) //Tickspeed
 
 	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
 	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
@@ -377,6 +381,16 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
+	if(true) {
+		player.g.artifact1eff = getArtifactEffect(player.g.artifact1,player.g.artifact1q)
+		player.g.artifact2eff = getArtifactEffect(player.g.artifact2,player.g.artifact2q)
+		player.g.artifact3eff = getArtifactEffect(player.g.artifact3,player.g.artifact3q)
+		player.g.artifact4eff = getArtifactEffect(player.g.artifact4,player.g.artifact4q)
+
+		updateArtifactEffect()
+		updateAllAritfactEffect()
+
+	}
 	if(oldVersion <= "0.0.4" && options.hidemastery) {
 		options.hidemastery = false
 		showModal('Your save had Hide Mastery option enabled prior to v0.0.4 , which is now been disabled')

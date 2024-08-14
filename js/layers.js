@@ -208,7 +208,7 @@ addLayer("ac", {
         for(let i = 0 ; i < 9 ; i++) {
             if(player.g.sacrificeactive[i].gt(highest)) highest = player.g.sacrificeactive[i]
         }
-        if(hasAchievement('ac',146) && player.r.tetrationcost.lte(100) && highest.eq(0)) {
+        if(hasAchievement('ac',146) && player.r.tetrationcost.lte(100)) {
             player.r.tetration = player.r.tetration.add(1)
         }
         if(hasAchievement('ac',148) && highest.eq(0) && player.r.points.gte(4)) {
@@ -2884,7 +2884,7 @@ addLayer("ac", {
         141: {
             name: "A brutal world I",
             done() {return (player.g.SacrificeUnlock[0]).gte(1)},
-            tooltip() {return "Unlock the first sacrifice (S1) <br> On reset , gain 1 extra Graduate only if above "+f(d("e5"))+" Mastery" },
+            tooltip() {return "Unlock the first sacrifice (S1) <br> On reset , gain 1 extra Graduate every "+f(d("5e4"))+" Mastery" },
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
@@ -2978,8 +2978,8 @@ addLayer("ac", {
         },
         146: {
             name: "Tetration VIII",
-            done() {return player.r.tetration.gte(24)},
-            tooltip() {return "Reach 24 Tetration <br> QOL : If Tetration cost is less than 100 , instantly purchase it without performing any reset (Disabled in all Graduation Sacrifice)"},
+            done() {return player.r.tetration.gte(23)},
+            tooltip() {return "Reach 23 Tetration <br> QOL : If Tetration cost is less than 100 , instantly purchase it without performing any reset"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
@@ -2996,7 +2996,7 @@ addLayer("ac", {
         147: {
             name: "Infinite Ticks 2",
             done() {return player.t.points.gte("1e50")},
-            tooltip() {return "Obtain "+format(d("1e50"))+" Ticks"},
+            tooltip() {return "Obtain "+format(d("1e50"))+" Ticks <br>"},
             unlocked() {return player.ac.r.eq(6)}, 
             ttStyle() {
                 return {
@@ -3060,11 +3060,14 @@ addLayer("ac", {
         },
         152: {
             name: "Crystallized",
-            done() {return player.r.buyables[601].gte(12)},
-            tooltip() {return "Have 12 Twilight crystal <br> Reward : Each 'Twilight crystal' make Perk power increase by x10 faster per"},
+            done() {return player.r.buyables[601].gte(15)},
+            tooltip() {return "Have 15 Twilight crystal <br> Reward : Each 'Twilight crystal' make Perk power increase by x4 faster per <br> Currently : x"+f(this.effect())+""},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
+            },
+            effect() {
+                return d(4).pow(player.r.buyables[601])
             },
             ttStyle() {
                 return {
@@ -3078,7 +3081,7 @@ addLayer("ac", {
         153: {
             name: "Energy flow",
             done() {return player.r.buyables[501].gte(1000)},
-            tooltip() {return "Have "+format(1000)+" Energy booster <br> Reward : 'Energy conductor' (buyable) is significantly stronger"},
+            tooltip() {return "Have "+format(1000)+" Energy booster buyable level <br> <i> QOL : Unlock Bulk-buying for Energy buyables , bulk is 5% of its original level , rounded down </i> <br> Reward : 'Energy conductor' (buyable) is significantly stronger"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
@@ -3116,8 +3119,8 @@ addLayer("ac", {
         },
         155: {
             name: "Powerful researcher",
-            done() {return player.r.points.gte(30) && player.r.timer2.lte(2.5)},
-            tooltip() {return "Obtain 30 Research within 2.5s of a Meta-reset <br> Reward : Automaticly buy Research"},
+            done() {return player.r.points.gte(28) && player.r.timer2.lte(2.5)},
+            tooltip() {return "Obtain 28 Research within 2.5s of a Meta-reset <br> Reward : Automaticly buy Research"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
@@ -3190,7 +3193,68 @@ addLayer("ac", {
                 }
             },
         },
-
+        159: {
+            name: "Bits VI",
+            done() {return player.g.totalmetabits.gte(80)},
+            tooltip() {return "Have 80 total Metabits <br> Reward : Metabits and Mastery boost Prestige time gain <br> Effect : "+f(this.effect())+"x"},
+            unlocked() {return player.ac.r.eq(6)}, 
+            style() {
+                return Qcolor3('aqua')
+            },
+            effect() {
+                let time = player.r.mastery.add(10).root(10)
+                let mb = player.g.totalmetabits.add(10).log(10)
+                return mb.pow(time)
+            },
+            ttStyle() {
+                return {
+                    "color":"#b3c3f5",
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"indigo",
+                }
+            },
+        },
+        161: {
+            name: "Generational hoarder",
+            done() {return player.g.points.gte(100)},
+            tooltip() {return "Have 100 Graduate <br> Reward : Unspent Graduate improve Artifact Quality , up to +100  <br> Improved : +"+format(this.effect(),0)+" Artifact Quality"},
+            unlocked() {return player.ac.r.eq(6)}, 
+            style() {
+                return Qcolor3('aqua')
+            },
+            effect() {
+                return player.g.points.root(3).times(10).add(4).floor().min(100)
+            },
+            ttStyle() {
+                return {
+                    "color":"#b3c3f5",
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"indigo",
+                }
+            },
+        },
+        162: {
+            name: "Points overload",
+            done() {return player.points.gte("e15000")},
+            tooltip() {return "Obtain "+f(d("e15000"))+" Points <br> Reward : "},
+            unlocked() {return player.ac.r.eq(6)}, 
+            style() {
+                return Qcolor3('aqua')
+            },
+            effect() {
+                return player.g.points.root(3).times(10).add(4).floor().min(100)
+            },
+            ttStyle() {
+                return {
+                    "color":"#b3c3f5",
+                    "width":"300px",
+                    "border":"2px solid",
+                    "border-color":"indigo",
+                }
+            },
+        },
         //secret
         1001: {
             name: "[s]Powerpoint simulation",
@@ -3464,7 +3528,9 @@ graduation: {
             ["raw-html", function () { return player.ac.r.eq(3)?"<h3>Altered achievement":"" }, { "color": "lime", "font-size": "18px"}],
             ["raw-html", function () { return player.ac.r.eq(4)?"<h3>Meta-research achievement":"" }, { "color": "purple", "font-size": "18px"}],
             ["raw-html", function () { return player.ac.r.eq(5)?"<h3>Graduation II achievement":"" }, { "color": "white", "font-size": "18px"}],
+            ["raw-html", function () { return player.ac.r.eq(5)?"<h3>Every completed achievement additionally increases Graduate gain by 4% <br> (Currently : "+format(player.ac.achievements.filter(x => x>=111 && x<=139).length * 0.04 + 1,2)+"x)":"" }, { "color": "white", "font-size": "18px"}],
             ["raw-html", function () { return player.ac.r.eq(6)?"<h3>Graduation sacrifice achievement":"" }, { "color": "aqua", "font-size": "18px"}],
+            ["raw-html", function () { return player.ac.r.eq(6)?"<h3>Every completed achievement additionally increases Graduate and Bits gain by 3% <br> (Currently : "+format(player.ac.achievements.filter(x => x>=141 && x<=169).length * 0.03 + 1,2)+"x)":"" }, { "color": "aqua", "font-size": "18px"}],
             ["blank","15px"],
             ["raw-html", function () { return player.ac.r.eq(3)?"<h3>* You must complete these achievement inside of Altered realm * <br>* The second row cannot be completed until you have 6 or more Tetration *":"" }, { "color": "lime", "font-size": "18px"}],
             ["blank","15px"],
@@ -3915,7 +3981,7 @@ addLayer("t", {
             title: "Faster Time X",
             description: "Gamespeed boosts Tickspeed",
             cost: d("1e9"),
-            tooltip:"Tickspeed multiplier equal to Gamespeed , higher than 1x",
+            tooltip:"Tickspeed multiplier equal to Gamespeed , higher than 1x . ",
             ttStyle() {
                 return {
                     "color":"#beed72",
@@ -4458,7 +4524,7 @@ addLayer("n", {
         if (hasAchievement('ac',81) && !inChallenge('al',11)) multi = multi.times(achievementEffect('ac',81))
         if (hasAchievement('ac',87) && !inChallenge('al',11)) multi = multi.times(achievementEffect('ac',87))
         if (player.d.unlocked) multi = multi.times(tmp.d.effect)
-        
+        if(player.g.effectWeight[0].gte(1)) multi = multi.times(tmp.e.effect.root(100).pow(player.g.effectWeight[0]))
         if(player.g.timer2.lte(0.5)) multi = d(1)
         return multi
     },
@@ -4467,6 +4533,7 @@ addLayer("n", {
         if (inChallenge('al',11)) exp = exp.times(player.al.alteredpow)
         if (inChallenge('r',11)) exp = exp.times(player.r.chb)
         if(hasSuperAchievement('ac',18)) exp = exp.times(1.05)
+        if(player.g.effectWeight[0].gte(1)) exp = exp.times(tmp.e.expeffect.root(100).pow(player.g.effectWeight[0]))
         exp = exp.times(player.g.artifactset1[0])
         if (inChallenge('m',12)) exp = exp.times(0.5)
         if(inChallenge('d',13)) exp = exp.times(0.1)
@@ -6627,6 +6694,7 @@ addLayer("m", {
         if (hasUpgrade('m', 42)) multi = multi.times(2)
         if (hasAchievement('ac',26)) multi = multi.times(1.1)
         if (hasAchievement('ac',84) && !inChallenge('al',11)) multi = multi.times(achievementEffect('ac',84))
+        if(player.g.effectWeight[1].gte(1)) multi = multi.times(tmp.e.effect.root(100).pow(player.g.effectWeight[1]))
 
         return multi 
     },
@@ -6634,6 +6702,7 @@ addLayer("m", {
         let exp = d(1)
         if(inChallenge('al',11)) exp = exp.times(player.al.alteredpow)
         if (inChallenge('r',11)) exp = exp.times(player.r.chb)
+        if(player.g.effectWeight[1].gte(1)) exp = exp.times(tmp.e.expeffect.root(100).pow(player.g.effectWeight[1]))
         if (inChallenge('e',13)) exp = exp.times(0)
         if(player.r.c10.gt(0) && player.r.c10.neq(4)) exp = d(0)
         exp = exp.times(player.g.artifactset1[3])
@@ -7095,7 +7164,7 @@ addLayer("d", {
         let multi = d(1).times(buyableEffect('r',102)).times(player.r.da2)
         if (hasAchievement('ac',37)) multi = multi.times(2)
         if (hasAchievement('ac',85) && !inChallenge('al',11)) multi = multi.times(achievementEffect('ac',85))
-
+        if(player.g.effectWeight[2].gte(1)) multi = multi.times(tmp.e.effect.root(100).pow(player.g.effectWeight[2]))
         return multi 
     },
     gainExp() {                             // Returns the exponent to your gain of the prestige resource.
@@ -7103,6 +7172,7 @@ addLayer("d", {
         if (player.r.tetration.gte(5)) exp = exp.times(1.1)
         if(hasSuperAchievement('ac',37)) exp = exp.times(1.04)
         exp = exp.times(player.g.artifactset1[4])
+        if(player.g.effectWeight[2].gte(1)) exp = exp.times(tmp.e.expeffect.root(100).pow(player.g.effectWeight[2]))
         if (inChallenge('r',11)) exp = exp.times(player.r.chb)
         if(inChallenge('al',11)) exp = exp.times(player.al.alteredpow)
         if (inChallenge('e',13)) exp = exp.times(0)
@@ -7543,6 +7613,7 @@ addLayer("e", {
         b = b.times(d(2).pow(player.e.perkpower.div(10)))
         b = b.div(buyableEffect('e',42))
         if(hasAchievement('ac',131)) b = b.div(achievementEffect('ac',131))
+        if(hasAchievement('ac',152)) b = b.div(achievementEffect('ac',152))
         player.e.perkpowerinterval = b
         let k = d(2).log(10).times(2.30258509299).div(player.e.perkpowerinterval).times(-1)
         player.e.perkpowerincrease = player.e.maxperkpower.sub(player.e.perkpower).sub((player.e.maxperkpower.sub(player.e.perkpower)).times(d(Math.E).pow(d(player.r.truegamespeed).times(k))))
@@ -7731,7 +7802,122 @@ addLayer("e", {
             unlocked() {return hasMilestone('e',7) && !player.r.buyables[121].gte(1)},
         }
     },
+    clickables: {
+        11: {
+            title() { return "Add weight to Number" },
+            canClick() { return player.g.EWid.neq(0)},
+            onClick() {
+            player.g.EWid = d(0)
+            },
+            style() {
+            if(!this.canClick()) return Qcolor('aqua',40)   
+            return Qcolor('black',40)
+        },
+        },
+        12: {
+            title() { return "Add weight to Multiplicative" },
+            canClick() { return player.g.EWid.neq(1)},
+            onClick() {
+            player.g.EWid = d(1)
+            },
+            style() {
+            if(!this.canClick()) return Qcolor('teal',40)   
+            return Qcolor('black',40)
+        },
+        },
+        13: {
+            title() { return "Add weight to Divisive" },
+            canClick() { return player.g.EWid.neq(2)},
+            onClick() {
+            player.g.EWid = d(2)
+            },
+            style() {
+            if(!this.canClick()) return Qcolor('crimson',40)   
+            return Qcolor('black',40)
+        },
+        },
+        14: {
+            title() { return "+1 weight" },
+            canClick() { return player.g.EW.gte(1)},
+            onClick() {
+            player.g.EW = player.g.EW.sub(1)
+            player.g.effectWeight[toNumber(player.g.EWid)] =  player.g.effectWeight[toNumber(player.g.EWid)].add(1)
+            },
+            style() {
+            if(this.canClick()) return Qcolor('lime',40)   
+            return Qcolor('black',40)
+        },
+        },
+        15: {
+            title() { return "+5 weight" },
+            canClick() { return player.g.EW.gte(5)},
+            onClick() {
+                player.g.EW = player.g.EW.sub(5)
+                player.g.effectWeight[toNumber(player.g.EWid)] =  player.g.effectWeight[toNumber(player.g.EWid)].add(5)
+                },
+            style() {
+            if(this.canClick()) return Qcolor('green',40)   
+            return Qcolor('black',40)
+        },
+        },
+        16: {
+            title() { return "25% of current weight <br> ("+format(player.g.EW.div(4).floor(),0)+" weight)" },
+            canClick() { return player.g.EW.gte(4)},
+            onClick() {
+                let amt = player.g.EW.div(4).floor()
+                player.g.EW = player.g.EW.sub(amt)
+                player.g.effectWeight[toNumber(player.g.EWid)] =  player.g.effectWeight[toNumber(player.g.EWid)].add(amt)
+                },
+            style() {
+            if(this.canClick()) return Qcolor('cyan',40)   
+            return Qcolor('black',40)
+        },
+        },
+        17: {
+            title() { return "Current weight <br> ("+format(player.g.EW,0)+" weight)" },
+            canClick() { return player.g.EW.gte(1)},
+            onClick() {
+                let amt = player.g.EW
+                player.g.EW = player.g.EW.sub(amt)
+                player.g.effectWeight[toNumber(player.g.EWid)] =  player.g.effectWeight[toNumber(player.g.EWid)].add(amt)
+                },
+            style() {
+            if(this.canClick()) return Qcolor('teal',40)   
+            return Qcolor('black',40)
+        },
+        },
+        18: {
+            title() { return "Evenly splits 25% weight <br> ("+format(player.g.EW.div(12).floor(),0)+" weight each)" },
+            canClick() { return player.g.EW.gte(12)},
+            onClick() {
+                let amt = player.g.EW.div(12).floor()
+                player.g.EW = player.g.EW.sub(amt.times(3))
+                player.g.effectWeight[0] =  player.g.effectWeight[0].add(amt)
+                player.g.effectWeight[1] =  player.g.effectWeight[1].add(amt)
+                player.g.effectWeight[2] =  player.g.effectWeight[2].add(amt)
 
+                },
+            style() {
+            if(this.canClick()) return Qcolor('blue',40)   
+            return Qcolor('black',40)
+        },
+        },
+        19: {
+            title() { return "Evenly splits 100% weight <br> ("+format(player.g.EW.div(3).floor(),0)+" weight each)" },
+            canClick() { return player.g.EW.gte(3)},
+            onClick() {
+                let amt = player.g.EW.div(3).floor()
+                player.g.EW = player.g.EW.sub(amt.times(3))
+                player.g.effectWeight[0] =  player.g.effectWeight[0].add(amt)
+                player.g.effectWeight[1] =  player.g.effectWeight[1].add(amt)
+                player.g.effectWeight[2] =  player.g.effectWeight[2].add(amt)              
+            },
+            style() {
+            if(this.canClick()) return Qcolor('indigo',40)   
+            return Qcolor('black',40)
+        },
+        },
+    },
     buyables: {
         10: {
             title() {
@@ -8302,13 +8488,18 @@ addLayer("e", {
                 unlocked() {return player.g.s4best.gte(2)},
                 content: [
                     ["blank", "25px"],
-                    ["raw-html", function () { return "<h3>You have 45 Exponent weight remain "}, { "color": "lime", "font-size": "22px"}],
+                    ["raw-html", function () { return "<h3>You have "+format(player.g.EW,0)+" Exponent weight remaining"}, { "color": "lime", "font-size": "22px"}],
                     ["raw-html", function () { return "<h3>Assign Exponent weight to resources (Number , Multiplicative , Divisive) to boost them"}, { "color": "white", "font-size": "17px"}],
+                    ["raw-html", function () { return "<h3>You can respec weight on Graduation reset"}, { "color": "white", "font-size": "17px"}],
                     ["raw-html", function () { return "<h3>Each Exponent weight boost a resource equal to 1% of the Exponent effect <br> Equal to "+f(tmp.e.effect.root(100))+"x and ^"+format(tmp.e.expeffect.root(100),4)+" to that resource gain"}, { "color": "lime", "font-size": "22px"}],
                     ["blank","25px"],
-                    ["row", [["buyable", 33],["buyable",34]]],
-                    ["row", [["buyable", 41],["buyable",42]]],
-
+                    ["row", [["clickable", 11],["clickable",12],["clickable",13]]],
+                    ["blank","25px"],
+                    ["raw-html", function () { return "<h3>Number : "+format(player.g.effectWeight[0],0)+" weight => "+f(tmp.e.effect.root(100).pow(player.g.effectWeight[0]))+"x and ^"+format(tmp.e.expeffect.root(100).pow(player.g.effectWeight[0]),4)+" to Number gain"}, { "color": function() {return player.g.EWid.eq(0)?"yellow":"white"}, "font-size": "22px"}],
+                    ["raw-html", function () { return "<h3>Multiplicative : "+format(player.g.effectWeight[1],0)+" weight => "+f(tmp.e.effect.root(100).pow(player.g.effectWeight[1]))+"x and ^"+format(tmp.e.expeffect.root(100).pow(player.g.effectWeight[1]),4)+" to Multiplicative gain"}, { "color": function() {return player.g.EWid.eq(1)?"yellow":"white"}, "font-size": "22px"}],
+                    ["raw-html", function () { return "<h3>Divisive : "+format(player.g.effectWeight[2],0)+" weight => "+f(tmp.e.effect.root(100).pow(player.g.effectWeight[2]))+"x and ^"+format(tmp.e.expeffect.root(100).pow(player.g.effectWeight[2]),4)+" to Divisive gain"}, { "color": function() {return player.g.EWid.eq(2)?"yellow":"white"}, "font-size": "22px"}],
+                    ["blank","25px"],
+                    ["row", [["clickable", 14],["clickable",15],["clickable",16],["clickable",17],["clickable",18],["clickable",19]]],
                 ]
             },
     },},
@@ -8322,8 +8513,8 @@ addLayer("e", {
                 return "<h3>Exponent provide these bonuses :  ^"+format(tmp.e.expeffect,4)+" and x"+format(tmp.e.effect)+" to Points gain"
             }, { "color": "purple", "font-size": "22px"}],
             ["raw-html", function () { 
-                return "<h3>Exponent also provide : ^"+format(tmp.e.expeffect.root(4),4)+" Number gain (Altered realm depth 2)"
-            }, { "color": "lime", "font-size": "22px"}],
+                return "<h3><i>Unspent Exponent weight : "+format(player.g.EW,0)+" (Altered realm depth 2)"
+            }, { "color": "lime", "font-size": "18px"}],
               ["raw-html", function () { 
                 return player.g.rank.gte(2)?"<h3>[Graduation II] : Exponent boosts Energy effect by ^"+format(tmp.e.expeffect.pow(1.5))+"":""
             }, { "color": "aqua", "font-size": "22px"}],
@@ -8590,6 +8781,7 @@ addLayer("r", {
         if(hasUpgrade('t',23)) dtime = dtime.add(upgradeEffect('t',23))
         if(hasUpgrade('t',24)) dtime = dtime.add(upgradeEffect('t',24))
         if(hasAchievement('ac',51)) dtime = dtime.times(2)
+        if(hasAchievement('ac',159)) dtime = dtime.times(achievementEffect('ac',159))
         if(hasAchievement('ac',62)) dtime = dtime.times(achievementEffect('ac',62))
         if(hasUpgrade('t',44)) dtime = dtime.times(upgradeEffect('t',44))
         if(player.r.tetration.gte(10)) dtime = dtime.times(player.r.challengeshard.add(1))
@@ -8880,12 +9072,11 @@ addLayer("r", {
         }
         //challenge stuff 
             let weaken = (100 - (player.g.artifactset4[3] - 1 )) / 100
-            if(player.g.sacrificeactive[6].gte(1)) weaken = (100 - (player.g.artifactset4[3] * 2.5 - 1)) / 100 
             player.r.potshard = player.r.c1.add(player.r.c2).add(player.r.c3).add(player.r.c4).add(player.r.c5).add(player.r.c6).add(player.r.c7).add(player.r.c8)
             let ulti = player.r.c8.times(0.25)
             player.r.cha = d(0.84).pow(player.r.c1.add(ulti)).pow(weaken)
             player.r.chb = d(0.917).pow(player.r.c2.add(ulti)).pow(weaken)
-            player.r.chc = player.r.c3.add(ulti).add(1).pow(player.r.c3.add(ulti).pow(1.25))
+            player.r.chc = player.r.c3.add(ulti).add(1).pow(player.r.c3.add(ulti).pow(1.25)).pow(weaken ** 2)
             player.r.chd = d(0.9).pow(player.r.c4.add(ulti)).pow(weaken)
             player.r.che = d(1.25).pow(player.r.c5.add(ulti)).pow(weaken)
             player.r.chf = d(1.08).pow(player.r.c5.add(ulti)).pow(weaken)
@@ -10078,7 +10269,9 @@ addLayer("r", {
             },
             unlocked() {return hasAchievement('ac',96)},
             tooltip() { 
-                return "Generate "+Qcolor2('purple1',""+format(this.effect()))+" => "+Qcolor2('purple1',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" "+Qcolor2('blue2','Energy')+" . Cost : "+Qcolor2('blue1',format(this.cost()))+" "+Qcolor2('blue2','Energy')+"" 
+                let bulk = d(1)
+                if(hasAchievement('ac',153)) bulk = bulk.add(getBuyableAmount(this.layer,this.id).div(20).floor())
+                return "Generate "+Qcolor2('purple1',""+format(this.effect()))+" => "+Qcolor2('purple1',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(bulk))))+" "+Qcolor2('blue2','Energy')+" . Cost : "+Qcolor2('blue1',format(this.cost()))+" "+Qcolor2('blue2','Energy')+"" 
             },
             ttStyle() {
                 return {
@@ -10097,7 +10290,9 @@ addLayer("r", {
                     player.r.energy = player.r.energy.sub(this.cost())
                 }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
-
+                if(hasAchievement('ac',153)) {
+                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).times(1.05).floor())
+                }
             },
             effect(x) {
                 let b = d(1.25)
@@ -10123,7 +10318,9 @@ addLayer("r", {
             },
             unlocked() {return hasAchievement('ac',96) && player.g.rank.gte(2)},
             tooltip() { 
-                return ""+Qcolor2('purple1',"x"+format(this.effect()))+" => "+Qcolor2('purple1',"x"+format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" "+Qcolor2('blue2','Energy')+" gain ("+Qcolor2('la','based on')+" "+Qcolor2('blue2','Energy')+") . Cost : "+Qcolor2('blue1',format(this.cost()))+" "+Qcolor2('blue2','Energy')+" " 
+                let bulk = d(1)
+                if(hasAchievement('ac',153)) bulk = bulk.add(getBuyableAmount(this.layer,this.id).div(20).floor())
+                return ""+Qcolor2('purple1',"x"+format(this.effect()))+" => "+Qcolor2('purple1',"x"+format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(bulk))))+" "+Qcolor2('blue2','Energy')+" gain ("+Qcolor2('la','based on')+" "+Qcolor2('blue2','Energy')+") . Cost : "+Qcolor2('blue1',format(this.cost()))+" "+Qcolor2('blue2','Energy')+" " 
             },
             ttStyle() {
                 return {
@@ -10142,7 +10339,9 @@ addLayer("r", {
                     player.r.energy = player.r.energy.sub(this.cost())
                 }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
-
+                if(hasAchievement('ac',153)) {
+                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).times(1.05).floor())
+                }
             },
             effect(x) {
                 let base = player.r.energy.add(10).log(10).pow(x).pow(buyableEffect('r',601))
@@ -11184,8 +11383,8 @@ microtabs: {
                     ["raw-html", function () { return player.r.tetration.gte(20)?"<h2> At Tetration 21 : Unlock 'Energy Enhancer' , giving more Energy":""}, { "color": function(){return player.r.tetration.gte(21)?"green":"red"}, "font-size": "14px"}],
                     ["raw-html", function () { return player.r.tetration.gte(21)?"<h2> At Tetration 22 : Unlock Twilight crystal , boosting the effectiveness of ALL twilight resource buyables":""}, { "color": function(){return player.r.tetration.gte(22)?"green":"red"}, "font-size": "14px"}],
                     ["raw-html", function () { return player.r.tetration.gte(22)?"<h2> At Tetration 23 : +2 and x1.5 Graduate gain":""}, { "color": function(){return player.r.tetration.gte(23)?"green":"red"}, "font-size": "14px"}],
-                    ["raw-html", function () { return player.r.tetration.gte(23)?"<h2> At Tetration 24 : Unlock Twilight star , reducing the cost increase of <i>Twilight crystal</i>":""}, { "color": function(){return player.r.tetration.gte(24)?"green":"red"}, "font-size": "14px"}],
-                    ["raw-html", function () { return player.r.tetration.gte(24)?"<h2> At Tetration 25 : You may attempt <i>the test of corruption</i> in your next Graduation":""}, { "color": function(){return player.r.tetration.gte(25)?"green":"red"}, "font-size": "14px"}],
+                    ["raw-html", function () { return player.r.tetration.gte(23)?"<h2> At Tetration 24 : Unlock Twilight star , reducing the cost of <i>Twilight crystal</i>":""}, { "color": function(){return player.r.tetration.gte(24)?"green":"red"}, "font-size": "14px"}],
+                    ["raw-html", function () { return player.r.tetration.gte(24)?"<h2> At Tetration 25 : Win the game":""}, { "color": function(){return player.r.tetration.gte(25)?"green":"red"}, "font-size": "14px"}],
 
                     ["blank","25px"],
                     ["row",[["buyable",120]]],
@@ -11444,7 +11643,10 @@ addLayer("al", {
                 return format(getBuyableAmount(this.layer,this.id),0) + "<br/> Base C value  "
                } ,
             cost(x) { 
-                return d(1.2).pow(x.pow(1.1)).times(5).sub(5) },
+                let cost = d(1.2).pow(x.pow(1.1)).times(5).sub(5) 
+                cost = postcorruptiongain(cost , d(5) , d("1e500"))
+                return cost
+            },
             tooltip() {               
             return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Increase "+Qcolor2('a','c')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" <br> "+Qcolor2('n','Coefficient purchase multiplier')+" applied every "+Qcolor2('n',format(player.al.cmilestone,0))+" levels" },
             canAfford() { return player.al.points.gte(this.cost())},
@@ -11478,7 +11680,10 @@ addLayer("al", {
                 return format(getBuyableAmount(this.layer,this.id),0) + "<br/> Base B value  "
                } ,
             cost(x) { 
-                return d(1.3).pow(x.pow(1.1)).times(25) },
+                let cost = d(1.3).pow(x.pow(1.1)).times(25) 
+                cost = postcorruptiongain(cost , d(5) , d("1e500"))
+                return cost
+            },
             tooltip() { 
                 let power = d(1)
                 if(hasAchievement('ac',156)) power = power.times(achievementEffect('ac',156))
@@ -11516,7 +11721,10 @@ addLayer("al", {
                 return format(getBuyableAmount(this.layer,this.id),0) + "<br/> Base A value  "
                } ,
             cost(x) { 
-                return d(1.4).pow(x.pow(1.1)).times(125) },
+                let cost = d(1.4).pow(x.pow(1.1)).times(125) 
+                cost = postcorruptiongain(cost , d(5) , d("1e500"))
+                return cost
+            },
             tooltip() { 
                 return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Increase "+Qcolor2('a','a')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" <br> "+Qcolor2('n','Coefficient purchase multiplier')+" applied every "+Qcolor2('n',format(player.al.amilestone,0))+" levels" },
             canAfford() { return player.al.points.gte(this.cost())},
@@ -11552,7 +11760,10 @@ addLayer("al", {
             cost(x) { 
                 let growth = d(0.5).div(buyableEffect('al',22))
                 let scaling = growth.add(1)
-                return scaling.pow(x.pow(1.1)).times(10) },
+                let cost = scaling.pow(x.pow(1.1)).times(10) 
+                cost = postcorruptiongain(cost , d(5) , d("1e500"))
+                return cost
+            },
             tooltip() { 
                 return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Increase "+Qcolor2('a','x')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" <br> "+Qcolor2('n','Variable X purchase multiplier')+" applied every level "+Qcolor2('green3','above 10')+"" },
             canAfford() { return player.al.points.gte(this.cost())},
@@ -11633,7 +11844,10 @@ addLayer("al", {
         cost(x) { 
             let growth = d(2)
             let scaling = growth.add(1)
-            return scaling.pow(x.pow(1.1)).times(d("1e50")) },
+            let cost =  scaling.pow(x.pow(1.1)).times(d("1e50")) 
+            cost = postcorruptiongain(cost , d(5) , d("1e500"))
+            return cost
+        },
         tooltip() {
             return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Increase "+Qcolor2('a','y')+" by " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+"" },
         canAfford() { return player.al.points.gte(this.cost())},
@@ -11658,7 +11872,10 @@ addLayer("al", {
         cost(x) { 
             let growth = d(9)
             let scaling = growth.add(1)
-            return scaling.pow(x.pow(1.05)).times(d("1e75")) },
+            let cost = scaling.pow(x.pow(1.05)).times(d("1e75")) 
+            cost = postcorruptiongain(cost , d(5) , d("1e500"))
+            return cost
+        },
         tooltip() {
             return "Cost : "+Qcolor2('a',format(this.cost()))+" algebric <br/> Effect : Variable "+Qcolor2('a','y')+" effect is " +Qcolor2('a',format(this.effect())) +" => "+Qcolor2('a',format(this.effect(d(getBuyableAmount(this.layer,this.id)).add(1))))+" % stronger" },
         canAfford() { return player.al.points.gte(this.cost())},
@@ -11881,9 +12098,10 @@ addLayer("al", {
         },
         effect(x) {
             let fact = player.al.points.add(10).pow(0.25).pow(x)
+            if(x.gt(5)) fact = fact.pow(x.div(5).add(1))
+            if(inChallenge('al',11)) fact = fact.pow(0.1)
             fact1 = softcap(fact,d("1e100"),0.1)
-            if(x.gt(5)) fact1 = fact1.pow(x.div(25).add(1))
-            if(inChallenge('al',11)) fact1 = fact1.pow(0.1)
+            fact1 = postcorruptiongain(fact1,d(0.25),d("1e500"))
             return fact1        
         },
         style() {
@@ -12345,6 +12563,7 @@ microtabs: {
                 ["blank", "25px"],
                 ["row", [["buyable", 11],["buyable", 12],["buyable", 13],["buyable",14]]],
                 ["blank", "25px"],
+                ["raw-html", function () { return player.al.points.gte("1e500")?"<h3>All algebric buyable costs scale faster at "+f(d("e500"))+" Algebric":""}, { "color": "red", "font-size": "22px"}],
                 ["raw-html", function () { return hasAchievement('ac',124)?"<h3>y = "+format(player.al.y)+" (+"+format(player.al.deltay)+"/s) , translated to "+format(player.al.purchasemultiplier,4)+"x bigger Coefficients and Variable X purchase multiplier":""}, { "color": "lime", "font-size": "22px"}],
                 ["blank","25px"],
                 ["row", [["buyable", 16],["buyable" , 17]]],

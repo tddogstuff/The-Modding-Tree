@@ -451,6 +451,9 @@ function unlockSAch(layer , id) {
 }
 //additional utility
 //graduation
+/** 
+*Generate the unique ID of the Artifact effect 
+**/
 function RandomArtifactID(index,binding) {
 	if(binding === undefined) binding = []
 	let array = [0,0,0,0]
@@ -475,6 +478,9 @@ function RandomArtifactID(index,binding) {
 
 	return array;
   }
+/** 
+*Generate an array of number representing the artifact quality , with quality affecting the randomness
+**/
 function RandomArtifactQuality(quality) {  
 	if(quality === undefined) quality = d(0)
 	quality = quality.add(100)
@@ -543,13 +549,13 @@ function maxEffect(id , level) {
 		case 25:
 		  return 9.85 + 0.15 * level; //Gamespeed
 		case 26:
-		  return 1.49 + 0.01 * level; //Tickspeed
+		  return 1.39 + 0.01 * level; //Tickspeed
 		 case 27:
 		  return 9.85 + 0.15 * level; //Prestige time
 		case 28:
 		  return 21; //Challenge reward weaken , cannot scale with level
 		case 29:
-		  return 100 - ((100 - 80 / ((level - 1) / 2500 + 1)) + 1); //Exponent cost scaling base reduction
+		  return 100 - ((80 / ((level - 1) / 2500 + 1)) + 1); //Exponent cost scaling base reduction
 		 case 30:
 		  return Math.pow(0.5 , 1 + (level - 1)/25); //Lower all Pre-research challenge goal
 		case 31:
@@ -561,6 +567,9 @@ function maxEffect(id , level) {
 		  return 1;
 	}
 }
+/** 
+*Get an array , containing the effect of Artifact given its ID and Quality 
+**/
 function getArtifactEffect(idarray,qualityarray,a) {
 	let id = idarray
 	let quality = qualityarray
@@ -577,6 +586,9 @@ function getArtifactEffect(idarray,qualityarray,a) {
 	return effect
 	
 }
+/** 
+*Handle displaying Artifact effect as a string
+**/
 function DisplayArtifactEffect(id,effect) {
 	let e = effect
   switch (id) {
@@ -652,6 +664,9 @@ function DisplayArtifactEffect(id,effect) {
       return "";
   }
 }
+/** 
+*Update the Artifact text display
+**/
 function updateArtifactEffect() {
 	for (let i = 0; i < 4; i++) {
 		while (true) {
@@ -663,6 +678,9 @@ function updateArtifactEffect() {
 		  }
 		}	
 }  
+/** 
+*Generate a 8 effect array with successive ID and will sort the effect correspondingly 
+**/
 function AllArtifactEffect(id, effect, index) {
     let b1 = id
     let array = [];
@@ -682,6 +700,9 @@ function AllArtifactEffect(id, effect, index) {
     return array.slice(index * 8, (index + 1) * 8);
 }
 //DO NOT CALL THIS
+/** 
+*Update the effect of all artifact , which do not include the text
+**/
 function updateAllAritfactEffect() { 
 
 	player.g.artifactset1 = AllArtifactEffect(player.g.artifact1,player.g.artifact1eff,0)
