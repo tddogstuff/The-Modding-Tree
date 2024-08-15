@@ -535,11 +535,11 @@ function maxEffect(id , level) {
 		case 18:
 		  return 1.192 + 0.008 * level; // Perk power from Research
 		case 19:
-		  return 1.195 + 0.005 * level;	 //Points boost effect
+		  return 1.245 + 0.005 * level;	 //Points boost effect
 		case 20:
-		  return 1.195 + 0.005 * level; //Improvement effect
+		  return 1.245 + 0.005 * level; //Improvement effect
 		case 21:
-		  return 1.73 + 0.02 * level; //Generator strength
+		  return 1.98 + 0.02 * level; //Generator strength
 		case 22:
 		  return 3.6 + 0.4 * level; //Perk power effect , boosting ASE cost reduction 
 		case 23:
@@ -547,13 +547,13 @@ function maxEffect(id , level) {
 		case 24:
 		  return 72 + 4 * level; //Twilight perk strength
 		case 25:
-		  return 9.85 + 0.15 * level; //Gamespeed
+		  return 24 + 1 * level; //Gamespeed
 		case 26:
-		  return 1.39 + 0.01 * level; //Tickspeed
+		  return 1.24 + 0.01 * level; //Tickspeed
 		 case 27:
-		  return 9.85 + 0.15 * level; //Prestige time
+		  return 28 + 2 * level; //Prestige time
 		case 28:
-		  return 21; //Challenge reward weaken , cannot scale with level
+		  return 26; //Challenge reward weaken , cannot scale with level
 		case 29:
 		  return 100 - ((80 / ((level - 1) / 2500 + 1)) + 1); //Exponent cost scaling base reduction
 		 case 30:

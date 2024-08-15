@@ -27,12 +27,20 @@ let changelog = `<h1>Changelog:</h1><br>
 	- Completing post Graduation reward grant additional reward <br>
 	- Algebric costs now increase faster above 1e500 <br>
 	- Algebric points boost is now weakened again above 1e500x <br>
-	- Nerfed the Charm Artifact effect 'Exponent cost reduction' , your Artifact will be readjusted <br>
+	- Nerfed Charm Artifact effect 'Exponent cost reduction' , Max effect : 80% => 20% <br>
+	- Nerfed Charm Artifact effect 'Tickspeed' , max effect : ^1.50 => ^1.25 <br>
+	- Buffed Charm Artifact effect 'Gamespeed' , 'Prestige time' , max effect : 10x => 25x , 30x respectively <br>
+	- Buffed Ring Artifact Effect 'Generator strength' , max effect : 1.75x => 2x <br>
+	- Buffed Ring Artifact Effect 'Improvement effect' , 'Points boost effect' , max effect : ^1.2 => ^1.25 <br>
+	- Reduce the cost of the first Bits tree perk (Exponent cost reduction) from 17 => 15 <br>
+	- Tetration Sacrifice reward changed <br>
 	*** Fixed : <br>
 	- Fixed Graduation milestone 1 and 2 not working <br>
+	- Fixed NaN due to not buying Charm yet <br>
 	*** Others : <br>
 	- Tweaked number inverting e.x 2e-10 will become 1/(5e10) <br>
-	- Fixed resources NOT being reset again <br>
+	*** Resource still retain post reset!!! <br>
+	- Currently investigating <br>
 	*** Notes : <br>
 	- (Future v0.0.4 patch note will be appended) <br>
 	<h3 style='color: orange'> v0.0.4a - Graduation I balancing </h3> <br>

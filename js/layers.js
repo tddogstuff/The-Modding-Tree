@@ -2644,10 +2644,12 @@ addLayer("ac", {
             name: "Improving Operator",
             done() {return player.al.operation.gte("1e600")},
             tooltip() {
-                return "Reach "+f(d("e600"))+" Operation <br> Reward : ^1.5 to base Operation gain per digit of unspent MR , minus 1 <br> Currently : ^"+format(this.effect())+""
+                return "Reach "+f(d("e600"))+" Operation <br> Reward : ^1.5 to base Operation gain per digit of unspent MR , minus 1 <br> Currently : ^"+format(this.effect())+" , effect nerfed above ^8" 
             },
             effect() {
-                return d(1.5).pow(player.r.metaresearch.max(1).log(10).floor())
+                let base = d(1.5).pow(player.r.metaresearch.max(1).log(10).floor())
+                if(base.gte(8)) base = base.times("1.25e7").log(10)
+                return base
             },
             style() {
                 return Qcolor3('aqua')
@@ -3238,7 +3240,7 @@ addLayer("ac", {
         162: {
             name: "Points overload",
             done() {return player.points.gte("e15000")},
-            tooltip() {return "Obtain "+f(d("e15000"))+" Points <br> Reward : "},
+            tooltip() {return "Obtain "+f(d("e15000"))+" Points <br> Reward : +2 Metabits storage"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
                 return Qcolor3('aqua')
@@ -4934,7 +4936,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         21: {
@@ -4951,8 +4953,8 @@ addLayer("n", {
             display() { 
                 return "Raise "+Qcolor2('e','number')+" gain by "+Qcolor2('a',"^"+format(this.effect()))+" <br> Cost : "+Qcolor2('n',format(this.cost(),0))+" "+Qcolor2('a',"metabits")+" " },
             canAfford() {
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
-                return player.g.metabits.gte(this.cost())
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && player.n.buyables[11].gte(2) 
+                return player.g.metabits.gte(this.cost()) && player.n.buyables[11].gte(2) 
             },            
             buy() {
                 let base = d(1)
@@ -4968,9 +4970,8 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)},
-            unlocked() {return player.n.buyables[11].gte(2)},
         },
         22: {
             title() {
@@ -4987,8 +4988,8 @@ addLayer("n", {
             display() { 
                 return "Raise "+Qcolor2('e','multiplicative')+" gain by "+Qcolor2('a',"^"+format(this.effect()))+" <br> Cost : "+Qcolor2('n',format(this.cost(),0))+" "+Qcolor2('a',"metabits")+" " },
             canAfford() {
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
-                return player.g.metabits.gte(this.cost())
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && player.n.buyables[11].gte(2) 
+                return player.g.metabits.gte(this.cost()) && player.n.buyables[11].gte(2) 
             },            
             buy() {
                 let base = d(1)
@@ -5004,9 +5005,8 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)},
-            unlocked() {return player.n.buyables[11].gte(2)},
 
         },
         31: {
@@ -5024,8 +5024,8 @@ addLayer("n", {
             display() { 
                 return "Raise "+Qcolor2('e','divisive')+" gain by "+Qcolor2('a',"^"+format(this.effect()))+" <br> Cost : "+Qcolor2('n',format(this.cost(),0))+" "+Qcolor2('a',"metabits")+" " },
             canAfford() {
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
-                return player.g.metabits.gte(this.cost())
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && player.n.buyables[11].gte(2) 
+                return player.g.metabits.gte(this.cost()) && player.n.buyables[11].gte(2) 
             },            
             buy() {
                 let base = d(1)
@@ -5038,11 +5038,10 @@ addLayer("n", {
                 let base = x.div(100).add(1)
                 return base      
             },
-            unlocked() {return player.n.buyables[11].gte(2)},
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         32: {
@@ -5059,8 +5058,8 @@ addLayer("n", {
             display() { 
                 return "Reduce "+Qcolor2('e','exponent')+" cost scaling base by "+Qcolor2('a',""+format(this.effect(),3)+"x")+" <br> Cost : "+Qcolor2('n',format(this.cost(),0))+" "+Qcolor2('a',"metabits")+" " },
             canAfford() {
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
-                return player.g.metabits.gte(this.cost())
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && player.n.buyables[11].gte(2) 
+                return player.g.metabits.gte(this.cost()) && player.n.buyables[11].gte(2) 
             },            
             buy() {
                 let base = d(1)
@@ -5069,7 +5068,6 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[11].gte(2)},
             effect(x) {
                 let base = d(1).add(x.div(250))
                 return base      
@@ -5077,7 +5075,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         33: {
@@ -5094,8 +5092,8 @@ addLayer("n", {
             display() { 
                 return "Decrease "+Qcolor2('e','research')+" cost by "+Qcolor2('a',"/"+format(this.effect())+"")+" <br> Cost : "+Qcolor2('n',format(this.cost(),0))+" "+Qcolor2('a',"metabits")+" " },
             canAfford() { 
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
-                return player.g.metabits.gte(this.cost())
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && player.n.buyables[11].gte(2) 
+                return player.g.metabits.gte(this.cost()) && player.n.buyables[11].gte(2) 
             },
             buy() {
                 let base = d(1)
@@ -5104,7 +5102,6 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[11].gte(2)},
             effect(x) {
                 let base = d(1.15).pow(x)
                 return base      
@@ -5112,7 +5109,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         41: {
@@ -5147,7 +5144,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         42: {
@@ -5182,7 +5179,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         43: {
@@ -5217,7 +5214,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         51: {
@@ -5252,7 +5249,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         52: {
@@ -5287,7 +5284,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         53: {
@@ -5322,7 +5319,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         61: {
@@ -5357,7 +5354,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         62: {
@@ -5392,7 +5389,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         63: {
@@ -5427,7 +5424,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         71: {
@@ -5462,7 +5459,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         72: {
@@ -5497,7 +5494,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         73: {
@@ -5532,7 +5529,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         81: {
@@ -5541,7 +5538,7 @@ addLayer("n", {
                } ,
             cost(x) { 
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return d(0)
-                return d(17) },
+                return d(15) },
             tooltip() {return this.display()},
             
             display() { 
@@ -5565,7 +5562,7 @@ addLayer("n", {
             purchaseLimit() {return d(1)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('aqua',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         91: {
@@ -5583,7 +5580,7 @@ addLayer("n", {
             display() { 
                 return "Multiplier to "+Qcolor2('y','Graduate')+" , which "+Qcolor2('red2',"decays")+" over time in this Graduation reset (CAN go below x1) <br> Effect : "+Qcolor2('y',"x"+format(this.effect(),5))+" <br> Cost : "+Qcolor2('s',format(this.cost(),0))+" "+Qcolor2('s',"metabits")+" " },
             canAfford() { 
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && !(getBuyableAmount('n',92).gte(1) || getBuyableAmount('n',93).gte(1))
                 return player.g.metabits.gte(this.cost())
             },
             buy() {
@@ -5593,7 +5590,7 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[71].gte(2) && player.n.buyables[72].gte(2) && player.n.buyables[73].gte(2) && hasUpgrade('n',74)},
+            unlocked() {return (player.n.buyables[71].gte(2) || player.n.buyables[72].gte(2) || player.n.buyables[73].gte(2) )&& hasUpgrade('n',74)},
             effect(x) {
                 let base = d(0.95).pow(x).pow(player.g.timer2.times(10).add(10).log(10).pow(0.6).sub(2.5))
                 return base      
@@ -5601,7 +5598,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         92: {
@@ -5619,7 +5616,7 @@ addLayer("n", {
             display() { 
                 return ""+Qcolor2('y',"x"+format(this.effect(),5)+" Graduate")+" <br> Cost : "+Qcolor2('s',format(this.cost(),0))+" "+Qcolor2('s',"metabits")+" " },
             canAfford() { 
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && !(getBuyableAmount('n',91).gte(1) || getBuyableAmount('n',93).gte(1))
                 return player.g.metabits.gte(this.cost())
             },
             buy() {
@@ -5629,7 +5626,7 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[71].gte(2) && player.n.buyables[72].gte(2) && player.n.buyables[73].gte(2) && hasUpgrade('n',74)},
+            unlocked() {return (player.n.buyables[71].gte(2) || player.n.buyables[72].gte(2) || player.n.buyables[73].gte(2) )&& hasUpgrade('n',74)},
             effect(x) {
                 let base = d(1.02).pow(x)
                 return base      
@@ -5637,7 +5634,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         93: {
@@ -5655,7 +5652,7 @@ addLayer("n", {
             display() { 
                 return "Reduced "+Qcolor2('y','Graduate')+" gain . But gain an "+Qcolor2('y',"increasing")+" Graduate bonus over time in this Graduation <br> Effect : "+Qcolor2('a',"x"+format(this.effect(),5))+" <br> Cost : "+Qcolor2('s',format(this.cost(),0))+" "+Qcolor2('s',"metabits")+" " },
             canAfford() { 
-                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) 
+                if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && !(getBuyableAmount('n',91).gte(1) || getBuyableAmount('n',92).gte(1))
                 return player.g.metabits.gte(this.cost())
             },
             buy() {
@@ -5665,7 +5662,7 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[71].gte(2) && player.n.buyables[72].gte(2) && player.n.buyables[73].gte(2) && hasUpgrade('n',74)},
+            unlocked() {return (player.n.buyables[71].gte(2) || player.n.buyables[72].gte(2) || player.n.buyables[73].gte(2)) && hasUpgrade('n',74)},
             effect(x) {
                 let base = d(1.1).pow(x).pow(player.g.timer2.times(2).add(10).log(10).pow(0.4).sub(1.5))
                 return base      
@@ -5673,7 +5670,7 @@ addLayer("n", {
             purchaseLimit() {return d(10)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('green',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         101: {
@@ -5698,7 +5695,7 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[71].gte(2) && player.n.buyables[72].gte(2) && player.n.buyables[73].gte(2) && hasUpgrade('n',74)},
+            unlocked() {return (player.n.buyables[91].gte(2))&& hasUpgrade('n',74)},
             effect(x) {
                 let base = d(4)
                 let ticks = d(pastTickTimes[0])
@@ -5713,7 +5710,7 @@ addLayer("n", {
             purchaseLimit() {return d(1)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('blue',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         103: {
@@ -5738,7 +5735,7 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[71].gte(2) && player.n.buyables[72].gte(2) && player.n.buyables[73].gte(2) && hasUpgrade('n',74)},
+            unlocked() {return (player.n.buyables[93].gte(2)) && hasUpgrade('n',74)},
             effect(x) {
                 let ratio = player.points.div(getPointGen().max(1)).max(1).add(9).log(10)
                 let base = ratio.max(1).root(3).div(2.5).add(0.6)
@@ -5747,7 +5744,7 @@ addLayer("n", {
             purchaseLimit() {return d(1)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('blue',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
         102: {
@@ -5772,7 +5769,7 @@ addLayer("n", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(base).min(this.purchaseLimit()))
 
             },
-            unlocked() {return player.n.buyables[71].gte(2) && player.n.buyables[72].gte(2) && player.n.buyables[73].gte(2) && hasUpgrade('n',74)},
+            unlocked() {return (player.n.buyables[92].gte(2)) && hasUpgrade('n',74)},
             effect(x) {
                 let base = d(2)
                 return base.pow(x)      
@@ -5780,7 +5777,7 @@ addLayer("n", {
             purchaseLimit() {return d(1)},
             style() {
                 if (player.n.buyables[this.id].gte(this.purchaseLimit())) return Qcolor('blue',100)
-                if (player.g.metabits.lt(this.cost())) return Qcolor('gray',100)
+                if (!this.canAfford()) return Qcolor('gray',100)
 				else return Qcolor('rgb(128,128,32)',100)}
         },
     },
@@ -7482,7 +7479,7 @@ addLayer("e", {
         perkpowerincrease: d(0),
         first: d(0),
         bonus: d(1),
-        strength: d(1),
+        strength: d(0.6),
     }},
     tooltip() {
         let a = f(player.e.perkpower)+" Perk power </br>"
@@ -7535,7 +7532,7 @@ addLayer("e", {
         if (hasUpgrade('m',74) && !player.r.buyables[121].gte(1)) cont = cont.times(0.95)
         if (player.r.tetration.gte(6)) cont = cont.times(0.96)
         if (hasUpgrade('n',52)) cont = cont.div(buyableEffect('n',32))
-        cont = cont.times((101 - player.g.artifactset4[4]) / 100)
+        if(!player.g.artifactset4 === undefined) cont = cont.times((101 - player.g.artifactset4[4]) / 100)
         if(hasSuperAchievement('ac',63)) cont = cont.div(d(1).add(achievementEffect('ac',63).div(1.5)))
         if (player.g.sacrificeactive[5].gte(1)) cont = cont.root(5)
         if (player.e.points.gt(player.g.corruption[5])) cont = cont.root((player.e.points.div(player.g.corruption[5])).max(1).root(2))
@@ -7645,7 +7642,7 @@ addLayer("e", {
             if(player.points.gte(static_cost('e',player.e.points.add(9)))) player.e.points = player.e.points.add(4)
             if(player.points.gte(static_cost('e',player.e.points.add(99)))) player.e.points = player.e.points.add(16)
         }
-        player.e.strength = tmp.e.gainExp.root(player.e.points.max(1).min(10).times(-1)).sub(1)
+        player.e.strength = tmp.e.gainExp.max(1).root(player.e.points.max(1).min(10).times(-1)).sub(1)
         player.e.first = d(0)       
     },
     doReset(resettingLayer) {
@@ -8678,7 +8675,7 @@ addLayer("r", {
     color: "#5020EC",                       // The color for this layer, which affects many elements.
     resource: "Research",            // The name of this layer's main prestige resource.
     layerName: "Research",
-    row: 10,                                 // The row this layer is on (0 is the first row).
+    row: 5,                                 // The row this layer is on (0 is the first row).
     branches:['al'],  
     baseResource: "exponents",                 // The name of the resource your prestige gain is based on.
     baseAmount() { return player.e.points },  // A function to return the current amount of baseResource.
@@ -10865,12 +10862,12 @@ addLayer("r", {
         },
         1104: {
             title() {
-                return "Enmetalize Bits <br> Require : "+format(this.cost2(),0)+" best Mastery"
+                return "Enmetalize Bits <br> Require : "+format(this.cost2(),0)+" Mastery"
                } ,
             cost2(x) {
-                return player.r.buyables[this.id].times(2000).add(64000)
+                return player.r.buyables[this.id].times(5000).add(200000)
             },
-            canAfford() { return player.g.enmetalizedbits.lt(player.g.storagedbitscap) && player.r.bestmastery.gte(this.cost2()) && player.r.timer.gte(0.25)},
+            canAfford() { return player.g.enmetalizedbits.lt(player.g.storagedbitscap) && player.r.mastery.gte(this.cost2()) && player.r.timer.gte(0.25)},
             unlocked() {return hasUpgrade('n',73)},
             buy() {
                 let base = d(1)
@@ -10943,6 +10940,8 @@ addLayer("r", {
             rewardDescription() {return "Increase your Challenge shard to be equal to total Modifier level"},
             unlocked() {return true},
             onEnter() {
+                options.gamepaused = true
+                player.r.timer2 = d(0)
                 player.r.savedtetration = player.r.tetration
                 player.r.savedresearch = player.r.points
                 let keep = []
@@ -10956,7 +10955,7 @@ addLayer("r", {
                 layerDataReset('n',keep)
                 player.r.points = d(0)
                 MRreset()
-                player.r.timer2 = d(0)
+                
                 player.r.tetration = d(0)
                 player.al.bankedprestigetime = player.r.prestigetime
                 player.r.prestigetime = d(0)
@@ -10973,8 +10972,12 @@ addLayer("r", {
                         player.r.milestones.splice(i, 1);
                         i--;   
                 }
-                doReset('e',true)
+                player.al.points = d(0)
+                player.al.extension = d(0)
+                player.al.operation = d(0)
+                player.r.timer2 = d(0)
                 player.points = getStartPoints()
+                options.gamepaused = false
             },
             onExit() {
                 if(player.r.mastery.gte(10000)) {

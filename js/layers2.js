@@ -70,9 +70,28 @@ addLayer("p", {
     },
     type: "none",
     automate() {
-        // Solar system : [0] refers to Sun , [9] refers to Dwarf planet / Oort cloud object . All planet order are based on their distance to the sun
         let ss = ['Sun','Mercury','Venus',['Earth','Moon'],['Mars','Phobos'],['Jupiter','Io','Europa','Ganymede','Callisto'],['Saturn','Titan','Mimas','Enceladus'],['Uranus','Oberon'],['Neptune','Triton','Proteus'],['Pluto','Makemake','Eris','Senda']]
-        // 
+        //
+        if(player.g.timer2.lte(0.5)) {
+            player.points = d(10)
+            player.n.points = d(0)
+            player.a.points = d(0)
+            player.s.points = d(0)
+            player.m.points = d(0)
+            player.d.points = d(0)
+            player.e.points = d(0)
+            player.r.points = d(0)
+            player.r.lightadd = d(0)
+            player.r.darksub = d(0)
+            player.r.twilight = d(0)
+            player.r.metaresearch = d(0)
+            player.r.energy = d(0)
+            player.r.prestigetime = d(0)
+            player.e.perkpower = d(0)
+            player.al.points = d(0)
+            player.al.extension = d(0)
+            player.al.operation = d(0)
+        }
     },
     update(delta) {
 

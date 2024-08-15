@@ -85,9 +85,10 @@ addLayer("g", {
         EW:d(45), //Remaining effect weight
         tEW:d(45), //Total effect weight 
         EWid:d(10) //rawID 
+
     }},
     color: "white",                       // The color for this layer, which affects many elements.
-    row: 10,                                 // The row this layer is on (0 is the first row).
+    row: 5,                                 // The row this layer is on (0 is the first row).
     tooltip() {return "Graduation"},
     type: "none",                         // Determines the formula used for calculating prestige currency.
     branches:['r'],
@@ -177,26 +178,6 @@ addLayer("g", {
         }
         if(player.g.sacrificeactive[0].gte(1)) {
             player.g.s1best = player.g.s1best.max(player.n.points)
-        }
-        if(player.g.timer2.lte(0.5)) {
-            player.points = d(10)
-            player.n.points = d(0)
-            player.a.points = d(0)
-            player.s.points = d(0)
-            player.m.points = d(0)
-            player.d.points = d(0)
-            player.e.points = d(0)
-            player.r.points = d(0)
-            player.r.lightadd = d(0)
-            player.r.darksub = d(0)
-            player.r.twilight = d(0)
-            player.r.metaresearch = d(0)
-            player.r.energy = d(0)
-            player.r.prestigetime = d(0)
-            player.e.perkpower = d(0)
-            player.al.points = d(0)
-            player.al.extension = d(0)
-            player.al.operation = d(0)
         }
         if(!inChallenge('r',11) && hasMilestone('g',3)) {
             player.m.challenges[11] = 1
