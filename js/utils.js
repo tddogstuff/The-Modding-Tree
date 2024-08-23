@@ -931,7 +931,7 @@ function addAchievement(layer , id) {
  * (2) Resource choice : Skills 21,22,23,31,32 and 33 requires 2 or more level of Skills 11 
  * (3) Resource choice II : Starting at skills 31,32 and 33 - Having 2 levels of skills n unlock skills n+10 ; until skills 71 , 72 and 73  
  * (4) Powerful Perk : Having 2 levels of skills 71,72 and 73 unlock an optional powerful perk 81
- * (5) Pace split : Having skills 71,72 and 73 additionally unlock skills 91,92,93 but only one can be bought with Bits upgrade 'More depth' 
+ * (5) Pace split : Having skills 71,72 and 73 additionally unlock skills 91,92,93 but only one can be bought with Bits upgrade 'Additional depth' 
  */ 
 function BitTreeCheckErrorMsg(importString) {
   const pairs = importString.split(',');
