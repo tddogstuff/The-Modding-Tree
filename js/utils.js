@@ -947,7 +947,7 @@ function BitTreeCheckErrorMsg(importString) {
     const match = pairRegex.exec(pair);
 
     if (!match) {
-      return 'Invalid format at: ' + pair;
+      return 'Invalid characters: ' + pair;
     }
 
     const skillId = parseInt(match[1]);
@@ -975,8 +975,10 @@ function BitTreeCheckErrorMsg(importString) {
   for (const pair of pairs) {
     const [skillId, skillLevel] = pair.split(":");
     totalCost = totalCost.add(new Decimal(skillLevel).times(tmp.n.buyables[skillId].cost));
+	
   }
-  	if(player.g.totalmetabits.lt(totalCost)) return 'Bits tree cannot be bought: Not enough Metabits'
+  	console.log(totalCost)
+  	if(totalCost.gt(player.g.totalmetabits)) return 'Not enough Metabits: ('+format(player.g.totalmetabits,0)+'/'+format(totalCost,0)+')'
   //Check for rule (II) violations , pre-requirements
   for (const pair of pairs) {
 	const [skillId, skillLevel] = pair.split(":");

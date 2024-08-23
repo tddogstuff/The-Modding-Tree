@@ -168,7 +168,7 @@ addLayer("g", {
         player.g.storagedbitscap = bitscap
         player.g.enmetalizedconvert = bitsconvert
 
-        if(player.g.metabits.lt(0) && !options.instantcalculation) {
+        if(player.g.metabits.lt(0)) {
                 for (let i = 0 ; i < 100 ; i++) {
                     let j = i % 4 + 1
                     let k = Math.floor(i / 4) * 10 + 10
@@ -177,7 +177,7 @@ addLayer("g", {
                 }
                 player.g.spentmetabits = d(0)
                 MRreset()
-                alert("Your metabit amount is somehow negative . A Meta-reset is forced")
+                showModal("Your metabit amount is negative . Your Bits tree is wiped")
         }
         if(player.g.sacrificeactive[0].gte(1)) {
             player.g.s1best = player.g.s1best.max(player.n.points)
