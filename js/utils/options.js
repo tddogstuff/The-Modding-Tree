@@ -73,7 +73,7 @@ const MS_DISPLAYS = ["ALL", "LAST, AUTO, INCOMPLETE", "AUTOMATION, INCOMPLETE", 
 
 const MS_SETTINGS = ["always", "last", "automation", "incomplete", "never"];
 
-const Unit = ["Scientific","Mixed scientific","Logarithm","Infinity","Blind"]
+const Unit = ["Scientific","Mixed scientific","Logarithm","None","Blind"]
 const DD1 = ["None","Play time","Current Mastery","Highest Mastery","Points","Update version","Gamespeed","Tickspeed","Real time","Random number"]
 function DD() {
 	options.DD = DD1[(DD1.indexOf(options.DD) + 1) % 10]

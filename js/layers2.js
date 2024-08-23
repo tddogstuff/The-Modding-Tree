@@ -72,26 +72,7 @@ addLayer("p", {
     automate() {
         let ss = ['Sun','Mercury','Venus',['Earth','Moon'],['Mars','Phobos'],['Jupiter','Io','Europa','Ganymede','Callisto'],['Saturn','Titan','Mimas','Enceladus'],['Uranus','Oberon'],['Neptune','Triton','Proteus'],['Pluto','Makemake','Eris','Senda']]
         //
-        if(player.g.timer2.lte(0.5)) {
-            player.points = d(10)
-            player.n.points = d(0)
-            player.a.points = d(0)
-            player.s.points = d(0)
-            player.m.points = d(0)
-            player.d.points = d(0)
-            player.e.points = d(0)
-            player.r.points = d(0)
-            player.r.lightadd = d(0)
-            player.r.darksub = d(0)
-            player.r.twilight = d(0)
-            player.r.metaresearch = d(0)
-            player.r.energy = d(0)
-            player.r.prestigetime = d(0)
-            player.e.perkpower = d(0)
-            player.al.points = d(0)
-            player.al.extension = d(0)
-            player.al.operation = d(0)
-        }
+       
     },
     update(delta) {
 
@@ -1216,12 +1197,12 @@ addLayer("o", {
         let heating = d(0)
         if(player.r.gamespeed.gt(1)) heating = heating.add(player.r.gamespeed.sub(1).div(2))
         if(player.o.gamespeed.gt(1)) heating = heating.add(player.o.gamespeed.sub(1).div(2))
-        if(hasUpgrade('o',42)) heating = heating.times(0.75)
-        if(true) heating = heating.times(buyableEffect('o',26)).div(buyableEffect('o',29))
+        if(hasUpgrade('o',42)) heating = heating.times(0.9)
+        if(true) heating = heating.times(buyableEffect('o',26))
         let cooling = d(0.25)
-        if(hasUpgrade('o',43)) cooling = cooling.times(1.25)
+        if(hasUpgrade('o',43)) cooling = cooling.times(1.2)
         if(true) cooling = cooling.times(buyableEffect('o',27)).times(buyableEffect('o',29))
-        if(hasUpgrade('o',44) && player.o.overheat) cooling = cooling.times(1.25)
+        if(hasUpgrade('o',44) && player.o.overheat) cooling = cooling.times(2)
         player.o.heating = heating
         player.o.cooling = cooling
         player.o.maxHeat = maxHeat
@@ -1458,7 +1439,7 @@ upgrades: {
         title: "Effective control",
         description: "",
         cost() {return d(36000)},
-        tooltip() {return "Heat from all time-speedup increase 25% slower  <br> Cost : "+formatTime(this.cost())+" Offline time"},
+        tooltip() {return "Heat from all time-speedup increase 10% slower  <br> Cost : "+formatTime(this.cost())+" Offline time"},
         ttStyle() {
             return {
                 "color":"#FF00FF",
@@ -1475,7 +1456,7 @@ upgrades: {
         title: "Cooling measure",
         description: "",
         cost() {return d(48000)},
-        tooltip() {return "You lose 25% more heat passively <br> Cost : "+formatTime(this.cost())+" Offline time"},
+        tooltip() {return "You lose 20% more heat passively <br> Cost : "+formatTime(this.cost())+" Offline time"},
         ttStyle() {
             return {
                 "color":"#FF00FF",
@@ -1492,7 +1473,7 @@ upgrades: {
         title: "Emergency coolants",
         description: "",
         cost() {return d(72000)},
-        tooltip() {return "You lose 25% more heat passively , but only while OVERHEATED <br> Cost : "+formatTime(this.cost())+" Offline time"},
+        tooltip() {return "You lose 100% more heat passively , but only while OVERHEATED <br> Cost : "+formatTime(this.cost())+" Offline time"},
         ttStyle() {
             return {
                 "color":"#FF00FF",
@@ -1730,9 +1711,9 @@ buyables: {
         cost(x) { 
             let sum = d(0)
             for (let i = 1; i < Math.min(50 - x , 11); i++) {
-                sum = sum.add(postcorruptiongain(getBuyableAmount(this.layer,this.id).add(i).times(1).pow(getBuyableAmount(this.layer,this.id).add(i).div(3).log(3).div(3).add(1)).times(60),d(1.125),d(86400)))
+                sum = sum.add(postcorruptiongain(getBuyableAmount(this.layer,this.id).add(i).times(1).pow(getBuyableAmount(this.layer,this.id).add(i).div(3).log(3).div(3.5).add(1)).times(60),d(1.1),d(86400)))
             }
-            let cost = postcorruptiongain(x.times(1).add(1).pow(x.div(3).log(3).div(3).add(1)).times(60),d(1.125),d(86400))
+            let cost = postcorruptiongain(x.times(1).add(1).pow(x.div(3).log(3).div(3.5).add(1)).times(60),d(1.1),d(86400))
             if(shiftDown) cost = sum
             return cost.floor()},
         tooltip() {return this.display()},
@@ -1756,12 +1737,12 @@ buyables: {
             }
         },
         effect(x) {
-            let effect = d(0.98).pow(d(x))
+            let effect = d(0.988).pow(d(x))
             return effect
         },
         nexteffect() {
-            let effect = d(0.98).pow(d(getBuyableAmount(this.layer,this.id)).add(1).min(50))
-            let effect2 = d(0.98).pow(d(getBuyableAmount(this.layer,this.id)).add(10).min(50))
+            let effect = d(0.988).pow(d(getBuyableAmount(this.layer,this.id)).add(1).min(50))
+            let effect2 = d(0.988).pow(d(getBuyableAmount(this.layer,this.id)).add(10).min(50))
             if(shiftDown) effect = effect2
             return effect
         },
@@ -1900,7 +1881,7 @@ buyables: {
                 "border-color":"#FF00FF",
             }
         },
-        display() { return "Increase Max heat , divide Heat gained from time-speedup machine , heat cooling by "+Qcolor2('e',format((this.effect()),2)+"x")+" => "+Qcolor2('e',format(this.nexteffect(),2)+"x")+" </br> Cost : " +Qcolor2('e',formatTime(this.cost())) + " offline time" },
+        display() { return "Increase Max heat and heat cooling by "+Qcolor2('e',format((this.effect()),2)+"x")+" => "+Qcolor2('e',format(this.nexteffect(),2)+"x")+" </br> Cost : " +Qcolor2('e',formatTime(this.cost())) + " offline time" },
         canAfford() { return player[this.layer].time.gte(this.cost()) },
         buy() {
             player.o.time = player.o.time.sub(this.cost())
@@ -2306,7 +2287,7 @@ buyables: {
             buttonStyle() { return { 'color': 'pink' } },
             unlocked() { return options.nerdy},
             content:  [
-            ["raw-html", function () { return "<h3>Resources are categorized into Game stage" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Resources are categorized into Game stage" }, { "color": "orange", "font-size": "22px", "font-family": "helvetica" }],
             ["microtabs", "calc", { 'border-width': '0px' }],
             ]
     },
@@ -2366,7 +2347,7 @@ buyables: {
                 ["raw-html", function () { return player.e.effective.gt(0)?"<h3>Exponent effect :  x"+format(tmp.e.expeffect)+"":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return player.r.tetration.gte(1)?"<h3>Tetration 1 reward :  x1.1":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return hasUpgrade('n',31)?"<h3>Point condenser upgrade :  x"+format(getPointCondensereffect_POW())+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return buyableEffect('n',11).neq(1)?"<h3>Bits tree - Point exponent increase : x"+format(buyableEffect('n',11))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return buyableEffect('n',11).neq(1)?"<h3>Bits tree - Skills 11 : x"+format(buyableEffect('n',11))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return hasSuperAchievement('ac',19)?"<h3>"+tmp.ac.achievements[19].name+" charged achievement : x1.02":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
                 ["raw-html", function () { return inChallenge('d',12)?"<h3>ACTIVE CHALLENGE Worsen condition (Exponent is multiplied by x5)":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
@@ -2394,7 +2375,7 @@ calc21: {
             ["raw-html", function () { return inChallenge('d',11)?"<h3>ACTIVE CHALLENGE No counting <br> (Number gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Number gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(1)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Number gain is always 0) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.n.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.r.truegamespeed.eq(0)?"<h3>Passive generation : x0":"<h3>Passive generation : x"+format(tmp.n.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Number passive gain : "+format(generateAmount('n'))+"/s" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -2442,7 +2423,7 @@ calc21: {
         content: [
             ["raw-html", function () { return hasAchievement('ac',92)?"<h3>"+tmp.ac.achievements[92].name+" achievement : x"+format(achievementEffect('ac',92))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasSuperAchievement('ac',18)?"<h3>"+tmp.ac.achievements[18].name+" achievement : x1.05":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return buyableEffect('n',21).neq(1)?"<h3>Bits tree - Number exponent increase : x"+format(buyableEffect('n',21))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',21).neq(1)?"<h3>Bits tree - Skills 21 : x"+format(buyableEffect('n',21))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.artifactset1[0]>1?"<h3>Artifacts - Active Orb : x"+format(player.g.artifactset1[0])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.effectWeight[0].gte(1)?"<h3> Exponent weight :  x"+format(tmp.e.expeffect.root(100).pow(player.g.effectWeight[0]))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
@@ -2467,13 +2448,14 @@ calc22: {
             ["raw-html", function () { return "<h3>Starting cost : "+format(250)+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('al',11)?"<h3> GLOBAL - Altered realm : Starting additive cost is 10.08 instead":"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Base cost : x"+format(d(2).pow(player.a.points.pow(1.35)))+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Additive is always 1) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(2)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Additive cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost scaling start at "+format(player.a.startsoftcap)+" additive" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost scaling : ^"+format(getCostScaling('a',player.a.points,d(0.6)),4)+" (avg : "+format(getCostScaling('a',player.a.points,d(0.6)).sub(1).div(player.a.points.max(player.a.startsoftcap.add(1)).sub(player.a.startsoftcap)))+")" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Direct additive gain : ^"+format(tmp.a.directMult.pow(-1))+" to costs" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.a.points.gte(player.g.corruption[1])?"<h3>CORRUPTED! After "+format(player.g.corruption[1])+" Additive , cost becomes 10^(log<sub>10</sub>cost)^"+format((player.a.points.div(player.g.corruption[1])).max(1),4)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost reduction : /"+format(tmp.a.gainMult.pow(-1))+"" }, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Additive is always 1) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(2)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Additive cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Additive layer is disabled)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Total cost : "+format(static_cost('a',player.a.points,d(0.6)))+"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ]      
     },
@@ -2490,7 +2472,7 @@ calc22: {
             ["raw-html", function () { return player.r.la3.gt(1)?"<h3>Light additive effect :  /"+format(player.r.la3)+"":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.e.perkpower.gt(0)?"<h3>Exponent perk : /"+format(buyableEffect('e',22).times(buyableEffect('e',24)))+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasUpgrade('e',51)?"<h3>Power Boost upgrade : /"+format(upgradeEffect('e',51))+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Additive cost reduction :  /"+format(buyableEffect('n',41))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Skills 41  :  /"+format(buyableEffect('n',41))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm - Resource reduction : ^"+format(player.al.alteredpow)+" to cost reduction":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('r',11)?"<h3>ACTIVE CHALLENGE Meta-research - Resource reduction : ^"+format(player.r.chb)+" to cost reduction":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2531,12 +2513,13 @@ calc23: {
             ["raw-html", function () { return inChallenge('al',11)?"<h3> GLOBAL - Altered realm : Starting subtractive cost is 10.08 instead":"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Base cost : x"+format(d(2).pow(player.s.points.pow(1.35)))+"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost scaling start at "+format(player.s.startsoftcap)+" subtractive" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Subtractive is always 1) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(3)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Subtractive cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost scaling : ^"+format(getCostScaling('s',player.s.points,d(0.6)),4)+" (avg : "+format(getCostScaling('s',player.s.points,d(0.6)).sub(1).div(player.s.points.max(player.s.startsoftcap.add(1)).sub(player.s.startsoftcap)))+")" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Direct subtractive gain : ^"+format(tmp.s.directMult.pow(-1))+" to costs" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.s.points.gte(player.g.corruption[2])?"<h3>CORRUPTED! After "+format(player.g.corruption[2])+" Subtractive , cost becomes 10^(log<sub>10</sub>cost)^"+format((player.s.points.div(player.g.corruption[2])).max(1),4)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost reduction : /"+format(tmp.s.gainMult.pow(-1))+"" }, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Subtractive is always 1) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(3)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Subtractive cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Subtractive layer is disabled)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Total cost : "+format(static_cost('s',player.s.points,d(0.6)))+"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
 
         ]      
@@ -2553,7 +2536,7 @@ calc23: {
             ["raw-html", function () { return player.r.da3.gt(1)?"<h3>Dark subtractive effect :  /"+format(player.r.da3)+"":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.e.perkpower.gt(0)?"<h3>Exponent perk : /"+format(buyableEffect('e',21).times(buyableEffect('e',24)))+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasUpgrade('e',51)?"<h3>Power Boost upgrade : /"+format(upgradeEffect('e',51))+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Subtractive cost reduction :  /"+format(buyableEffect('n',42))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Skills 42 :  /"+format(buyableEffect('n',42))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm - Resource reduction : ^"+format(player.al.alteredpow)+" to cost reduction":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('r',11)?"<h3>ACTIVE CHALLENGE Meta-research - Resource reduction : ^"+format(player.r.chb)+" to cost reduction":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2597,6 +2580,7 @@ calc24: {
             ["raw-html", function () { return tmp.m.resourcegain.gte(player.g.corruption[3])?"<h3>CORRUPTED! <br> After "+format(player.g.corruption[3])+" multiplicative gain , excessive multiplicative gain is rooted by "+format(corruptionroot(tmp.m.resourcegain,d(0.225),player.g.corruption[3]))+" <br> "+format(tmp.m.resourcegain)+" => "+format(player.g.corruption[3].times(tmp.m.directMult))+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Multiplicative gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(4)?"<h3>ACTIVE SACRIFICE Multiplicative <br> (Multiplicative cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Multiplicative layer is disabled)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.m.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
@@ -2623,7 +2607,7 @@ calc24: {
         buttonStyle() { return { 'color': 'red' , "border-color" : "purple" } },
         unlocked() { return true },
         content: [
-            ["raw-html", function () { return buyableEffect('n',22).neq(1)?"<h3>Bits tree - Multiplicative exponent increase : x"+format(buyableEffect('n',22))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',22).neq(1)?"<h3>Bits tree - Skills 22 : x"+format(buyableEffect('n',22))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasSuperAchievement('ac',26)?"<h3>10th Doubling charged achievement : x1.05":"" }, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.artifactset1[3]>1?"<h3>Artifacts - Active Orb : x"+format(player.g.artifactset1[3])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.effectWeight[1].gte(1)?"<h3> Exponent weight :  x"+format(tmp.e.expeffect.root(100).pow(player.g.effectWeight[1]))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -2632,6 +2616,7 @@ calc24: {
             ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm - Resource reduction : (Exponent is multiplied by x"+format(player.al.alteredpow)+")":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.sacrificeactive[0].gt(1)?"<h3>ACTIVE SACRIFICE Number sacrifice : (Exponent is multiplied by x2.50)":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Exponent always equal to 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Exponent always equal to 0)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return "<h3>Total : ^"+format(tmp.m.gainExp)+" to base multiplicative gain"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -2650,6 +2635,7 @@ calc25: {
             ["raw-html", function () { return tmp.d.resourcegain.gte(player.g.corruption[4])?"<h3>CORRUPTED! <br> After "+format(player.g.corruption[4])+" divisive gain , excessive divisive gain is rooted by "+format(corruptionroot(tmp.d.resourcegain,d(0.275),player.g.corruption[4]))+" <br> "+format(tmp.d.resourcegain)+" => "+format(player.g.corruption[4].times(tmp.d.directMult))+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Divisive gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(5)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Divisive cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Divisive layer is disabled)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.d.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
@@ -2676,7 +2662,7 @@ calc25: {
         unlocked() { return true },
         content: [
             ["raw-html", function () { return player.r.tetration.gte(5)?"<h3> 5 Tetration reward : x1.1":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return buyableEffect('n',31).neq(1)?"<h3>Bits tree - Divisive exponent increase : x"+format(buyableEffect('n',31))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',31).neq(1)?"<h3>Bits tree - Skills 31 : x"+format(buyableEffect('n',31))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.artifactset1[4]>1?"<h3>Artifacts - Active Orb : x"+format(player.g.artifactset1[4])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasSuperAchievement('ac',37)?"<h3>Third exponent charged achievement : x1.04":"" }, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.effectWeight[2].gte(1)?"<h3> Exponent weight :  x"+format(tmp.e.expeffect.root(100).pow(player.g.effectWeight[2]))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -2685,6 +2671,7 @@ calc25: {
             ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm - Resource reduction : (Exponent is multiplied by x"+format(player.al.alteredpow)+")":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.sacrificeactive[0].gt(1)?"<h3>ACTIVE SACRIFICE Number sacrifice : (Exponent is multiplied by x2.50)":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Exponent always equal to 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3>ACTIVE SACRIFICE Herbivore sacrifice <br> (Exponent always equal to 0)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return "<h3>Total : ^"+format(tmp.d.gainExp)+" to base divisive gain"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -2711,7 +2698,9 @@ calc31: {
         unlocked() { return true },
         content: [
             ["raw-html", function () { return player.e.perkpower.gt(0)?"<h3>Exponent perk : /"+format(buyableEffect('e',23).times(buyableEffect('e',24)))+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Exponent cost reduction :  /"+format(buyableEffect('n',43).times(buyableEffect('n',81)))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',43).neq(1)?"<h3>Bits tree - Skills 43 :  /"+format(buyableEffect('n',43))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',81).neq(1)?"<h3>Bits tree - Perk 81 :  /"+format(buyableEffect('n',81))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return hasAchievement('ac',163)?"<h3>"+tmp.ac.achievements[163].name+" achievement :  /"+format(achievementEffect('ac',163))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasUpgrade('e',63)?"<h3>Extra cheap upgrade : ^1.25 to cost reduction":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.tetration.gte(7)?"<h3>7 Tetration reward : ^1.5 to cost reduction":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
@@ -2734,9 +2723,11 @@ calc31: {
             ["raw-html", function () { return hasChallenge('e',11)?"<h3>No number challenge completion : x0.98":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasMilestone('r',1)?"<h3>Research milestone 1 : x0.925":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.tetration.gte(6)?"<h3>6 Tetration reward : x0.96":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Exponent cost reduction :  /"+format(buyableEffect('n',32))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',32).neq(1)?"<h3>Bits tree - Skills 32 :  /"+format(buyableEffect('n',32))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.artifactset4[4]>1?"<h3>Active Charm - Exponent cost reduction :  x"+format((101 - player.g.artifactset4[4]) / 100)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>"+tmp.ac.achievements[164].name+" achievement : x0.95"}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasSuperAchievement('ac',63)?"<h3>What have you done charged achievement : /"+format(achievementEffect('ac',63).add(1).div(1.5))+"":"" }, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return hasUpgrade('t',64)?"<h3><i>Empowering Ticks IV : /"+format(upgradeEffect('t',64))+"":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return player.g.sacrificeactive[5].gte(1)?"<h3>Active sacrifice Exponent sacrifice : ^0.20 to cost scaling base":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.e.points.gt(player.g.corruption[5])?"<h3>CORRUPTED! <br> : ^"+format(player.e.points.div(player.g.corruption[5]).max(1).pow(-0.5))+" to cost scaling base":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2788,6 +2779,7 @@ calc32: {
             ["raw-html", function () { return hasAchievement('ac',49)?"<h3>"+tmp.ac.achievements[49].name+" achievement : x"+format(1.25)+"":"" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return d(player.g.artifactset1[6]).gt(1)?"<h3>Active Orb : x"+format(player.g.artifactset1[6])+"":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return getBuyableAmount('e',41).gte(10)?"<h3>Exponent perk : x"+format(tmp.e.expeffect.add(1).pow(0.5))+" <i>Thanks to active ring</i>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return hasUpgrade('t',62)?"<h3><i>Empowering Ticks II : x"+format(upgradeEffect('t',62))+"":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
 
             ["blank", "25px"],
             ["raw-html", function () { return player.r.tetration.gte(4)?"<h3>4 Tetration reward : ^1.04":"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
@@ -2809,6 +2801,7 @@ calc32: {
             ["raw-html", function () { return "<h3>Faster power buyable : /"+format(buyableEffect('e',42))+""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : /"+format(player.r.truegamespeed)+""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+tmp.ac.achievements[131].name+" achievement : /"+format(achievementEffect('ac',131))+""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>"+tmp.ac.achievements[152].name+" achievement : /"+format(achievementEffect('ac',152))+""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return "<h3>Time : "+formatTime(player.e.perkpowerinterval.max(1))+" , interval increased to 1 second if lower" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
         ]      
@@ -2832,7 +2825,7 @@ calc33: {
         unlocked() { return true },
         content: [
             ["raw-html", function () { return player.g.artifactset2[0] > 1?"<h3>Artifacts - Active ring : /"+format(player.g.artifactset2[0])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>bits tree - Research cost reduction : /"+format(buyableEffect('n',33))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',33).neq(1)?"<h3>Bits tree - Skills 33 : /"+format(buyableEffect('n',33))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Total cost reduction : /"+format(tmp.r.gainMult.pow(-1))+"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return player.g.artifactset1[7] > 1?"<h3>Artifacts - Active Orb : x"+format(player.g.artifactset1[7])+" to Research gain":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -2858,7 +2851,7 @@ calc34: {
         ["raw-html", function () { return player.r.tetration.gte(10)?"<h3> 10 Tetration reward : x"+format(player.r.challengeshard.add(1))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.tetration.gte(11)?"<h3> 11 Tetration reward : x2":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.g.artifactset4[2]>1?"<h3> Artifacts - Active charm : x"+format(player.g.artifactset4[2])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Prestige time multiplier : x"+format(buyableEffect('n',63))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',63).neq(1)?"<h3> Bits tree - Skills 63 : x"+format(buyableEffect('n',63))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.cdcomp.gte(1)?"<h3> Chaotic division challenge (secondary) reward : x"+format(d(1.1).pow(player.r.cdcomp))+"":""}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.truegamespeed.neq(1)?"<h3> Current gamespeed : x"+format(player.r.truegamespeed)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2882,7 +2875,7 @@ calc41: {
         ["raw-html", function () { return hasUpgrade('r',41)?"<h3> Lightness upgrade : x10":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',202).gt(1)?"<h3> Light additive multiplier buyable : x"+format(buyableEffect('r',202))+"":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',203).gt(1)?"<h3> Light additive powerer buyable : x"+format(buyableEffect('r',203))+"":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Light additive multiplier : x"+format(buyableEffect('n',51))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',51).neq(1)?"<h3> Bits tree - Skills 51 : x"+format(buyableEffect('n',51))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(11)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2902,7 +2895,7 @@ calc41: {
         ["raw-html", function () { return hasUpgrade('r',42)?"<h3> Darkness upgrade : x10":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',302).gt(1)?"<h3> Dark subtractive multiplier buyable : x"+format(buyableEffect('r',302))+"":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',303).gt(1)?"<h3> Dark subtractive powerer buyable : x"+format(buyableEffect('r',303))+"":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Dark subtractive multiplier : x"+format(buyableEffect('n',51))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',51).neq(1)?"<h3> Bits tree - Skills 51 : x"+format(buyableEffect('n',51))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(12)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2919,7 +2912,7 @@ calc41: {
         unlocked() { return true },
         content: [
         ["raw-html", function () { return "<h3>Base : +"+format(player.r.lightadd.times(player.r.darksub).pow(0.5).times(0.01))+" <i>(1/100 the Geometric mean of Light additive/Dark subtractive)"}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Twilight multiplier : x"+format(buyableEffect('n',52))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',52).neq(1)?"<h3> Bits tree - Skills 52 : x"+format(buyableEffect('n',52))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.ee1.gt(1)?"<h3> Energy effect : x"+format(player.r.ee1)+"":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(13)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2937,7 +2930,7 @@ calc41: {
         unlocked() { return true },
         content: [
         ["raw-html", function () { return "<h3>Base : +"+format(buyableEffect('r',501))+""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Energy multiplier : x"+format(buyableEffect('n',53))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',53).neq(1)?"<h3> Bits tree - Skills 53 : x"+format(buyableEffect('n',53))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',502).gt(1)?"<h3> Energy conductor buyable : x"+format(buyableEffect('r',502))+"":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h3>Current energy : /"+format((player.r.energy.add(1)).pow(0.25))+""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2961,7 +2954,7 @@ calc42: {
         unlocked() { return true },
         content: [
         ["raw-html", function () { return "<h3>Base : +"+format(player.r.mastery.div(10000).pow(0.75))+""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Meta-research multiplier : x"+format(buyableEffect('n',62))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',62).neq(1)?"<h3> Bits tree - Skills 62 : x"+format(buyableEffect('n',62))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasSuperAchievement('ac',44)?"<h3> 'Not enough' charged achievement : x1.15":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(10)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2982,8 +2975,7 @@ calc43: {
         ["raw-html", function () { return "<h3>Cost multiplier : "+format(player.r.tetration.sub(10).div(100).add(1).max(1.09))+"x per Tetration = x"+format(player.r.tetration.sub(10).div(100).add(1).max(1.09).pow(player.r.tetration),2)+""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return "<h3>Cost increaser , at 6 tetration : +"+format(player.r.tetration.pow(2))+""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return player.g.sacrificeactive[3].gte(1)?"<h3> ACTIVE SACRIFICE Tetration sacrifice : x2.5 to cost and add +250 after":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Tetration cost multiplier : x"+format(buyableEffect('n',71))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',71).neq(1)?"<h3> Bits tree - Skills 71 : x"+format(buyableEffect('n',71))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',103)?"<h3> Condensed upgrade achievement : -25 to cost":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('t',51)?"<h3> Tetration cost I upgrade : -"+format(upgradeEffect('t',51))+" to cost":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('t',52)?"<h3> Tetration cost II upgrade : -"+format(upgradeEffect('t',52))+" to cost":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -3125,7 +3117,9 @@ calc61: {
         ["raw-html", function () { return "<h3>Base : +1"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',141)?"<h3> "+tmp.ac.achievements[141].name+" achievement : +"+format(player.r.mastery.div(50000).floor())+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.tetration.gte(23)?"<h3> 23 Tetration reward : +2 then x1.5":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Graduate multiplier : x"+format(buyableEffect('n',91).times(buyableEffect('n',92)).times(buyableEffect('n',93)))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',91).neq(1)?"<h3> Bits tree - Skills 91 : x"+format(buyableEffect('n',91))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',92).neq(1)?"<h3> Bits tree - Skills 92 : x"+format(buyableEffect('n',92))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',93).neq(1)?"<h3> Bits tree - Skills 93 : x"+format(buyableEffect('n',93))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',111)?"<h3> Graduation II achievements multiplier : x"+format(player.ac.achievements.filter(x => x>=111 && x<=139).length * 0.04 + 1)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',139)?"<h3> Graduation Sacrifice achievements multiplier : x"+format(player.ac.achievements.filter(x => x>=141 && x<=169).length * 0.03 + 1)+"":""}, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -3145,7 +3139,8 @@ calc62: {
         ["raw-html", function () { return player.r.tetration.gte(23)?"<h3> 23 Tetration reward : +2 then x1.5":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('n',51)?"<h3> More Bits upgrade : x"+format(upgradeEffect('n',51))+"":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('n',61)?"<h3> More Bits upgrade : x"+format(upgradeEffect('n',61))+"":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('n',52)?"<h3> Bits tree - Bits multiplier : x"+format(buyableEffect('n',61))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return buyableEffect('n',61).neq(1)?"<h3> Bits tree - Skills 61 : x"+format(buyableEffect('n',61))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return hasUpgrade('t',61)?"<h3> Empowering Ticks I : x"+format(upgradeEffect('t',61))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',139)?"<h3> Graduation Sacrifice achievements multiplier : x"+format(player.ac.achievements.filter(x => x>=141 && x<=169).length * 0.03 + 1)+"":""}, { "color": "teal", "font-size": "22px", "font-family": "helvetica" }],
         ["blank","25px"],
         ["raw-html", function () { return inChallenge('e',13)?"<h3> INSIDE No Basic challenge : x50.00 Bits gain":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
@@ -3196,7 +3191,9 @@ calc71: {
             ["raw-html", function () { return player.r.points.gt(0)?"<h3>Research effect :  x"+format(player.r.tickspeedbonus)+"":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.ta1.gt(1)?"<h3>Twilight effect :  x"+format(player.r.ta1)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return getBuyableAmount('r',104).gt(1)?"<h3>More Letter Improvement :  x"+format(buyableEffect('r',104))+"":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Tickspeed multiplier increase : x"+format(buyableEffect('n',41).times(buyableEffect('n',42)).times(buyableEffect('n',43)))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',41).neq(1)?"<h3> Bits tree - Skills 41 : x"+format(buyableEffect('n',41))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',42).neq(1)?"<h3> Bits tree - Skills 42 : x"+format(buyableEffect('n',42))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',43).neq(1)?"<h3> Bits tree - Skills 43 : x"+format(buyableEffect('n',43))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return "<h3>Total : x"+format(tmp.t.effectMult)+" to Tickspeed"}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ]      
@@ -3208,7 +3205,7 @@ calc71: {
             ["raw-html", function () { return hasUpgrade('t',15)?"<h3>Faster Time V upgrade : x"+format(upgradeEffect('t',15))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasUpgrade('t',16)?"<h3>Faster Time VI upgrade : x"+format(upgradeEffect('t',16))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasAchievement('ac',93)?"<h3>"+tmp.ac.achievements[93].name+" achievement : x"+format(achievementEffect('ac',93))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Tickspeed exponent increase : x"+format(buyableEffect('n',73))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',73).neq(1)?"<h3> Bits tree - Skills 73 : x"+format(buyableEffect('n',73))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.artifactset4[1] > 1?"<h3>Artifacts - Active Charm : x"+format(player.g.artifactset4[1])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return player.g.sacrificeactive[6].gte(1)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> Tickspeed exponent is x"+format(player.r.chl)+" <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -3228,14 +3225,18 @@ calc72: {
             ["raw-html", function () { return player.o.gamespeed.neq(1)?"<h3>Offline Time-speedup : x"+format(player.o.gamespeed)+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.gamespeed.neq(1)?"<h3>Research Time-speedup : x"+format(player.r.gamespeed)+"":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasUpgrade('t',41)?"<h3>Gamespeed I upgrade : x"+format(upgradeEffect('t',41))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasSuperAchievement('ac',25)?"<h3>"+tmp.ac.achievements[25].name+" charged achievement : x1.5":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return hasSuperAchievement('ac',25)?"<h3>"+tmp.ac.achievements[25].name+" charged achievement : x3":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasAchievement('ac',99)?"<h3>"+tmp.ac.achievements[99].name+" achievement : x2":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasAchievement('ac',101)?"<h3>"+tmp.ac.achievements[101].name+" achievement : x"+format(achievementEffect('ac',101))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasAchievement('ac',127)?"<h3>"+tmp.ac.achievements[127].name+" achievement : x"+format(achievementEffect('ac',127).div(100).add(1))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasAchievement('ac',121)?"<h3>"+tmp.ac.achievements[121].name+" achievement : x"+format(achievementEffect('ac',121))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.tetration.gte(16)?"<h3> 16 Tetration reward : x3":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.artifactset4[0] > 1?"<h3>Artifacts - Active Charm : x"+format(player.g.artifactset4[0])+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return hasUpgrade('n',52)?"<h3>Bits tree - Gamespeed multiplier increase : x"+format(buyableEffect('n',101).times(buyableEffect('n',102)).times(buyableEffect('n',103)).times(buyableEffect('n',72)))+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',72).neq(1)?"<h3> Bits tree - Skills 72 : x"+format(buyableEffect('n',72))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',101).neq(1)?"<h3> Bits tree - Skills 101 : x"+format(buyableEffect('n',101))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',102).neq(1)?"<h3> Bits tree - Skills 102 : x"+format(buyableEffect('n',102))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return buyableEffect('n',103).neq(1)?"<h3> Bits tree - Skills 103 : x"+format(buyableEffect('n',103))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+
             ["raw-html", function () { return player.o.heat.gte(player.o.maxHeat.div(2))?"<h3>Overheating Effect : x"+format(d(1).sub(player.o.heat.div(player.o.maxHeat).sub(0.5).times(2).pow(1.5)))+"":""}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return buyableEffect('g',202).gt(1)?"<h3>Tickspeed sacrifice reward : x"+format(buyableEffect('g',202))+" Gamespeed <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -3245,7 +3246,7 @@ calc72: {
             ["blank","25px"],
             ["raw-html", function () { return player.r.timer2.lte(0.25)?"<h3>Game is currently paused for "+format(d(0.25).sub(player.r.timer2))+"":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.sacrificeactive[6].gte(1) && !(player.r.potshard.eq(56) && inChallenge('r',11))?"<h3>You are not in Meta-research challenge with the correct modifier <br> Paused game":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return !inChallenge('al',11) && player.g.sacrificeactive[3].eq(1)?"<h3>You are not in Altered realm inside of Realm sacrifice <br> Paused game":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return !inChallenge('al',11) && player.g.sacrificeactive[3].eq(1)?"<h3>Illegal : Altered realm cannot be entered in Meta-research challenge but it was <br> Game is frozen":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return options.gamepaused?"<h3> The game is currently being paused (in Option)":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed is fastened by x"+format(player.r.truegamespeed)+""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ]      
@@ -3587,4 +3588,109 @@ calc: {
         ["raw-html", function () { return "<h3>You have "+formatTime(player.o.time)+" offline time and "+formatTime(player.o.realtime)+" real time" }, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
         ["microtabs", "main", { 'border-width': '0px' }],
     ],
+})
+
+addLayer("ghost", {
+    startData() { return {
+        unlocked: true,
+    }},
+    color: "gray",                      
+    row: 'side',                              
+    tooltip() {return "Ghost layer <br> How did you know that?"},
+    type: "none",
+    automate() {
+        if(player.g.timer2.lte(0.5) || player.r.timer2.lte(0.5)) buyBuyable('ghost',11)
+        if(player.g.timer2.lte(0.5) ) buyBuyable('ghost',12)
+        if( player.r.timer2.lte(0.5)) buyBuyable('ghost',13)
+        if(!canGenPoints()) player.points = d(10)
+    },
+    update(delta) {
+
+    },  
+
+    milestones: {
+        
+    },
+    /*
+    Technical note :
+     -   This is a ghost layer , use for fixing bugs related to ...
+     -   Design to drain 100% of resources
+    */
+    buyables: {
+        11: {
+            title() {return "Ghost - Algebric reset"},
+            cost(x) { return d(0)},
+            canAfford() { return player.g.timer2.lte(0.5) || player.r.timer2.lte(0.5)},
+            buy() {
+                player.al.x = d(0)
+                player.al.x1 = d(0)
+                player.al.points = d(0)
+                player.al.operation = d(0)
+                player.al.extension = d(0)
+            },
+            style() {
+            },
+            unlocked() {return true},
+            },
+        12: {
+            title() {return "Ghost - Graduation reset"},
+            cost(x) { return d(0)},
+            canAfford() { return player.g.timer2.lte(0.5)},
+            buy() {
+                    player.points = d(10)
+                    player.n.points = d(0)
+                    player.a.points = d(0)
+                    player.s.points = d(0)
+                    player.m.points = d(0)
+                    player.d.points = d(0)
+                    player.e.points = d(0)
+                    player.r.points = d(0)
+                    player.r.lightadd = d(0)
+                    player.r.darksub = d(0)
+                    player.r.twilight = d(0)
+                    player.r.metaresearch = d(0)
+                    player.r.energy = d(0)
+                    player.r.prestigetime = d(0)
+                    player.e.perkpower = d(0)
+                    player.al.points = d(0)
+                    player.al.extension = d(0)
+                    player.al.operation = d(0)
+            },
+            style() {
+            },
+            unlocked() {return true},
+            },
+        13: {
+            title() {return "Ghost - partial Meta Research reset"},
+            cost(x) { return d(0)},
+            canAfford() { return player.r.timer2.lte(0.5)},
+            buy() {
+                    player.points = d(10)
+                    player.n.points = d(0)
+                    player.a.points = d(0)
+                    player.s.points = d(0)
+                    player.m.points = d(0)
+                    player.d.points = d(0)
+                    player.e.points = d(0)
+                    player.r.points = d(0)
+                    player.e.perkpower = d(0)
+                    player.al.points = d(0)
+                    player.al.extension = d(0)
+                    player.al.operation = d(0)
+            },
+            style() {
+            },
+            unlocked() {return true},
+            },
+    },
+    upgrades: {
+       
+    },
+    challenges: {
+       
+    },
+
+layerShown() { return false}
+
+
 })

@@ -20,29 +20,31 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3 style='color: red'> v0.0.4b - Graduation II additions </h3> <br>
+	*** Addition : <br>
+	- 7 Achievements <br>
 	*** Balancing changes : <br>
-	- Capped Tetration cost II upgrade effect to -400 raw Tetration <br>
-	- S4 requirement is decreased (1e1000 Operation => 1e850) <br>
-	- <s> Achievement 141 "A brutal world" give a static +1 conditional Graduate instead </s> : Reverted <br>
-	- Completing post Graduation reward grant additional reward <br>
-	- Algebric costs now increase faster above 1e500 <br>
-	- Algebric points boost is now weakened again above 1e500x <br>
-	- Nerfed Charm Artifact effect 'Exponent cost reduction' , Max effect : 80% => 20% <br>
-	- Nerfed Charm Artifact effect 'Tickspeed' , max effect : ^1.50 => ^1.25 <br>
-	- Buffed Charm Artifact effect 'Gamespeed' , 'Prestige time' , max effect : 10x => 25x , 30x respectively <br>
-	- Buffed Ring Artifact Effect 'Generator strength' , max effect : 1.75x => 2x <br>
-	- Buffed Ring Artifact Effect 'Improvement effect' , 'Points boost effect' , max effect : ^1.2 => ^1.25 <br>
+	- Capped <span style='color:yellow'>'Tetration II' upgrade</span> effect to -400 raw Tetration <br>
+	- <span style='color:yellow'>Realm sacrifice</span> requirement is decreased (1e1000 Operation => 1e850) <br>
+	- <span style='color:yellow'>Tickspeed sacrifice</span> bar fill 5x faster <br>
+	- <s> <span style='color:yellow'>Achievement 141 'A brutal world'</span>  give a static +1 conditional Graduate instead </s> : Reverted <br>
+	- Completing post Graduation <span style='color:yellow'>achievement</span> grant additional reward <br>
+	- <span style='color:lime'>Algebric</span> buyable cost now increase faster above 1e500 <br>
+	- <span style='color:lime'>Algebric points boost</span> is now weakened again above 1e500x <br>
+	- Nerfed <span style='color:yellow'>Charm artifact</span> effect <span style='color:pink'>'Exponent cost scaling reduction'</span> , Max effect : 80% => 20% <br>
+	- Nerfed <span style='color:yellow'>Charm artifact</span> effect <span style='color:yellow'>'Tickspeed'</span> , max effect : ^1.50 => ^1.25 <br>
+	- Buffed <span style='color:yellow'>Charm artifact</span> effect <span style='color:yellow'>'Gamespeed'</span> , 'Prestige time' , max effect : 10x => 25x , 30x respectively <br>
+	- Buffed <span style='color:yellow'>Ring artifact</span> Effect <span style='color:yellow'>'Twilight generator strength'</span> , max effect : 1.75x => 2x <br>
+	- Buffed <span style='color:yellow'>Ring artifact</span> Effect <span style='color:magenta'>'Improvement effect' , 'Point boost effect'</span> , max effect : ^1.2 => ^1.25 <br>
 	- Reduce the cost of the first Bits tree perk (Exponent cost reduction) from 17 => 15 <br>
-	- Tetration Sacrifice reward changed <br>
+	- <span style='color:yellow'>Tetration sacrifice</span> reward removed , renamed to <span style='color:yellow'>Herbivore sacrifice</span><br>
 	*** Fixed : <br>
 	- Fixed Graduation milestone 1 and 2 not working <br>
-	- Fixed NaN due to not buying Charm yet <br>
+	- Fixed features that haven't been unlocked , being displayed <br>
 	*** Others : <br>
+	- <span style='color:purple'>'Research'</span> hotkey is now shift+H<br>
 	- Tweaked number inverting e.x 2e-10 will become 1/(5e10) <br>
-	*** Resource still retain post reset!!! <br>
-	- Currently investigating <br>
-	*** Notes : <br>
-	- (Future v0.0.4 patch note will be appended) <br>
+	- Having the <span style='color:purple'>'Operationless' upgrade</span>  set the cost of <span style='color:orange'>'Mathmatical Operation' upgrade</span>  to 0<br>
+	*** Endgame : <span style='color:magenta'>Cursed realm</span> unlock<br>
 	<h3 style='color: orange'> v0.0.4a - Graduation I balancing </h3> <br>
 	*** Reminder : <br>
 	- Some part of Graduation II is available <br>
@@ -167,10 +169,10 @@ function getStartPoints(){
 }
 
 /** 
-* Should the points/sec be shown , always
+* Should the points/sec be shown 
 **/
 function canGenPoints(){
-	return true
+	return !(player.g.timer2.lte(0.5) || player.r.timer2.lte(0.5))
 }
 
 /** 
@@ -252,18 +254,18 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function() {
-		return !player.r.truegamespeed.eq(1)?"Gamespeed : "+Qcolor2('n',format(player.r.truegamespeed)+"x"):""},
-	function() {
-		let a = player.t.tickspeedcontrol.eq(1)?"":"  "+Qcolor2('d',"(^"+format(player.t.tickspeedcontrol)+")")+" </span>"
-		let b = tmp.t.effect.gte(player.t.cap)?" "+Qcolor2('d','(Capped at '+format(player.t.cap)+')')+"":""
-
-		if((!tmp.t.effect.eq(1000) || hasAchievement('ac',39)) && !inChallenge('al',11))
-		return "Tickspeed : "+Qcolor2('la',format(tmp.t.effect))+""+a+b
-		if(inChallenge('al',11))
-		return ""+Qcolor2('s','Altered')+" Tickspeed : "+Qcolor2('la',format(tmp.t.effect))+""+a+b
-		else 
-		return ""
- 		},
+		let a = player.t.tickspeedcontrol.eq(1)?"":"  "+Qcolor2('d',"(^"+format(player.t.tickspeedcontrol)+")")+""
+		let b = tmp.t.effect.gte(player.t.cap)?!shiftDown?" "+Qcolor2('d',''+format(player.t.cap)+'')+"":" "+Qcolor2('la',format(tmp.t.effect))+"":" "+Qcolor2('la',format(tmp.t.effect))+""
+		let c = ""
+		if(!(!tmp.t.effect.eq(1000) || hasAchievement('ac',39)) && !inChallenge('al',11)) c = ""
+		else c = " Tickspeed :"+b+" "+a+""
+		let d = !player.r.truegamespeed.eq(1)?" Gamespeed : "+Qcolor2('n',format(player.r.truegamespeed)+"x"):""
+		let m = '' 
+		m += c
+		if(c !== '' && d!== '') m += ' / '
+		m += d
+		return ""+m
+	},
 	function() {return !options.hidemastery?"Current Mastery : "+Qcolor2('e',format(player.r.mastery))+" (Highest : "+Qcolor2('r',format(player.r.bestmastery))+")":""},
 	function() {
 	if (options.hidemastery) 
@@ -395,7 +397,7 @@ function fixOldSave(oldVersion){
 		player.g.artifact3eff = getArtifactEffect(player.g.artifact3,player.g.artifact3q)
 		player.g.artifact4eff = getArtifactEffect(player.g.artifact4,player.g.artifact4q)
 
-		updateArtifactEffect()
+		AllArtifactEffect()
 		updateAllAritfactEffect()
 
 	}

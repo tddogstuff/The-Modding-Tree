@@ -685,8 +685,8 @@ function AllArtifactEffect(id, effect, index) {
     let b1 = id
     let array = [];
     let v = 1 + 8 * index;
-
-    for (let i = 0; i < 8; i++) {
+try {
+	for (let i = 0; i < 8; i++) {
         if (!b1.includes(v)) {
             b1.push(v);
         }
@@ -697,7 +697,13 @@ function AllArtifactEffect(id, effect, index) {
         array[id[i] - 1] = effect[i] || 1; 
     }
 
-    return array.slice(index * 8, (index + 1) * 8);
+} catch (error) {
+	return 
+}
+    
+    array =  array.slice(index * 8, (index + 1) * 8);
+	if(array.length < 8) return [1,1,1,1,1,1,1,1]
+	else return array
 }
 //DO NOT CALL THIS
 /** 
@@ -859,9 +865,14 @@ function Qcolor4(color,text) {
 	if(!options.coloredtext) {
 		return text
 	} else {
-		return `<span style='color:${color}'>" +c + "</span>`
+		return `<span style='color:${color}'>" +${text} + "</span>`
 	}
 }
+/**
+ * the default shadow colored text without <h3> , currently unused
+ */
+function BasicColor(layer, text, tag='h2') { return `<${tag} style='color:${tmp[layer].color};text-shadow:${tmp[layer].color} 0px 0px 10px;'>${text}</${tag}>` }
+
 
  /** 
 *Perform an Meta-research reset (very obvious)
@@ -911,3 +922,151 @@ function addAchievement(layer , id) {
  	player[layer].achievements = [... new Set(player[layer].achievements.concat(String(id)))]
 	doPopup("achievement", tmp[layer].achievements[id].name, "Achievement reached", 3, tmp[layer].color)
 }
+/**
+ * Bits tree import follow these rule :
+ * (Basic) formatting should follow : ID:levels
+ * (I) you need to actually have enough MB to buy them 
+ * (II) you need to physically unlocked them first , following this rules : 
+ * (1) Default : Skills 11 are always unlocked
+ * (2) Resource choice : Skills 21,22,23,31,32 and 33 requires 2 or more level of Skills 11 
+ * (3) Resource choice II : Starting at skills 31,32 and 33 - Having 2 levels of skills n unlock skills n+10 ; until skills 71 , 72 and 73  
+ * (4) Powerful Perk : Having 2 levels of skills 71,72 and 73 unlock an optional powerful perk 81
+ * (5) Pace split : Having skills 71,72 and 73 additionally unlock skills 91,92,93 but only one can be bought with Bits upgrade 'More depth' 
+ */ 
+function BitTreeCheckErrorMsg(importString) {
+  const pairs = importString.split(',');
+
+  //Set do not allow duplicates
+  const skillIds = new Set();
+  const skillLevels = {}; //new Object
+  let totalCost = d(0)
+  //RegEx to check
+  const pairRegex = /^(\d+):(\d+)$/;
+  //Check for import violation
+  for (const pair of pairs) {
+    const match = pairRegex.exec(pair);
+
+    if (!match) {
+      return 'Invalid format at: ' + pair;
+    }
+
+    const skillId = parseInt(match[1]);
+    const skillLevel = parseInt(match[2]);
+
+    // Check if exist , of course there's a false postive
+    if (!tmp.n.buyables.hasOwnProperty(skillId) || skillId === 10) {
+      return 'Skill ID not found: ' + skillId;
+    }
+
+    // Check duplicates
+    if (skillIds.has(skillId)) {
+      return 'Duplicate skill ID: ' + skillId;
+    }
+
+    // Check if actually in range of 0 to whatever that purchase limit might be
+    if (skillLevel < 0 || skillLevel > (toNumber(tmp.n.buyables[skillId].purchaseLimit))) {
+      return 'Invalid skill level: ' + skillLevel + ' for skill ID ' + skillId;
+    }
+
+    skillIds.add(skillId);
+	skillLevels[skillId] = skillLevel;
+  }
+  //Check for rule (I) violations , cost exceeding total
+  for (const pair of pairs) {
+    const [skillId, skillLevel] = pair.split(":");
+    totalCost = totalCost.add(new Decimal(skillLevel).times(tmp.n.buyables[skillId].cost));
+  }
+  	if(player.g.totalmetabits.lt(totalCost)) return 'Bits tree cannot be bought: Not enough Metabits'
+  //Check for rule (II) violations , pre-requirements
+  for (const pair of pairs) {
+	const [skillId, skillLevel] = pair.split(":");
+	if(skillId>=91 && !hasUpgrade('n',74)) return 'Skills '+skillId+' is locked (Not having "Additional depth")'
+	if(isSkillUnlocked(skillId,skillLevels) === null) return 'Skills '+skillId+' cannot be bought due to exclusivity'
+	if(!isSkillUnlocked(skillId,skillLevels)) return 'Cannot reach skill '+skillId+''
+  }
+
+  return '';
+}
+function isSkillUnlocked(skillId, skillTree) {
+	skillId = parseInt(skillId)
+	// Rule (II).1
+	if (skillId === 11) {
+	  return true;
+	}
+  
+	// Rule (II).2
+	if (skillId >= 21 && skillId <= 33 && skillTree[11] >= 2) {
+	  return true;
+	}
+  
+	// Rule (II).3
+	if (skillId >= 31 && skillId <= 73) {
+	  const prerequisiteSkillId = skillId - 10;
+	  return skillTree[prerequisiteSkillId] >= 2;
+	}
+	// Rule (II).4
+	if (skillId === 81) {
+		try {
+			if(skillTree[71] >= 2 && skillTree[72] >= 2 && skillTree[73] >= 2) return true
+			else return false
+		} catch (e) {
+			return false
+		}
+	}
+	// Rule (II).5
+	if (skillId >= 91 && skillId <= 93) {
+		let other = [91,92,93].filter(x => x!==skillId)
+		const prerequisiteSkillId = skillId - 20;
+		for (let i = 0; i < other.length; i++) {
+			if(skillTree[parseInt(other[i])] > 0) return null
+			else continue
+		} 
+		return skillTree[prerequisiteSkillId] >= 2 && hasUpgrade('n',74)
+	}
+	// Rule (II).3 and 5 extended 
+	if (skillId >= 101 && skillId <= 103) {
+		const prerequisiteSkillId = skillId - 10;
+		return skillTree[prerequisiteSkillId] >= 2 && hasUpgrade('n',74)
+	}
+	return false;
+  }
+  function BitsTreeImport() {
+	showModal('Paste your Bits tree string here (Do not add empty space)','You need an empty Bittree otherwise you are forced to Meta-reset',{ textBox: true , confirmButton: true , textColor: 'aqua'} , BitsTreeImport2)
+  }
+  function BitsTreeImport2(imported = undefined) {
+	imported = String(modal.textBox.value)
+	let msg = BitTreeCheckErrorMsg(imported)
+	if(msg === '' && (tmp.r.buyables[110].canAfford || getBuyableAmount('n',11).eq(0))) {
+		if(getBuyableAmount('n',11).gte(1)) player.r.buyables[1101] = d(0)
+		if(getBuyableAmount('n',11).gte(1)) buyBuyable('r',110)
+
+		const pairs = imported.split(",");
+		let totalCost = d(0);	
+		for (const pair of pairs) {
+			const [skillId, skillLevel] = pair.split(":");
+			player.n.buyables[skillId] = new Decimal(skillLevel)
+			totalCost = totalCost.add(new Decimal(skillLevel).times(tmp.n.buyables[skillId].cost));
+		}
+		player.g.spentmetabits = totalCost
+		
+	} else if (msg === '') {
+		doPopup('Machine', 'You cannot Meta-reset!' , 'Bits tree import failed' , 3 , 'red')
+	} else {
+		doPopup('Machine' , msg , "Bits tree import failed" , 3 , "red")
+	}
+  }
+  function BitsTreeExport(skillTree = tmp.n.buyables) {
+	const skillPairs = [];
+
+	for (const skillId in skillTree) {
+	  const skillLevel = parseInt(skillTree[skillId].title);
+	  if (skillLevel > 0) {
+		skillPairs.push(`${skillId}:${skillLevel}`);
+	  }
+	}
+   
+	return skillPairs.join(",");
+  }
+  function BitsTreeImport3(str) {
+
+  }

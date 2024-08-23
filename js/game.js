@@ -462,9 +462,6 @@ var interval = setInterval(function() {
 		}
 		playTimeUpdate = false
 	}
-	if (!options.flashingWarned && player.o.heat.div(player.o.maxHeat).gte(0.5)) {
-		flashingWarned()
-	}
 	tmp.scrolled = document.getElementById('treeTab') && document.getElementById('treeTab').scrollTop > 30
 	updateTemp();
 	updateOomps(diff);

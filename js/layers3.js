@@ -142,6 +142,7 @@ addLayer("g", {
         if(hasAchievement('ac',116)) bitpersec = bitpersec.times(achievementEffect('ac',116))
         if(inChallenge('e',13)) bitpersec = bitpersec.times(50)
         if(player.g.ud.gte(2)) bitpersec = bitpersec.times(16777216)
+        if(hasUpgrade('t',61)) bitpersec = bitpersec.times(upgradeEffect('t',61))
         if(hasAchievement('ac',139)) bitpersec = bitpersec.times(player.ac.achievements.filter(x => x>=141 && x<=169).length * 0.03 + 1)
         if(true) bitpersec = bitpersec.times(player.r.truegamespeed)
         player.g.bitspersec = bitpersec
@@ -160,7 +161,9 @@ addLayer("g", {
         let bitsconvert = d(1)
 
         if(hasAchievement('ac',119)) bitscap = bitscap.add(1)
+        if(hasAchievement('ac',162)) bitscap = bitscap.add(2)
         if(hasAchievement('ac',119)) bitsconvert = bitsconvert.add(1)
+        if(hasAchievement('ac',162)) bitsconvert = bitsconvert.add(2)
 
         player.g.storagedbitscap = bitscap
         player.g.enmetalizedconvert = bitsconvert
@@ -233,6 +236,10 @@ addLayer("g", {
         player.g.corruption[4] = base5
         player.g.corruption[5] = base6
 
+        if(hasMilestone('g',8) && player.g.enmetalizedbits.gt(0)) {
+            player.g.totalmetabits = player.g.totalmetabits.add(player.g.enmetalizedbits)
+            player.g.enmetalizedbits = d(0)
+        }
     },
     update(delta) {
         player.g.bits = player.g.bits.add(player.g.bitspersec.times(delta))
@@ -314,7 +321,7 @@ addLayer("g", {
         },
         8: {
             requirementDescription() {return options.hidemastery?"Milestone 8":""+format(300000)+" Mastery (8)"},
-            effectDescription() {return "Automaticly "+Qcolor2('a','Enmetalize')+" bits"},
+            effectDescription() {return ""+Qcolor2('a','Enmetalized')+" Bits is "+Qcolor2('green3','instantly')+" converted to "+Qcolor2('green5','Metabit')+""},
             unlocked() {return player.g.sacrificeactive[2].gte(1)},
             done() {return player.r.mastery.gte("300000") && player.g.sacrificeactive[2].gte(1)},
             style() {
@@ -346,8 +353,8 @@ addLayer("g", {
             canClick() { return player.r.prestigetime.gt(10)},
             unlocked() { return player.g.sacrificeactive[1].gte(1) },
             onHold() {
-                let expected = player.r.prestigetime.times(0.005)
-                let next = player.g.s2best.times(0.1).add(1)
+                let expected = player.r.prestigetime.times(0.025)
+                let next = player.g.s2best.times(0.5).add(1)
                 let fill = expected.min(next)
 
                 player.g.s2best = player.g.s2best.add(fill)
@@ -359,12 +366,13 @@ addLayer("g", {
         },
         12: {
             title() { return "Further explore" },
-            canClick() { return player.points.gt("1e10000")},
+            canClick() { return player.points.gt("1e10000") && player.g.s4best.neq(2)},
             unlocked() { return player.g.sacrificeactive[3].gte(1) },
             tooltip() {
                 let text = ""
                 let level = player.g.s4best
                 if(level.eq(1)) text = "Exploring depth 2 <br> In this depth , Additive , Subtractive and Exponent corruption start 2x sooner while Number , Multiplicative and Divisive corruption start is square rooted <br> In depth 2 : You will be given a total of 30 Exponent weight , assign them to Number/Multiplicative/Divisive to boost them "
+                if(level.eq(2)) text = "You cannot go to depth 3 yet"
                 return "Require : "+f(d("e10000"))+" Points <br>"+text 
             },
             ttStyle() {
@@ -376,6 +384,7 @@ addLayer("g", {
              }
             },
             onClick() {
+            if(player.g.s4best.gte(2)) return
             if (!confirm("Do you wish to further explore Altered realm . This action will restart your current Graduation")) return
             player.g.s4best = player.g.s4best.add(1)
             buyBuyable('g',100)
@@ -402,7 +411,10 @@ addLayer("g", {
             onClick() {
             if (!confirm("Do you want to retreat from Altered realm . This action will restart your current Graduation and will remove bonuses reached")) return
             player.g.s4best = player.g.s4best.sub(1)
-            player.g.buyables[17] = d(1)
+            player.g.EW = player.g.tEW
+            player.g.effectWeight[0] = d(0)
+            player.g.effectWeight[1] = d(0)
+            player.g.effectWeight[2] = d(0)
             player.subtabs.e.stuff = "Main"
             buyBuyable('g',100)
             player.g.timer = d(1200)
@@ -437,7 +449,6 @@ addLayer("g", {
                    
                }
                player.n.points = d(0)
-               player.g.timer2 = d(0)
             },
             effect() {
                 let base = d(1)
@@ -659,7 +670,7 @@ addLayer("g", {
                 return d(0)},
             canAfford() { return true},
             tooltip() {return "Respec spent Exponent weight"},
-            unlocked() {return player.g.s4best.gte(1)},
+            unlocked() {return player.g.s4best.gte(2)},
             buy() {
                player.g.buyables[this.id] = player.g.buyables[this.id].sub(1).times(-1)
 
@@ -944,10 +955,10 @@ addLayer("g", {
         },                    
         205: {
             title() {
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?"Tetration sacrifice":"Locked-S5"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?"Herbivore sacrifice":"Locked-S5"
                },
             display() {
-                 let text2 = "Tetration cost is increased by 2.5x and +250 raw ; but add +250% to Twilight reward strength <br> Permeant reward : On graduation reset , retain Tetration equal to highest Tetration ever <i>in this sacrifice</i> ("+format(player.g.s5best,0)+")"
+                 let text2 = "All row2 layers are disabled and cannot generate resources . +250% twilight reward strength <br> Inside of this sacrifice lies a portal to the third realm"
                  return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Achieve "+format(d("24"),0)+" Tetration <br><i> You have "+format(player.r.tetration,0)+" Tetration"
             },
             canAfford() { return true },
@@ -979,8 +990,8 @@ addLayer("g", {
                 return player.g.SacrificeUnlock[this.id-201].gte(1)?"Exponent sacrifice":"Locked-S6"
                },
             display() {
-                let text2 = "Exponent cost scaling base is much higher but Tickspeed is increased massively <br> Permeant reward : You can charge up 1 Graduation I Achievements per Exponent inside this challenge , giving it much stronger bonuses"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Have "+format(d("200"),0)+" Exponent <br><i> You have "+format(player.e.points,0)+" Exponent"
+                let text2 = "Exponent cost scaling base is much higher but Tickspeed is ^4 & Tickspeed cap is "+f(d("1e1500"))+"x higher  <br> Permeant reward : You can charge up 1 Graduation I Achievements per Exponent inside this challenge , giving it much stronger bonuses"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Have "+format(d("167"),0)+" Exponent <br><i> You have "+format(player.e.points,0)+" Exponent"
 
             },
             canAfford() { return true },
@@ -989,7 +1000,7 @@ addLayer("g", {
                if(player.g.sacrificehover.neq(d(this.id).sub(200))) {
                  player.g.sacrificehover = d(d(this.id).sub(200))
                } else {
-                if(player.g.SacrificeUnlock[this.id-201].eq(0) && player.e.points.gte("200") && player.g.sacrificehover.eq(d(d(this.id).sub(200)))) {
+                if(player.g.SacrificeUnlock[this.id-201].eq(0) && player.e.points.gte("167") && player.g.sacrificehover.eq(d(d(this.id).sub(200)))) {
                     player.g.SacrificeUnlock[this.id-201] = d(1)
                     return
                }
@@ -1013,7 +1024,7 @@ addLayer("g", {
                },
             display() {
                 let text2 = "You're trapped in MR challenge with <i>every single modifier maxed apart from Frozen Time</i> ; Improvements cost way less and is unlocked instantly <br> Permeant reward : Any challenge you completed in this sacrifice recieve 1 new effect"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:player.g.sacrificeactive[2].gte(1)?"Unlock this sacrifice <br> You cannot unlock inside of Time sacrifice":"Unlock this sacrifice <br> Obtain "+format(d("200000"),0)+" Mastery <br><i> You have "+format(player.r.mastery)+" Mastery"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:player.g.sacrificeactive[2].gte(1)?"Unlock this sacrifice <br> You cannot unlock inside of Time sacrifice , nice try":"Unlock this sacrifice <br> Obtain "+format(d("250000"),0)+" Mastery (Currently impossible) <br><i> You have "+format(player.r.mastery)+" Mastery"
 
             },
             canAfford() { return true },
@@ -1022,7 +1033,7 @@ addLayer("g", {
                if(player.g.sacrificehover.neq(d(this.id).sub(200))) {
                  player.g.sacrificehover = d(d(this.id).sub(200))
                } else {
-                if(player.g.SacrificeUnlock[this.id-201].eq(0) && player.r.mastery.gte("200000") && !player.g.sacrificeactive[2].gte(1) && player.g.sacrificehover.eq(d(d(this.id).sub(200)))) {
+                if(player.g.SacrificeUnlock[this.id-201].eq(0) && player.r.mastery.gte("250000") && !player.g.sacrificeactive[2].gte(1) && player.g.sacrificehover.eq(d(d(this.id).sub(200)))) {
                     player.g.SacrificeUnlock[this.id-201] = d(1)
                     return
                }
@@ -1046,7 +1057,7 @@ addLayer("g", {
                },
             display() {
                 let text2 = "All Points gain multiplier and exponent is reduced to 1 <br> Tickspeed is equal to 10^(log(Tickspeed)^0.75) <br> Permeant reward : The 6th improvement is unlocked and will not reset normally , but can only be bought inside of this sacrifice"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Gather "+format(d("1e25000"),0)+" Points <br><i> You have "+format(player.points)+" Points"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Gather "+format(d("1e25000"),0)+" Points (Currently impossible) <br><i> You have "+format(player.points)+" Points"
 
             },
             canAfford() { return true },

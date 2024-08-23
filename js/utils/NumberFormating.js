@@ -96,7 +96,7 @@ function format(decimal, precision = 2, small , order = 100) {
         else return Decimal.pow(10, slog.sub(slog.floor())).toStringWithDecimalPlaces(3) + "F" + commaFormat(slog.floor(), 0)
     }
     else if (options.unit === "Blind") return ""
-    else if (options.unit === "Infinity" && order === 100) return infinityFormat(decimal , precision)
+    //else if (options.unit === "Infinity" && order === 100) return infinityFormat(decimal , precision)
     else if (options.unit === "Logarithm" && order === 100) return logFormat(decimal , 2)
     else if (decimal.gte("1e1000000")) return exponentialFormat(decimal, 0 , false)
     else if (decimal.gte("1e10000")) return exponentialFormat(decimal, 0)
@@ -243,7 +243,7 @@ function invertOOM(x){
     let e = x.log10().ceil()
     let m = x.div(Decimal.pow(10, e))
     e = e.neg()
-    x = new Decimal(10).pow(e).times(d(10).div(m))
+    x = new Decimal(10).pow(e).times(d(10).div(m)).div(10)
 
     return x
 }
