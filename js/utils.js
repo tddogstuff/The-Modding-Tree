@@ -1069,6 +1069,3 @@ function isSkillUnlocked(skillId, skillTree) {
    
 	return skillPairs.join(",");
   }
-  function BitsTreeImport3(str) {
-
-  }

@@ -3324,10 +3324,10 @@ addLayer("ac", {
         165: {
             name: "Long-lasting Milestone",
             done() {return hasMilestone('g',8)},
-            tooltip() {return "Complete the eighth ("+f(300000)+" Mastery) milestone in S3 <br> Reward : Unlock 4 Graduation upgrade"},
+            tooltip() {return "Complete the eighth ("+f(300000)+" Mastery) milestone in S3"},
             unlocked() {return player.ac.r.eq(6)}, 
             style() {
-                return Qcolor3('aqua')
+                return Qcolor3('')
             },
             ttStyle() {
                 return {
@@ -3762,18 +3762,6 @@ addLayer("t", {
         tickspeedcontrol: d(1),
         banked: d(0),
         bankedgain: d(0), 
-        crystal: [d(0),d(0),d(0)],
-        crystalEffect: [[d(1)],[d(1)],[d(1)]],
-        generatorAmount: [[d(0)],[d(0)],[d(0)]],
-        generatorProduction: [[d(0)],[d(0)],[d(0)]],
-        generatorMultiplier: [[d(1)],[d(1)],[d(1)]],
-        generatorMultiplier1: [[d(1)],[d(1)],[d(1)]],
-        generatorPurchased: [[d(0)],[d(0)],[d(0)]],
-        acceleration:d(1),
-        accelerationPurchase: d(0),
-        accelerationMultiplier: d(1.2),
-        purchaseMultiplier: d(1.2),
-
     }},
     infoboxes: {
         lore: {
@@ -3884,36 +3872,15 @@ addLayer("t", {
             limit = limit.times("1e1500")
         }
         player.t.cap = limit
-        let baseSpeed = d(1)
-        baseSpeed = baseSpeed.times(player.t.accelerationMultiplier.pow(player.t.accelerationPurchase))
-        player.t.acceleration = baseSpeed
 
         let basegain = player.t.banked.add(1).pow(0.5).times(player.r.truegamespeed).div(player.r.gamespeed.max(1))
-   player.t.bankedgain = basegain
-        for (let a = 0 ; a < player.t.generatorPurchased.length ; a++) {
-            for (let b = 0 ; b < player.t.generatorPurchased[a].length ; b++) {
-                player.t.generatorMultiplier[a][b] = player.t.purchaseMultiplier.pow(d(player.t.generatorPurchased[a][b])).times(d(player.t.generatorMultiplier1[a][b]))
-            }
-        }
-        for (let c = 0 ; c < player.t.generatorAmount.length ; c++) {
-            for (let f= 0 ; f < player.t.generatorAmount[c].length ; f++) {
-                player.t.generatorProduction[c][f] = d(player.t.generatorAmount[c][f]).times(d(player.t.generatorMultiplier[c][f])).times(player.t.acceleration)
-            }
-        }
-        player.t.crystalEffect[0][0] = player.t.crystal[0].add(1).pow(7)
+        player.t.bankedgain = basegain
+
     },
     update(delta) {
         if(!player.t.banked.eq(0)) {
         player.t.banked = player.t.banked.add(player.t.bankedgain.times(delta))
-    }
-        for (let a = 0 ; a < player.t.crystal.length ; a++) {
-            player.t.crystal[a] = player.t.crystal[a].add(player.t.generatorProduction[a][0].times(delta))
         }
-        for (let b = 0 ; b < player.t.generatorAmount.length ; b++) {
-            for (let c = 1 ; c < player.t.generatorAmount[b].length ; c++) {
-                player.t.generatorAmount[b][c-1] = d(player.t.generatorAmount[b][c-1]).add(d(player.t.generatorProduction[b][c]).times(delta))
-            }
-        }    
 },  
 
 
@@ -5830,7 +5797,7 @@ addLayer("n", {
             tooltip() {return this.display()+"<br> Perk ID : "+format(d(this.id),0)},
             
             display() { 
-                return "Gain a "+Qcolor2('y','6.4x Gamespeed')+" multiplier , only when you are "+Qcolor2('green2','increasing')+" your Points by at least "+Qcolor2('green2','10 OoM in a second')+" <br> Currently : "+this.effect()+"x  <br> Cost : "+Qcolor2('s',format(this.cost(),0))+" "+Qcolor2('s',"metabits")+" " },
+                return "Gain a "+Qcolor2('y','6.4x Gamespeed')+" multiplier , only when you are "+Qcolor2('green2','multipling')+" your Points by at least "+Qcolor2('green2',fde(10)+'x')+" in a second <br> Currently : "+this.effect()+"x  <br> Cost : "+Qcolor2('s',format(this.cost(),0))+" "+Qcolor2('s',"metabits")+" " },
             canAfford() { 
                 if(options.instantcalculation) return (player.g.spentmetabits.add(this.cost())).lte(player.g.totalmetabits) && getBuyableAmount('n',91).gte(2)
                 return player.g.metabits.gte(this.cost()) && getBuyableAmount('n',91).gte(2)
@@ -7666,11 +7633,13 @@ addLayer("e", {
         perkpower: d(0),
         maxperkpower: d(0),
         perkpowerinterval: d(60),
+        perkpowerinterval2: d(60),
         effective: d(0),
         perkpowerincrease: d(0),
         first: d(0),
         bonus: d(1),
         strength: d(0.6),
+        ticked: d(0),
     }},
     tooltip() {
         let a = f(player.e.perkpower)+" Perk power </br>"
@@ -7745,13 +7714,15 @@ addLayer("e", {
     update(delta) {
          /*
         The constant 2.30258509299 is equal to log(10)/log(e) , where e is Euler's number
+        - Perk power gain
         */
-
-       let ticks = d(delta).times(player.r.truegamespeed)
+       let overTime = d(delta).sub(0.1).max(0)
+       let ticks = d(delta).min(0.1).times(player.r.truegamespeed)
        if(player.r.c10.gt(0) && player.r.c10.neq(7)) ticks = d(0)
-        if(!hasMilestone('e',5)) ticks = d(0)
+       if(!hasMilestone('e',5)) ticks = d(0)
        let k = d(2).log(10).times(2.30258509299).div(player.e.perkpowerinterval).times(-1)
-        player.e.perkpower = player.e.perkpower.add(player.e.maxperkpower.sub(player.e.perkpower).sub((player.e.maxperkpower.sub(player.e.perkpower)).times(d(Math.E).pow(ticks.times(k)))))
+       player.e.perkpower = player.e.perkpower.add(player.e.maxperkpower.sub(player.e.perkpower).sub((player.e.maxperkpower.sub(player.e.perkpower)).times(d(Math.E).pow(ticks.times(k)))).min(player.e.maxperkpower.sub(player.e.perkpower).div(4)))
+       player.e.ticked = player.e.ticked.add(overTime)
     },
     power() {
         let power = d(0.05)
@@ -7805,8 +7776,11 @@ addLayer("e", {
         b = b.div(buyableEffect('e',42))
         if(hasAchievement('ac',131)) b = b.div(achievementEffect('ac',131))
         if(hasAchievement('ac',152)) b = b.div(achievementEffect('ac',152))
+        player.e.perkpowerinterval2 = b
+        b = b.div(player.e.ticked.add(1).max(1))
+        player.e.ticked = d(0)
         player.e.perkpowerinterval = b
-        let k = d(2).log(10).times(2.30258509299).div(player.e.perkpowerinterval).times(-1)
+        let k = d(2).log(10).times(2.30258509299).div(player.e.perkpowerinterval2).times(-1)
         player.e.perkpowerincrease = player.e.maxperkpower.sub(player.e.perkpower).sub((player.e.maxperkpower.sub(player.e.perkpower)).times(d(Math.E).pow(d(player.r.truegamespeed).times(k))))
 
         if(true) {
@@ -8650,7 +8624,7 @@ addLayer("e", {
                 content: [
                     ["blank", "25px"],
                     ["raw-html", function () { return "<h3>You have "+format(player.e.perkpower)+"/"+format(player.e.maxperkpower)+" ("+format(player.e.perkpowerincrease)+"/s) perk power , which boost Effective Exponent by x"+format(player.e.bonus)+" "}, { "color": "purple", "font-size": "22px"}],
-                    ["raw-html", function () { return "<h3>The difference between <i>current perk power</i> and <i>max perk power</i> is <i>halved</i> every "+formatTime(player.e.perkpowerinterval.max(1))+" <br> The <i>interval</i> is <i>doubled every 10 perk power</i> and can be decreased based on various bonuses "}, { "color": "white", "font-size": "17px"}],
+                    ["raw-html", function () { return "<h3>The difference between <i>current perk power</i> and <i>max perk power</i> is <i>halved</i> every "+formatTime(player.e.perkpowerinterval2.max(1))+" <br> The <i>interval</i> is <i>doubled every 10 perk power</i> and can be decreased based on various bonuses "}, { "color": "white", "font-size": "17px"}],
                     ["raw-html", function () { return "<h3>Perk power also give additional scaling bonuses"}, { "color": "purple", "font-size": "22px"}],
                     ["raw-html", function () { return getBuyableAmount('e',41).gte(1)?"<h3>Divide Exponent , Additive and Subtractive cost by /"+format(buyableEffect('e',24))+"":""}, { "color": "pink", "font-size": "18px"}],
                     ["raw-html", function () { return getBuyableAmount('e',41).gte(2)&&getBuyableAmount('r',121).neq(1)?"<h3>Divide Exponent cost by /"+format(buyableEffect('e',23))+"":""}, { "color": "pink", "font-size": "18px"}],

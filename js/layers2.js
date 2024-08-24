@@ -1225,13 +1225,22 @@ addLayer("o", {
             doPopup("Machine", "Cooled down", "", 3, 'green')
             player.o.overheat = false
         }
+        if(getBuyableAmount('o',45).eq(1) && player.o.rerolltime.lte(0)) {
+            buyBuyable('o',41)
+        }
+        if(getBuyableAmount('o',46).eq(1) && player.o.rerolltime.lte(0)) {
+            if(player.o.realtime.gte(d(player.o.cost[0]).times(10))) buyBuyable('o',42)
+            if(player.o.realtime.gte(d(player.o.cost[1]).times(10))) buyBuyable('o',43)
+            if(player.o.realtime.gte(d(player.o.cost[2]).times(10))) buyBuyable('o',44)
+
+        }
     },
     update(delta) {
         if(!player.o.gamespeed.eq(1) && !options.dev) {
             player.o.realtime = player.o.realtime.sub(player.o.gscost.times(delta))
         }
         player.o.rerolltime = player.o.rerolltime.sub(d(1).times(delta))
-        player.o.heat = player.o.heat.add(player.o.heating.sub(player.o.cooling).times(d(delta).clampMax(0.05))).clampMin(0).clampMax(player.o.maxHeat)
+        player.o.heat = player.o.heat.add(player.o.heating.sub(player.o.cooling).times(d(delta))).clampMin(0).clampMax(player.o.maxHeat)
     },
 
     layerShown() { return true }, 
@@ -1917,7 +1926,7 @@ buyables: {
         title() {
         return +getBuyableAmount(this.layer, this.id) + " unused </br> 1 minute warp"
         } ,
-        tooltip() { return "Grant 1 min worth of production instantly <br> +5% Heat" },
+        tooltip() { return "Grant 1 min worth of production instantly" },
         ttStyle() {
             return {
                 "color":"yellow",
@@ -1933,14 +1942,12 @@ buyables: {
                 player.o.buyables[31] = player.o.buyables[31].sub(a)
                 player.o.rerolltime = player.o.rerolltime.add(60 * a)
                 player.timePlayed = player.timePlayed - 60 * a
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(20)).times(a))
                 gameLoop(60 * a)
             } else if (player.o.buyables[32].gte(1)) {
                 player.o.buyables[32] = player.o.buyables[32].sub(1)
                 player.o.buyables[31] = player.o.buyables[31].add(10 - a)
                 player.o.rerolltime = player.o.rerolltime.add(60 * a)
                 player.timePlayed = player.timePlayed - (60 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(20)).times(a))
 
                 gameLoop(60 * a)
             } else if (player.o.buyables[33].gte(1)) {
@@ -1948,13 +1955,11 @@ buyables: {
                 player.o.buyables[31] = player.o.buyables[31].add(60 - a)
                 player.o.rerolltime = player.o.rerolltime.add(60)
                 player.timePlayed = player.timePlayed - (60 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(20)).times(a))
                 gameLoop(60 * a)
             } else if (player.o.realtime.gte(60 * a)) {
                 player.o.realtime = player.o.realtime.sub(60 * a)
                 player.o.rerolltime = player.o.rerolltime.add(60 * a)
                 player.timePlayed = player.timePlayed - (60 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(20)).times(a))
                 gameLoop(60 * a)
             } else {
                 alert("Not enough real time to warp")
@@ -1968,7 +1973,7 @@ buyables: {
         title() {
         return +getBuyableAmount(this.layer, this.id) + " unused </br> 10 minutes warp"
         } ,
-        tooltip() { return "Grant 10 mins worth of production instantly <br> +10% Heat" },
+        tooltip() { return "Grant 10 mins worth of production instantly" },
         ttStyle() {
             return {
                 "color":"yellow",
@@ -1984,26 +1989,22 @@ buyables: {
                 player.o.buyables[32] = player.o.buyables[32].sub(a)
                 player.o.rerolltime = player.o.rerolltime.add(600 * a)
                 player.timePlayed = player.timePlayed - (600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(10)).times(a))
                 gameLoop(600 * a)
             } else if (player.o.buyables[31].gte(10 * a)) {
                 player.o.buyables[31] = player.o.buyables[31].sub(10 * a)
                 player.o.rerolltime = player.o.rerolltime.add(600 * a)
                 player.timePlayed = player.timePlayed - (600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(10)).times(a))
                 gameLoop(600 * a)
             } else if (player.o.buyables[33].gte(1)) {
                 player.o.buyables[33] = player.o.buyables[33].sub(1)
                 player.o.buyables[32] = player.o.buyables[32].add(6 - a)
                 player.o.rerolltime = player.o.rerolltime.add(600 * a)
                 player.timePlayed = player.timePlayed - (600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(10)).times(a))
                 gameLoop(600 * a)
             } else if (player.o.realtime.gte(600 * a)) {
                 player.o.realtime = player.o.realtime.sub(600 * a)
                 player.o.rerolltime = player.o.rerolltime.add(600 * a)
                 player.timePlayed = player.timePlayed - (600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(10)).times(a))
                 gameLoop(600 * a)
             } else {
                 alert("Not enough real time to warp")
@@ -2018,7 +2019,7 @@ buyables: {
         title() {
         return +getBuyableAmount(this.layer, this.id) + " unused </br> 1 hour warp"
         } ,
-        tooltip() { return "Grant 1h worth of production instantly <br> +20% Heat" },
+        tooltip() { return "Grant 1h worth of production instantly" },
         ttStyle() {
             return {
                 "color":"yellow",
@@ -2034,25 +2035,21 @@ buyables: {
                 player.o.buyables[33] = player.o.buyables[33].sub(a)
                 player.o.rerolltime = player.o.rerolltime.add(3600 * a)
                 player.timePlayed = player.timePlayed - (3600* a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(5)).times(a))
                 gameLoop(3600 * a)
             } else if (player.o.buyables[31].gte(60 * a)) {
                 player.o.buyables[31] = player.o.buyables[31].sub(60 * a)
                 player.o.rerolltime = player.o.rerolltime.add(3600 * a)
                 player.timePlayed = player.timePlayed - (3600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(5)).times(a))
                 gameLoop(3600 * a)
             } else if (player.o.buyables[32].gte(6 * a)) {
                 player.o.buyables[32] = player.o.buyables[32].sub(6 * a)
                 player.o.rerolltime = player.o.rerolltime.add(3600 * a)
                 player.timePlayed = player.timePlayed - (3600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(5)).times(a))
                 gameLoop(3600 * a)
             } else if (player.o.realtime.gte(3600 * a)) {
                 player.o.realtime = player.o.realtime.sub(3600 * a)
                 player.o.rerolltime = player.o.rerolltime.add(3600 * a)
                 player.timePlayed = player.timePlayed - (3600 * a)
-                player.o.heat = player.o.heat.add(d(player.o.maxHeat.div(5)).times(a))
                 gameLoop(3600 * a)
             } else {
                 alert("Not enough real time to warp")
@@ -2075,7 +2072,7 @@ buyables: {
             let d = softcap(c,604800,0.91) //1w
             let e = softcap(d,2592000,0.88) //1mo
             let f = softcap(e,31536000,0.85) //1y
-            return "Consume all of your real time to instantly gain "+formatTime(f)+" worth of production <br> No heat increase"
+            return "Consume all of your real time to instantly gain "+formatTime(f)+" worth of production"
         },
         ttStyle() {
             return {
@@ -2113,7 +2110,7 @@ buyables: {
             let c = player.o.buyables[33].times(3600)
         
             let f = a.add(b).add(c)
-            return "Consume all unused warp to instantly gain "+formatTime(f)+" worth of production <br> No heat increase"
+            return "Consume all unused warp to instantly gain "+formatTime(f)+" worth of production"
         },
         ttStyle() {
             return {
@@ -2124,7 +2121,6 @@ buyables: {
             }
         },
         buy() {
-            if (!confirm("Are you sure? This action cannot be undone")) return
             let a = player.o.buyables[31].times(60)
             let b = player.o.buyables[32].times(600)
             let c = player.o.buyables[33].times(3600)
@@ -2145,10 +2141,14 @@ buyables: {
         title() {
         return "Reroll bundle"
         } ,
+        tooltip() {return "Reroll cooldown is 1.5% less per achievement completed"},
         display() { return "" },
         canAfford() { return player[this.layer].rerolltime.lte(0) },
         buy() {
-        player.o.rerolltime = d(60)
+        let base = d(60)
+        if(getBuyableAmount('o',45).eq(1)) base = d(120)
+        base = base.times(d(0.985).pow(d(player.ac.achievements.filter(x => x < 1000).length)))
+        player.o.rerolltime = d(base)
         player.o.hourwarp[0] = 0
         player.o.hourwarp[1] = Math.floor(Math.random()*2)
         player.o.hourwarp[2] = Math.floor(Math.random()*4)
@@ -2273,6 +2273,44 @@ buyables: {
             }    else return Qcolor('green')
     }
     },
+    45: {
+        title() {
+            return "AutoReroll"
+           } ,
+        cost(x) { 
+            return d(0)},
+        canAfford() { return true},
+        tooltip() {return "Automatic bundle reroll , but reroll cooldown is 2x higher"},
+        unlocked() {return true},
+        buy() {
+           player.o.buyables[this.id] = player.o.buyables[this.id].sub(1).times(-1)
+
+        },
+        style() {
+            if (player.o.buyables[this.id].eq(1)) {
+                return Qcolor('green',40)
+            }
+             else return Qcolor('red',40)}
+    },
+    46: {
+        title() {
+            return "AutoBuyer"
+           } ,
+        cost(x) { 
+            return d(0)},
+        canAfford() { return true},
+        tooltip() {return "Automatically buy bundles costing less than 10x your current Real time , every reroll cycle"},
+        unlocked() {return true},
+        buy() {
+           player.o.buyables[this.id] = player.o.buyables[this.id].sub(1).times(-1)
+
+        },
+        style() {
+            if (player.o.buyables[this.id].eq(1)) {
+                return Qcolor('green',40)
+            }
+             else return Qcolor('red',40)}
+    },
         },
     microtabs: {
         main: {
@@ -2375,7 +2413,7 @@ calc21: {
             ["raw-html", function () { return inChallenge('d',11)?"<h3>ACTIVE CHALLENGE No counting <br> (Number gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Number gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(1)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Number gain is always 0) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return player.r.truegamespeed.eq(0)?"<h3>Passive generation : x0":"<h3>Passive generation : x"+format(tmp.n.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.r.truegamespeed.eq(0)?"<h3>Passive generation : x0":"<h3>Passive generation : x"+format(tmp.n.passiveGeneration.div(tmp.t.effect.clampMin(player.t.cap).div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Number passive gain : "+format(generateAmount('n'))+"/s" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -2581,7 +2619,7 @@ calc24: {
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Multiplicative gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(4)?"<h3>ACTIVE SACRIFICE Multiplicative <br> (Multiplicative cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Multiplicative layer is disabled)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.m.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.m.passiveGeneration.div(tmp.t.effect.clampMax(player.t.cap).div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Multiplicative passive gain : "+format(generateAmount('m'))+"/s" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -2636,7 +2674,7 @@ calc25: {
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Divisive gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(5)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Divisive cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.g.sacrificeactive[4].gte(1)?"<h3> ACTIVE SACRIFICE Herbivore sacrifice <br> (Divisive layer is disabled)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.d.passiveGeneration.div(tmp.t.effect.div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Passive generation : x"+format(tmp.d.passiveGeneration.div(tmp.t.effect.clampMax(player.t.cap).div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Divisive passive gain : "+format(generateAmount('m'))+"/s" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -2803,7 +2841,7 @@ calc32: {
             ["raw-html", function () { return "<h3>"+tmp.ac.achievements[131].name+" achievement : /"+format(achievementEffect('ac',131))+""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+tmp.ac.achievements[152].name+" achievement : /"+format(achievementEffect('ac',152))+""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
-            ["raw-html", function () { return "<h3>Time : "+formatTime(player.e.perkpowerinterval.max(1))+" , interval increased to 1 second if lower" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Time : "+formatTime(player.e.perkpowerinterval2.max(1))+" , interval increased to 1 second if lower" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
         ]      
     },
 }, 
@@ -3570,8 +3608,10 @@ calc: {
             content: [
                 ["raw-html", function () { return !options.dev?"":"<h3><i> Developer mode : All bundles are free" }, { "color": "orange", "font-size": "18px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3> Each bundle contains random amount of normal warp that is sold at a reduced price" }, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3> You can refresh bundles every 60s (Remaining cooldown : "+formatTime(player.o.rerolltime.max(0))+")" }, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3> You can refresh bundles (Remaining cooldown : "+formatTime(player.o.rerolltime.max(0))+")" }, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
                 ["row",[["buyable",41]]],
+                ["blank","50px"],
+                ["row",[["buyable",45],["buyable",46],["buyable",47]]],
                 ["blank", "50px"],
                 ["row", [["buyable",42],["buyable",43],["buyable",44]]],
 

@@ -155,7 +155,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added Some stuff.<br>
 		- Endgame : 320 Mastery`
 
-let winText = `You have reached the end of Graduation II for now`
+let winText = `You have reached Cursed Realm (current Endgame)`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -370,7 +370,7 @@ var displayThings = [
 // Determines when the game "ends"
 // it's not possible right now
 function isEndgame() {
-	return player.r.bestmastery.gte(d("1e6"))
+	return false
 }
 
 
@@ -400,7 +400,19 @@ function fixOldSave(oldVersion){
 		AllArtifactEffect()
 		updateAllAritfactEffect()
 
+		delete player.t.accelerationMultiplier
+		delete player.t.accelerationPurchase
+		delete player.t.purchaseMultiplier
+		delete player.t.crystal
+		delete player.t.generatorAmount
+		delete player.t.generatorPurchased
+		delete player.t.generatorMultiplier
+		delete player.t.generatorMultiplier1
+		delete player.t.generatorProduction
+		delete player.t.crystalEffect
+
 	}
+	
 	if(oldVersion <= "0.0.4" && options.hidemastery) {
 		options.hidemastery = false
 		showModal('Your save had Hide Mastery option enabled prior to v0.0.4 , which is now been disabled')
