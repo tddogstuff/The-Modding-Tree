@@ -39,7 +39,7 @@ function getResetGain(layer, useType = null) {
 	}
 }
 /** 
-* Calculate the amount of prior resource to gain 1 of that resource
+* Calculate the amount of prior resource to gain n of that resource
 **/
 function getNextAt(layer, canMax=false, useType = null) {
 	let type = useType

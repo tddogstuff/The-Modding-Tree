@@ -110,11 +110,11 @@ var systemComponents = {
 			<br>Offline Time: {{formatTime(player.offTime.remain)}} (Hold [shift] to speed up)<br>
 		</span>
 		<br>
-		<span v-if="player.points.lt('1e1000') && !inChallenge('e',13)"  class="overlayThing">You have </span>
+		<span v-if="player.points.lt('1e1000') && !inChallenge('e',13) && !inChallenge('c',11)"  class="overlayThing">You have </span>
 		<span v-if="inChallenge('e',13)"  class="overlayThing"> You gain </span>
-		<h2 v-if="!inChallenge('e',13)" class="overlayThing" id="points">{{format(player.points)}}</h2>
+		<h2 v-if="!inChallenge('e',13) && !inChallenge('c',11)" class="overlayThing" id="points">{{format(player.points)}}</h2>
 		<h2 v-if="inChallenge('e',13)" class="overlayThing" id="points">{{format(getPointGen())}}</h2>
-		<span v-if="player.points.lt('1e1e6')"  class="overlayThing"> {{modInfo.pointsName}}</span>
+		<span v-if="player.points.lt('1e1e6') && !inChallenge('c',11)"  class="overlayThing"> {{modInfo.pointsName}}</span>
 		<span v-if="inChallenge('e',13)"  class="overlayThing"> per second </span>
 		<br>
 		<span v-if="canGenPoints() && !inChallenge('e',13)"  class="overlayThing">({{tmp.other.oompsMag != 0 ? format(tmp.other.oomps) + " OOM" + (tmp.other.oompsMag < 0 ? "^OOM" : tmp.other.oompsMag > 1 ? "^" + tmp.other.oompsMag : "") + "s" : formatSmall(getPointGen())}}/sec)</span>
@@ -176,7 +176,7 @@ var systemComponents = {
 				<td><button class="opt" onclick="subCurrency()">Display layer sub-currency  : {{options.subCurrency?"ON":"OFF"}}</button></td>
 				<td><button class="opt" onclick="heatPercentage()">Heat display : {{options.heatPercentage?"Percentage":"Numeric"}}</button></td>
 				<td><button class="opt" onclick="noHeatColor()">Background Heat color : {{options.noHeatColor?"OFF":"ON"}}</button></td>
-
+				<td><button class="opt" onclick="costIncrease()">Show static layer cost increase : {{!options.costIncrease?"OFF":"ON"}}</button></td>
 
         </table>`
     },

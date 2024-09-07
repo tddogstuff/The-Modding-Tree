@@ -88,6 +88,14 @@ function buyableTooltipStyle(layer, id) {
 	style.push(bb.ttStyle)
 	return style
 }
+/**
+ * Mostly used for grid ; Due to the nature of my grid , it's not automated
+ */
+function gridTooltipStyle(layer, id) {
+	let style = []
+	style.push(tmp[player.tab].ttStyle)
+	return style
+}
 
 
 function updateWidth() {

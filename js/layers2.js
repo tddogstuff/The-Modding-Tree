@@ -1234,6 +1234,11 @@ addLayer("o", {
             if(player.o.realtime.gte(d(player.o.cost[2]).times(10))) buyBuyable('o',44)
 
         }
+        if(getBuyableAmount('o',47).eq(1) && player.o.rerolltime.gte(1) && player.o.realtime.gte(player.o.rerolltime.times(1200)) && player.o.realtime.gte("3600")) {
+            let eff = player.o.rerolltime.sub(1).max(0).times(4)
+            player.o.rerolltime = d(1)
+            player.o.realtime = player.o.realtime.sub(eff)
+        }
     },
     update(delta) {
         if(!player.o.gamespeed.eq(1) && !options.dev) {
@@ -1924,7 +1929,8 @@ buyables: {
         
     31: {
         title() {
-        return +getBuyableAmount(this.layer, this.id) + " unused </br> 1 minute warp"
+        let a = getBuyableAmount(this.layer,this.id)
+        return format(a,0) + " unused </br> 1 minute warp"
         } ,
         tooltip() { return "Grant 1 min worth of production instantly" },
         ttStyle() {
@@ -1971,7 +1977,8 @@ buyables: {
     },
     32: {
         title() {
-        return +getBuyableAmount(this.layer, this.id) + " unused </br> 10 minutes warp"
+        let a = getBuyableAmount(this.layer,this.id)
+        return format(a,0)+ " unused </br> 10 minutes warp"
         } ,
         tooltip() { return "Grant 10 mins worth of production instantly" },
         ttStyle() {
@@ -2017,7 +2024,8 @@ buyables: {
     },
     33: {
         title() {
-        return +getBuyableAmount(this.layer, this.id) + " unused </br> 1 hour warp"
+        let a = getBuyableAmount(this.layer,this.id)
+        return format(a,0) + " unused </br> 1 hour warp"
         } ,
         tooltip() { return "Grant 1h worth of production instantly" },
         ttStyle() {
@@ -2299,7 +2307,26 @@ buyables: {
         cost(x) { 
             return d(0)},
         canAfford() { return true},
-        tooltip() {return "Automatically buy bundles costing less than 10x your current Real time , every reroll cycle"},
+        tooltip() {return "Automatically buy bundles costing less than 10% of your current Real time , every reroll cycle"},
+        unlocked() {return true},
+        buy() {
+           player.o.buyables[this.id] = player.o.buyables[this.id].sub(1).times(-1)
+
+        },
+        style() {
+            if (player.o.buyables[this.id].eq(1)) {
+                return Qcolor('green',40)
+            }
+             else return Qcolor('red',40)}
+    },
+    47: {
+        title() {
+            return "InstantReroll"
+           } ,
+        cost(x) { 
+            return d(0)},
+        canAfford() { return true},
+        tooltip() {return "Spent real time to lower the reroll cooldown at 4:1 ratio"},
         unlocked() {return true},
         buy() {
            player.o.buyables[this.id] = player.o.buyables[this.id].sub(1).times(-1)
@@ -2343,6 +2370,7 @@ buyables: {
                 ["raw-html", function () { return inChallenge('e',11)?"<h3>ACTIVE CHALLENGE Equality <br> (Points gain cannot exceed Number<sup>0.5</sup>) <br> Point gain is capped at "+format(player.n.points.pow(0.5))+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return inChallenge('e',12)?"<h3>ACTIVE CHALLENGE No Number <br> (Points gain is reduced to 10<sup>log(gain)<sup>"+format(d(0.25).times(player.points.max(10).log(10).pow(-0.1)),6)+"</sup></sup>) <br> Point gain is reduced to "+format(d(10).pow(getMult().pow(getExp()).max(10).log(10).pow(d(0.25).times(player.points.max(10).log(10).pow(-0.1)))))+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No Basic <br> (Points gain is reduced to log(gain)^^1.5 <br> Point gain is reduced to "+format(getMult().pow(getExp()).max(10).log(10).tetrate(1.5))+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Points gain is disabled)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return "<h3>Point gain : "+format(getPointGen())+"/s" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -2368,7 +2396,9 @@ buyables: {
                 ["raw-html", function () { return hasUpgrade('n',31)?"<h3>Point condenser upgrade :  x"+format(getPointCondensereffect_MUL())+"":""}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
 
                 ["blank" , "25px"],
-                ["raw-html", function () { return inChallenge('d',12)?"<h3>ACTIVE CHALLENGE Worsen condition (Multiplier is equal to its log<sub>10</sub>)":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return inChallenge('d',12)?"<h3>ACTIVE CHALLENGE Worsen condition (Multiplier becomes log<sub>10</sub>)":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return inChallenge('al',11)&&player.g.s4best.gte(3)?"<h3>Global : Altered realm - Depth 3 (Multiplier becomes log<sub>10</sub>)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return player.g.sacrificeactive[7].gte(1)?"<h3>ACTIVE SACRIFICE Points sacrifice (Multiplier is set to x1)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
                 ["raw-html", function () { return "<h3>Total : x"+format(getMult())+" to base Points gain"}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
             ]      
@@ -2389,11 +2419,13 @@ buyables: {
                 ["raw-html", function () { return hasSuperAchievement('ac',19)?"<h3>"+tmp.ac.achievements[19].name+" charged achievement : x1.02":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
                 ["raw-html", function () { return inChallenge('d',12)?"<h3>ACTIVE CHALLENGE Worsen condition (Exponent is multiplied by x5)":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return inChallenge('al',11)&&player.g.s4best.gte(3)?"<h3>Global : Altered realm - Depth 3 (Exponent is multiplied by x125)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return inChallenge('m',11)?"<h3>ACTIVE CHALLENGE Fatigued : (Exponent is multiplied by x0.5)":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return inChallenge('d',13)?"<h3>ACTIVE CHALLENGE Chaotic Division : (Exponent is multiplied by x0.2)":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
                 ["raw-html", function () { return inChallenge('r',11)?"<h3>ACTIVE CHALLENGE Meta-research - Point shredder : (Exponent is multiplied by x"+format(player.r.cha)+")":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
                 ["raw-html", function () { return player.g.timer.lt(600)?"<h3>GRADUATION Early game nerf : Exponent is multiplied by x"+format(player.g.timer.min(600).div(600))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return player.g.sacrificeactive[7].gte(1)?"<h3>ACTIVE SACRIFICE Points sacrifice (Exponent is set to 1)":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
                 ["blank" , "25px"],
                 ["raw-html", function () { return "<h3>Total : ^"+format(getExp())+" to base Points gain"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -2413,7 +2445,12 @@ calc21: {
             ["raw-html", function () { return inChallenge('d',11)?"<h3>ACTIVE CHALLENGE No counting <br> (Number gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Number gain is always 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(1)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Number gain is always 0) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return player.r.truegamespeed.eq(0)?"<h3>Passive generation : x0":"<h3>Passive generation : x"+format(tmp.n.passiveGeneration.div(tmp.t.effect.clampMin(player.t.cap).div(1000).div(player.r.truegamespeed)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Number gain is disabled)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { 
+                let a = d(0)
+                if(hasUpgrade('al',32)) a = a.add(1)
+                return player.r.truegamespeed.eq(0)?"<h3>Passive generation : x0":"<h3>Passive generation : x"+format(tmp.n.passiveGeneration.div(tmp.t.effect.clampMin(player.t.cap).div(1000).div(player.r.truegamespeed)).add(a))+""
+             }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Tickspeed : x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Gamespeed : x"+format(player.r.truegamespeed)+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Number passive gain : "+format(generateAmount('n'))+"/s" }, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
@@ -2472,6 +2509,7 @@ calc21: {
             ["raw-html", function () { return player.g.sacrificeactive[0].gte(1)?"<h3>ACTIVE SACRIFICE Number sacrifice : (Exponent is multiplied by x0.05)":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('d',11)?"<h3>ACTIVE CHALLENGE No counting <br> (Exponent always equal to 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No basic <br> (Exponent always equal to 0) <br>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Exponent always equal to 0)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return "<h3>Total : ^"+format(tmp.n.gainExp)+" to base Number gain"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -2486,7 +2524,7 @@ calc22: {
             ["raw-html", function () { return "<h3>Starting cost : "+format(250)+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('al',11)?"<h3> GLOBAL - Altered realm : Starting additive cost is 10.08 instead":"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Base cost : x"+format(d(2).pow(player.a.points.pow(1.35)))+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Cost scaling start at "+format(player.a.startsoftcap)+" additive" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Cost scaling starts at "+format(player.a.startsoftcap)+" additive" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost scaling : ^"+format(getCostScaling('a',player.a.points,d(0.6)),4)+" (avg : "+format(getCostScaling('a',player.a.points,d(0.6)).sub(1).div(player.a.points.max(player.a.startsoftcap.add(1)).sub(player.a.startsoftcap)))+")" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Direct additive gain : ^"+format(tmp.a.directMult.pow(-1))+" to costs" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.a.points.gte(player.g.corruption[1])?"<h3>CORRUPTED! After "+format(player.g.corruption[1])+" Additive , cost becomes 10^(log<sub>10</sub>cost)^"+format((player.a.points.div(player.g.corruption[1])).max(1),4)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2516,7 +2554,7 @@ calc22: {
             ["raw-html", function () { return inChallenge('r',11)?"<h3>ACTIVE CHALLENGE Meta-research - Resource reduction : ^"+format(player.r.chb)+" to cost reduction":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm : /"+format(24.8)+" (Applied after exponent)":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Total Cost reduction : /"+format(tmp.a.gainMult.pow(-1))+"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Total cost reduction : /"+format(tmp.a.gainMult.pow(-1))+"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return player.g.artifactset1[1] > 1?"<h3>Artifacts - Active Orb : x"+format(player.g.artifactset1[1])+" to Additive gain":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasSuperAchievement('ac',21)?"<h3>Subtractive lord charged achievement : x1.02 to Additive gain":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -2547,10 +2585,10 @@ calc23: {
         buttonStyle() { return { 'color': 'red' , "border-color" : "orange" } },
         unlocked() { return true },
         content: [
-            ["raw-html", function () { return "<h3>Starting cost : +"+format(250)+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Starting cost : "+format(250)+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('al',11)?"<h3> GLOBAL - Altered realm : Starting subtractive cost is 10.08 instead":"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Base cost : x"+format(d(2).pow(player.s.points.pow(1.35)))+"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Cost scaling start at "+format(player.s.startsoftcap)+" subtractive" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Cost scaling starts at "+format(player.s.startsoftcap)+" subtractive" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Cost scaling : ^"+format(getCostScaling('s',player.s.points,d(0.6)),4)+" (avg : "+format(getCostScaling('s',player.s.points,d(0.6)).sub(1).div(player.s.points.max(player.s.startsoftcap.add(1)).sub(player.s.startsoftcap)))+")" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Direct subtractive gain : ^"+format(tmp.s.directMult.pow(-1))+" to costs" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.s.points.gte(player.g.corruption[2])?"<h3>CORRUPTED! After "+format(player.g.corruption[2])+" Subtractive , cost becomes 10^(log<sub>10</sub>cost)^"+format((player.s.points.div(player.g.corruption[2])).max(1),4)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
@@ -2580,7 +2618,7 @@ calc23: {
             ["raw-html", function () { return inChallenge('r',11)?"<h3>ACTIVE CHALLENGE Meta-research - Resource reduction : ^"+format(player.r.chb)+" to cost reduction":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm : /"+format(24.8)+" (Applied after exponent)":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Total Cost reduction : /"+format(tmp.s.gainMult.pow(-1))+"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Total cost reduction : /"+format(tmp.s.gainMult.pow(-1))+"" }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["raw-html", function () { return player.g.artifactset1[2] > 1?"<h3>Artifacts - Active Orb : x"+format(player.g.artifactset1[2])+" to Subtractive gain":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasSuperAchievement('ac',24)?"<h3>Is this enough? charged achievement : x1.05 to Subtractive gain":"" }, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
@@ -2727,6 +2765,7 @@ calc31: {
             ["raw-html", function () { return "<h3>Requirement : x"+format(d("1e50"))+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Total cost : "+format(static_cost('e',player.e.points))+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(6)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Exponent cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Exponent does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
 
         ]      
     },
@@ -2737,7 +2776,7 @@ calc31: {
         content: [
             ["raw-html", function () { return player.e.perkpower.gt(0)?"<h3>Exponent perk : /"+format(buyableEffect('e',23).times(buyableEffect('e',24)))+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return buyableEffect('n',43).neq(1)?"<h3>Bits tree - Skills 43 :  /"+format(buyableEffect('n',43))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return buyableEffect('n',81).neq(1)?"<h3>Bits tree - Perk 81 :  /"+format(buyableEffect('n',81))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return getBuyableAmount('n',81).eq(1)?"<h3>Bits tree - Perk 81 :  /"+format(buyableEffect('n',81))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasAchievement('ac',163)?"<h3>"+tmp.ac.achievements[163].name+" achievement :  /"+format(achievementEffect('ac',163))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return hasUpgrade('e',63)?"<h3>Extra cheap upgrade : ^1.25 to cost reduction":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.tetration.gte(7)?"<h3>7 Tetration reward : ^1.5 to cost reduction":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
@@ -2824,6 +2863,7 @@ calc32: {
             ["raw-html", function () { return hasUpgrade('al',54)?"<h3>Super Divisive upgrade : ^1.1":"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('r',11)?"<h3>ACTIVE CHALLENGE Meta-research - Weaken Exponent : ^"+format(player.r.chd)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(7)?"<h3>ACTIVE SACRIFICE Challenge sacrifice <br> (Perk Power cannot be gained) <br>":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Perk power does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["blank", "25px"],
             ["raw-html", function () { return "<h3>Max Perk Power : "+format(buyableEffect('e',12))+"" }, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -2896,6 +2936,7 @@ calc34: {
         ["raw-html", function () { return inChallenge('e',13)?"<h3> No basic challenge : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(9)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.g.sacrificeactive[2].gte(1)?"<h3> ACTIVE SACRIFICE Prestige time sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Prestige time does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return "<h3> Totalling : "+format(player.r.deltatime)+"/s"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h3> Converted to : "+formatTime(player.r.deltatime)+"/s"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
@@ -2919,6 +2960,7 @@ calc41: {
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.tetration.gte(10)?"<h3> 10 Tetration reward : x"+format(player.r.challengeshard.add(1))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('r',105)?"<h3> Energetic Improvement upgrade : x"+format(upgradeEffect('r',105))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Light additive does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',401).gt(1)?"<h3> Twilight booster : x"+format(buyableEffect('r',401))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.truegamespeed.neq(1)?"<h3> Current gamespeed : x"+format(player.r.truegamespeed)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2937,8 +2979,10 @@ calc41: {
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(12)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
+        ["raw-html", function () { return hasAchievement('ac',102)?"<h3> "+tmp.ac.achievements[102].name+" achievement : x"+format(achievementEffect('ac',102))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.tetration.gte(10)?"<h3> 10 Tetration reward : x"+format(player.r.challengeshard.add(1))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('r',105)?"<h3> Energetic Improvement upgrade : x"+format(upgradeEffect('r',105))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Dark subtractive does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',401).gt(1)?"<h3> Twilight booster : x"+format(buyableEffect('r',401))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.truegamespeed.neq(1)?"<h3> Current gamespeed : x"+format(player.r.truegamespeed)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2957,6 +3001,7 @@ calc41: {
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.tetration.gte(10)?"<h3> 10 Tetration reward : x"+format(player.r.challengeshard.add(1))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('r',105)?"<h3> Energetic Improvement upgrade : x"+format(upgradeEffect('r',105))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Twilight does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('r',401).gt(1)?"<h3> Twilight booster : x"+format(buyableEffect('r',401))+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.truegamespeed.neq(1)?"<h3> Current gamespeed : x"+format(player.r.truegamespeed)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
@@ -2974,12 +3019,13 @@ calc41: {
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(13)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
-        ["raw-html", function () { return hasAchievement('ac',154)?"<h3> Energetic Improvement upgrade : x"+format(achievementEffect('ac',154))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return hasAchievement('ac',154)?"<h3> Energetic power achievement : x"+format(achievementEffect('ac',154))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.tetration.gte(10)?"<h3> 10 Tetration reward : x"+format(player.r.challengeshard.add(1))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasUpgrade('r',105)?"<h3> Energetic Improvement upgrade : x"+format(upgradeEffect('r',105))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return buyableEffect('r',503).gt(1)?"<h3> Energy powerer buyable : ^"+format(buyableEffect('r',503))+"":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasSuperAchievement('ac',92)?"<h3> Tetration I charged achievement : ^1.5":""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Energy does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.truegamespeed.neq(1)?"<h3> Current gamespeed : x"+format(player.r.truegamespeed)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h3> Totalling : "+format(player.r.energypersec)+""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ]      
@@ -2997,6 +3043,7 @@ calc42: {
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(10)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : x0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.g.sacrificeactive[3].gte(1)?"<h3> ACTIVE SACRIFICE Realm sacrifice : x3":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Meta-research does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return "<h3> On reset : +"+format(player.r.nextmetaresearch)+""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
 
@@ -3019,6 +3066,7 @@ calc43: {
         ["raw-html", function () { return hasUpgrade('t',52)?"<h3> Tetration cost II upgrade : -"+format(upgradeEffect('t',52))+" to cost":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return player.r.c10.gt(0)&&player.r.c10.neq(10)?"<h3> ACTIVE SACRIFICE Challenge sacrifice : Cost is set to Infinity":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Tetration does not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["blank" , "25px"],
         ["raw-html", function () { return "<h3> Total cost : "+format(player.r.tetrationcost)+""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h3> Note : If the total cost is Infinity , It means that you have reached your Tetration cap <br> The large number is just in place to disallow buying more"}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
@@ -3120,22 +3168,31 @@ calc53: {
         buttonStyle() { return { 'color': 'green' , "border-color" : "aqua" } },
         unlocked() { return true },
         content: [
-        ["raw-html", function () { return "<h3>Gain Operation based on Mastery"}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return "<h3>Base Operation : +"+format(d(2).pow(player.r.mastery.add(4).div(4)).sub(2))+""}, { "color": "orange", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return "<h3>Gain Operation while inside of Altered realm"}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () {
+            let base = d(2).pow(player.r.mastery.add(4).div(4)).sub(2)
+            if(base.gte("e6")) base = d("1e6").times(base.div("5e5").log(2))
+             return "<h3>Base Operation : +"+format(base)+" (from Mastery)"
+            }, { "color": "orange", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return !inChallenge('al',11)?"<h3>While not inside Altered realm , Base Operation from Mastery is equal to 0":""}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-        ["raw-html", function () { return hasUpgrade('r',51)?"<h3>Operationless upgrade [] Base Operation : +"+format(d(2).pow((player.points.add(10).log(10).pow(2.5)).add(4).div(4)).sub(2))+" from Points":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
-        ["blank","25px"],
-
+        ["raw-html", function () {
+            let base = d(2).pow((player.points.add(10).log(10).pow(2.5)).add(4).div(4)).sub(2)
+            if(base.gte("e6")) base = d("e6").times(base.div("5e5").log(2))
+             return hasUpgrade('r',51)?"<h3>Operationless upgrade [] Base Operation : +"+format(base)+" (from Points)"
+             :""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { 
             let base = d(2).pow(player.r.mastery.add(4).div(4)).sub(2)
+            if(base.gte("e6")) base = d("1e6").times(base.div("5e5").log(2))
             if(!inChallenge('al',11)) base = d(0)
-            if (hasUpgrade('r',51)) base = base.add(d(2).pow((player.points.add(10).log(10).pow(2.5)).add(4).div(4)).sub(2))
-            let after = d("1e6").times(base.div("5e5").max(2).log(2))
+            let base1 = d(2).pow((player.points.add(10).log(10).pow(2.5)).add(4).div(4)).sub(2)
+            if(base1.gte("e6")) base1 = d("e6").times(base1.div("5e5").log(2))
+            if (!hasUpgrade('r',51)) base1 = d(0)
+            let after = base.add(base1)
             if(hasAchievement('ac',126)) after = after.pow(achievementEffect('ac',126))
-            let formula = "baseOperation => "+format(1000000)+" * log<sub>2</sub>(baseOperation/"+format(500000)+") <br> ("+format(base)+" => "+format(after)+")"
-            if(hasAchievement('ac',126)) formula = "baseOperation <br>=> ("+format(1000000)+" * log<sub>2</sub>(baseOperation/"+format(500000)+"))<sup>"+f(achievementEffect('ac',126))+"</sup> <br> ("+format(base)+" => "+format(after)+") <br> the exponent ^"+f(achievementEffect('ac',126))+" is from Improving Operator achievement"
+            let formula = "Totalling : "+format(after)+""
+            if(hasAchievement('ac',126)) formula = "Base operation gain is raised by "+f(achievementEffect('ac',126))+" (Improving Operator achievement) <br> ("+format(base.add(base1))+" => "+format(after)+") "
 
-            return base.gte("1e6")?"<h3>Base Operation gain will be massively reduced above "+format(1000000)+" : "+formula:"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }
+            return"<h3>"+formula }, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }
         ],        ["raw-html", function () { return hasUpgrade('al',34)?"<h3> Extra Operation upgrade : x"+format(upgradeEffect('al',34))+"":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return hasAchievement('ac',145)?"<h3> Incredible Age achievement : x"+format(achievementEffect('ac',145))+"":""}, { "color": "yellow", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return buyableEffect('al',31).gt(1)?"<h3> More Operation buyable : x"+format(buyableEffect('al',31))+"":""}, { "color": "lime", "font-size": "22px", "font-family": "helvetica" }],
@@ -3183,6 +3240,7 @@ calc62: {
         ["blank","25px"],
         ["raw-html", function () { return inChallenge('e',13)?"<h3> INSIDE No Basic challenge : x50.00 Bits gain":""}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.g.ud.gte(2)?"<h3> No Basic challenge effect : "+format(d(2).pow(24))+" Bits gain":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
+        ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Bits do not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return player.r.truegamespeed.neq(1)?"<h3> Current gamespeed : x"+format(player.r.truegamespeed)+"":""}, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
         ["raw-html", function () { return "<h3> Gaining : "+format(player.g.bitspersec)+" Bits/s"}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
         ]      
@@ -3201,9 +3259,11 @@ calc71: {
             ["raw-html", function () { return player.g.sacrificeactive[1].gte(1)?"<h3>ACTIVE SACRIFICE Tickspeed Sacrifice <br> (Tickspeed is sacrificed)":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return inChallenge('e',13)?"<h3>ACTIVE CHALLENGE No Basic <br> Tickspeed become : Tickspeed => (log<sub>10</sub>Tickspeed)<sup>2</sup>":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.t.tickspeedcontrol.neq(1)?"<h3>Tickspeed control : ^"+format(player.t.tickspeedcontrol)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return inChallenge('al',11)?"<h3>Altered realm : Tickspeed is ^"+format(player.al.tickspeedreduction1)+" , then /"+format(player.al.tickspeedreduction2)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('al',11)?"<h3>GLOBAL : Altered realm - Tickspeed is ^"+format(player.al.tickspeedreduction1)+" , then /"+format(player.al.tickspeedreduction2)+"":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('al',11)&&player.g.s4best.gte(3)?"<h3>GLOBAL : Altered realm - Depth 3 <br> (Tickspeed is always equal to 1)":"" }, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Special tickspeed multiplier : x"+format(1000)+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Total tickspeed : "+format(tmp.t.effect)+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Tickspeed do not exist)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Above "+format(player.t.cap)+" Tickspeed , Excess Tickspeed will not provide effects" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>Which speed up Points , Row1 and Row2 resource generation by x"+format(tmp.t.effect.div(1000).clampMax(player.t.cap.div(1000)))+"" }, { "color": "gray", "font-size": "22px", "font-family": "helvetica" }],
         ]      
@@ -3258,7 +3318,7 @@ calc71: {
 calc72: {
     "Multiplier": {
         buttonStyle() { return { 'color': 'white' , "border-color" : "yellow" } },
-        unlocked() { return true },
+        unlocked() { return !inChallenge('c',11) },
         content: [
             ["raw-html", function () { return player.o.gamespeed.neq(1)?"<h3>Offline Time-speedup : x"+format(player.o.gamespeed)+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return player.r.gamespeed.neq(1)?"<h3>Research Time-speedup : x"+format(player.r.gamespeed)+"":""}, { "color": "purple", "font-size": "22px", "font-family": "helvetica" }],
@@ -3286,6 +3346,17 @@ calc72: {
             ["raw-html", function () { return player.g.sacrificeactive[6].gte(1) && !(player.r.potshard.eq(56) && inChallenge('r',11))?"<h3>You are not in Meta-research challenge with the correct modifier <br> Paused game":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return !inChallenge('al',11) && player.g.sacrificeactive[3].eq(1)?"<h3>Illegal : Altered realm cannot be entered in Meta-research challenge but it was <br> Game is frozen":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return options.gamepaused?"<h3> The game is currently being paused (in Option)":"" }, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return inChallenge('c',11)?"<h3>GLOBAL Cursed realm <br> (Gamespeed is disabled mostly , except for Offline time speedup)":""}, { "color": "brown", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Gamespeed is fastened by x"+format(player.r.truegamespeed)+""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
+        ]      
+    },
+    "Cursed Multiplier": {
+        buttonStyle() { return { 'color': 'brown' , "border-color" : "purple" } },
+        unlocked() { return inChallenge('c',11) },
+        content: [
+            ["raw-html", function () { return player.o.gamespeed.neq(1)?"<h3>Offline Time-speedup : x"+format(player.o.gamespeed)+"":""}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return player.o.heat.gte(player.o.maxHeat.div(2))?"<h3>Overheating Effect : x"+format(d(1).sub(player.o.heat.div(player.o.maxHeat).sub(0.5).times(2).pow(1.5)))+"":""}, { "color": "crimson", "font-size": "22px", "font-family": "helvetica" }],
+            ["blank","25px"],
             ["raw-html", function () { return "<h3>Gamespeed is fastened by x"+format(player.r.truegamespeed)+""}, { "color": "aqua", "font-size": "22px", "font-family": "helvetica" }],
         ]      
     },

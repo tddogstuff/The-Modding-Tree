@@ -396,7 +396,7 @@ function doPopup(type = "none", text = "This is a test popup.", title = "", time
 			popupType = "challenge-popup"
 			break;
 		case "Machine":
-			popupTitle = "Machine";
+			popupTitle = "Game notification";
 			popupType = "machine-popup"
 			break;
 		default:
@@ -541,7 +541,7 @@ function maxEffect(id , level) {
 		case 21:
 		  return 1.98 + 0.02 * level; //Generator strength
 		case 22:
-		  return 3.6 + 0.4 * level; //Perk power effect , boosting ASE cost reduction 
+		  return 1.97 + 0.03 * level; //Perk power effect , boosting ASE cost reduction 
 		case 23:
 		  return 10; //10th Perk
 		case 24:
@@ -740,120 +740,71 @@ function Qcolor(bgcolor,height,color) {
 		'height': height+'px'
 	} 
 }
-/** 
+const colorMap = {
+	n:'#8efdfc',
+	a:'#93fd8e',
+	s:'#fd8e8e',
+	m:'#2487da',
+	d:'#b90e0e',
+	e:'#d968f6',
+	r:'#9168f6',
+	t:'#efc7ef',
+	g:'#dcdac4',
+	la:'#6eb23c',
+	ds:'#b23c3c',
+	tw:'#7006be',
+	en:'#6cd9dd',
+	tt:'#54a23b',
+	off:'#ff00ff',
+	y:'#ffff00',
+	red1:'#cd5c5c',
+	red2:'#f08080',
+	red3:'#e9967a',
+	red4:'#b22222',
+	red5:'#bb0000',
+	pink1:'#ffc0cb',
+	pink2:'#ffb6c1',
+	pink3:'#ff69b4',
+	pink4:'#ff1493',
+	pink5:'#db7093',
+	orange1:'#ffa07a',
+	orange2:'#ff7f50',
+	orange3:'#ff6347',
+	orange4:'#ff4500',
+	orange5:'#ffa500',
+	yellow1:'#ffd700',
+	yellow2:'#ffffe0',
+	yellow3:'#ffe4b5',
+	yellow4:'#eee8aa',
+	yellow5:'#f0e68c',
+	purple1:'#e6e6fa',
+	purple2:'#dda0dd',
+	purple3:'#ee82ee',
+	purple4:'#663399',
+	purple5:'#9400d3',
+	green1:'#adf2ff',
+	green2:'#7cfc00',
+	green3:'#00ff7f',
+	green4:'#808000',
+	green5:'#66cdaa',
+	blue1:'#e0ffff',
+	blue2:'#e4d0d0',
+	blue3:'#00ced1',
+	blue4:'#4682b4',
+	blue5:'#7b68ee',
+}
+	
+/**
 *Change a color of an html elements
 **/
-function Qcolor2(layercode,text) {
+function Qcolor2(layerColor,text) {
 	if(!options.coloredtext) {
 		return text
 	} else {
 	let c = text
-	switch(layercode) {
-		case 'n': //number
-		return "<span style='color:#8efdfc'>" + c + "</span>"
-		case 'a': //addtive
-		return "<span style='color:#93fd8e'>" + c + "</span>"
-		case 's': //subtractive
-		return "<span style='color:#fd8e8e'>" + c + "</span>"
-		case 'm': //multiplicative
-		return "<span style='color:#2487da'>" + c + "</span>"
-		case 'd': //divisive
-		return "<span style='color:#b90e0e'>" + c + "</span>"
-		case 'e': //exponent
-		return "<span style='color:#d968f6'>" + c + "</span>"
-		case 'r': //research
-		return "<span style='color:#9168f6'>" + c + "</span>"
-		case 't': //ticks
-		return "<span style='color:#ffffff'>" + c + "</span>"
-		case 'g': //graduation
-		return "<span style='color:#dcdac4'>" + c + "</span>"
-		case 'la': //light additive
-		return "<span style='color:#6eb23c'>" + c + "</span>"
-		case 'ds': //dark subtractive
-		return "<span style='color:#b23c3c'>" + c + "</span>"
-		case 'tw': //twilight
-		return "<span style='color:#7006be'>" + c + "</span>"
-		case 'en': //energy
-		return "<span style='color:#6cd9dd'>" + c + "</span>"
-		case 'tt': //tetration
-		return "<span style='color:#54a23b'>" + c + "</span>"
-		case 'off': //offline time
-		return "<span style='color:#ff00ff'>" + c + "</span>"
-		case 'y' : //yellow color
-		return "<span style='color:#ffff00'>" + c + "</span>" 
-		case 'red1' : 
-		return "<span style='color:#cd5c5c'>" + c + "</span>" 
-		case 'red2' : 
-		return "<span style='color:#f08080'>" + c + "</span>" 
-		case 'red3' : 
-		return "<span style='color:#e9967a'>" + c + "</span>" 
-		case 'red4' : 
-		return "<span style='color:#b22222'>" + c + "</span>" 
-		case 'red5' : 
-		return "<span style='color:#bb0000'>" + c + "</span>" 
-		case 'pink1' : 
-		return "<span style='color:#ffc0cb'>" + c + "</span>" 
-		case 'pink2' : 
-		return "<span style='color:#ffb6c1'>" + c + "</span>" 
-		case 'pink3' : 
-		return "<span style='color:#ff69b4'>" + c + "</span>" 
-		case 'pink4' : 
-		return "<span style='color:#ff1493'>" + c + "</span>" 
-		case 'pink5' : 
-		return "<span style='color:#db7093'>" + c + "</span>" 
-		case 'orange1' : 
-		return "<span style='color:#ffa07a'>" + c + "</span>" 
-		case 'orange2' : 
-		return "<span style='color:#ff7f50'>" + c + "</span>" 
-		case 'orange3' : 
-		return "<span style='color:#ff6347'>" + c + "</span>" 
-		case 'orange4' : 
-		return "<span style='color:#ff4500'>" + c + "</span>" 
-		case 'orange5' : 
-		return "<span style='color:#ffa500'>" + c + "</span>" 
-		case 'yellow1' : 
-		return "<span style='color:#ffd700'>" + c + "</span>" 
-		case 'yellow2' : 
-		return "<span style='color:#ffffe0'>" + c + "</span>" 
-		case 'yellow3' : 
-		return "<span style='color:#ffe4b5'>" + c + "</span>" 
-		case 'yellow4' : 
-		return "<span style='color:#eee8aa'>" + c + "</span>" 
-		case 'yellow5' : 
-		return "<span style='color:#f0e68c'>" + c + "</span>" 
-		case 'purple1' : 
-		return "<span style='color:#e6e6fa'>" + c + "</span>" 
-		case 'purple2' : 
-		return "<span style='color:#dda0dd'>" + c + "</span>" 
-		case 'purple3' : 
-		return "<span style='color:#ee82ee'>" + c + "</span>" 
-		case 'purple4' : 
-		return "<span style='color:#663399'>" + c + "</span>" 
-		case 'purple5' : 
-		return "<span style='color:#9400d3'>" + c + "</span>" 
-		case 'green1' : 
-		return "<span style='color:#adf2ff'>" + c + "</span>" 
-		case 'green2' : 
-		return "<span style='color:#7cfc00'>" + c + "</span>" 
-		case 'green3' : 
-		return "<span style='color:#00ff7f'>" + c + "</span>" 
-		case 'green4' : 
-		return "<span style='color:#808000'>" + c + "</span>" 
-		case 'green5' : 
-		return "<span style='color:#66cdaa'>" + c + "</span>" 
-		case 'blue1' : 
-		return "<span style='color:#e0ffff'>" + c + "</span>" 
-		case 'blue2' : 
-		return "<span style='color:#e4d0d0'>" + c + "</span>" 
-		case 'blue3' : 
-		return "<span style='color:#00ced1'>" + c + "</span>" 
-		case 'blue4' : 
-		return "<span style='color:#4682b4'>" + c + "</span>" 
-		case 'blue5' : 
-		return "<span style='color:#7b68ee'>" + c + "</span>" 
-		default: 
-		return c
-	}}
+	let color = colorMap[layerColor]
+	return `<span style="color: ${color}; text-shadow: ${color} 0px 5px 15px">${c}</span>`;
+}
 }
 
 function Qcolor3(color) {
@@ -928,7 +879,7 @@ function addAchievement(layer , id) {
  * (I) you need to actually have enough MB to buy them 
  * (II) you need to physically unlocked them first , following this rules : 
  * (1) Default : Skills 11 are always unlocked
- * (2) Resource choice : Skills 21,22,23,31,32 and 33 requires 2 or more level of Skills 11 
+ * (2) Resource choice : Skills 21,22,31,32 and 33 requires 2 or more level of Skills 11 
  * (3) Resource choice II : Starting at skills 31,32 and 33 - Having 2 levels of skills n unlock skills n+10 ; until skills 71 , 72 and 73  
  * (4) Powerful Perk : Having 2 levels of skills 71,72 and 73 unlock an optional powerful perk 81
  * (5) Pace split : Having skills 71,72 and 73 additionally unlock skills 91,92,93 but only one can be bought with Bits upgrade 'Additional depth' 
@@ -938,7 +889,7 @@ function BitTreeCheckErrorMsg(importString) {
 
   //Set do not allow duplicates
   const skillIds = new Set();
-  const skillLevels = {}; //new Object
+  const skillLevels = new Object();
   let totalCost = d(0)
   //RegEx to check
   const pairRegex = /^(\d+):(\d+)$/;
@@ -963,7 +914,7 @@ function BitTreeCheckErrorMsg(importString) {
       return 'Duplicate skill ID: ' + skillId;
     }
 
-    // Check if actually in range of 0 to whatever that purchase limit might be
+    // Check if level actually in range of 0 to whatever that purchase limit might be
     if (skillLevel < 0 || skillLevel > (toNumber(tmp.n.buyables[skillId].purchaseLimit))) {
       return 'Invalid skill level: ' + skillLevel + ' for skill ID ' + skillId;
     }
@@ -982,7 +933,7 @@ function BitTreeCheckErrorMsg(importString) {
   //Check for rule (II) violations , pre-requirements
   for (const pair of pairs) {
 	const [skillId, skillLevel] = pair.split(":");
-	if(skillId>=91 && !hasUpgrade('n',74)) return 'Skills '+skillId+' is locked (Not having "Additional depth")'
+	if(skillId>=91 && !hasUpgrade('n',74)) return 'Skills '+skillId+' is locked (Req : "Additional depth" Bits upgrade)'
 	if(isSkillUnlocked(skillId,skillLevels) === null) return 'Skills '+skillId+' cannot be bought due to exclusivity'
 	if(!isSkillUnlocked(skillId,skillLevels)) return 'Cannot reach skill '+skillId+''
   }
@@ -1033,7 +984,7 @@ function isSkillUnlocked(skillId, skillTree) {
 	return false;
   }
   function BitsTreeImport() {
-	showModal('Paste your Bits tree string here (Do not add empty space)','You need an empty Bittree otherwise you are forced to Meta-reset',{ textBox: true , confirmButton: true , textColor: 'aqua'} , BitsTreeImport2)
+	showModal('Paste your Bits tree string here (Do not add empty space)',"You need to have an empty Bits tree ; if you don't , a Meta-reset will be forced",{ textBox: true , confirmButton: true , textColor: 'aqua'} , BitsTreeImport2)
   }
   function BitsTreeImport2(imported = undefined) {
 	imported = String(modal.textBox.value)

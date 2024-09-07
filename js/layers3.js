@@ -45,12 +45,7 @@ addLayer("g", {
         artifactset3:[1,1,1,1,1,1,1,1], 
         artifactset4:[1,1,1,1,1,1,1,1], 
         //Artifact storage
-        artifactstorage1:[], //Effect id
-        artifactstorage2:[], //Quality
-        artifactstorage3:[], //Effect
-        artifactstorage4:[], //Name
-        artifactstorage5:[], //Total buff
-        generated:d(0),
+
         action:d(0),
         artifactlevel: 1,
         artifactquality: 0,
@@ -87,7 +82,7 @@ addLayer("g", {
         EWid:d(10) //rawID 
 
     }},
-    color: "white",                       // The color for this layer, which affects many elements.
+    color: "#add8c8",                       // The color for this layer, which affects many elements.
     row: 5,                                 // The row this layer is on (0 is the first row).
     tooltip() {return "Graduation"},
     type: "none",                         // Determines the formula used for calculating prestige currency.
@@ -96,10 +91,10 @@ addLayer("g", {
 
     ttStyle() {
         return {
-            "color":"white",
+            "color":"#add8c8",
             "width":"200px",
             "border":"2px solid",
-            "border-color":"white",
+            "border-color":"#add8c8",
         }
     },
     
@@ -197,22 +192,7 @@ addLayer("g", {
         if(player.g.sacrificeactive[5].gte(1)) {
             player.g.s6best = player.g.s6best.max(player.e.points)
         }
-        //Handling the generation of nested array 
-        if(player.g.generated.eq(0)) {
-            let a = []
-            let b = []
-            for (let i = 0 ; i < 36 ; i++) {
-                a.push([0,0,0,0])
-                b.push([0,0,0,0,0,0,0,0])
-            }
-            player.g.generated = d(1)
-            player.g.artifactstorage1 = a
-            player.g.artifactstorage2 = a
-            player.g.artifactstorage3 = a
-            player.g.artifactstorage4 = a
-            player.g.artifactstorage5 = b
 
-        }
         player.g.chargeToken = player.g.s6best.sub(d(player.ac.super.length))  
 
         let base1 = d("1e10000")
@@ -371,16 +351,21 @@ addLayer("g", {
             tooltip() {
                 let text = ""
                 let level = player.g.s4best
-                if(level.eq(1)) text = "Exploring depth 2 <br> In this depth , Additive , Subtractive and Exponent corruption start 2x sooner while Number , Multiplicative and Divisive corruption start is square rooted <br> In depth 2 : You will be given a total of 30 Exponent weight , assign them to Number/Multiplicative/Divisive to boost them "
-                if(level.eq(2)) text = "You cannot go to depth 3 yet"
+                if(level.eq(1)) text = "Exploring depth 2 <br> In this depth , Additive , Subtractive and Exponent corruption start 2x sooner while Number , Multiplicative and Divisive corruption start is square rooted <br> In depth 2 : You will be given a total of 45 Exponent weight , assign them to Number/Multiplicative/Divisive to boost their gain"
+                if(level.eq(2)) text = hasAchievement('ac',169)?"Complete Cursed realm to venture deeper! <br> In this depth : Points gain multiplier is lowered to log10(multiplier) but is raised to the power of 125 <br> Additionally , tickspeed is disabled <br> In this depth : ":"You cannot go here yet , check back way later"
+                if(level.eq(3)) text = "Currently impossible"
+                if(level.eq(4)) text = "Currently impossible"
+                if(level.eq(5)) text = "Currently impossible"
+                if(level.eq(6)) text = "Currently impossible"
+
                 return "Require : "+f(d("e10000"))+" Points <br>"+text 
             },
             ttStyle() {
             return {
-                "width":"300px",
+                "width":"450px",
                 "border":"2px solid",
-                "border-color":"red",
-                "color":"red",
+                "border-color":"#add8c8",
+                "color":"#add8c8",
              }
             },
             onClick() {
@@ -402,10 +387,10 @@ addLayer("g", {
             tooltip() {return "Require : If you really want to <br> Unlocked powers will be removed"},
             ttStyle() {
                 return {
-                    "width":"300px",
+                    "width":"450px",
                     "border":"2px solid",
-                    "border-color":"white",
-                    "color":"white",
+                    "border-color":"#add8c8",
+                    "color":"#add8c8",
                  }
                 },
             onClick() {
@@ -428,7 +413,7 @@ addLayer("g", {
     buyables: {
         10: {
             title() {
-             return "Graduation reset <br><i> Gain +"+formatWhole(this.effect())+" Graduate"
+             return "Graduation reset <br> Gain +"+formatWhole(this.effect())+" Graduate"
             } ,
             display() { return options.hidemastery?"Perform a graduation reset to gain Graduate":"Perform a graduation reset to gain Graduate , requiring "+format(40000)+" Mastery" },
             canAfford() { return player.r.mastery.gte(40000) },
@@ -470,14 +455,14 @@ addLayer("g", {
             } ,
             tooltip() { 
                 return player.g.g1?"Get a new orb <br> Always have an quality of 50% <br> Always contains : x1.073 Effective Exponent and ^1.118 Number gain"
-                :"Replace your current orb <br> <i> Potential Effect : Raise Number , Multiplicative , Divisive gain . Multiply direct Additive , Subtractive , Research gain . Boosts Max Perk power and Effective Exponent" 
+                :"Replace your current orb <br>  Potential Effect : Raise Number , Multiplicative , Divisive gain . Multiply direct Additive , Subtractive , Research gain . Boosts Max Perk power and Effective Exponent" 
             },
             ttStyle() {
                 return {
                     "width":"300px",
                     "border":"2px solid",
-                    "border-color":"white",
-					"color":"white",
+                    "border-color":"#add8c8",
+					"color":"#add8c8",
                 }
             },
             canAfford() { return player.g.points.gte(player.g.costMultiplier) },
@@ -515,14 +500,14 @@ addLayer("g", {
              return "Get a new Relic"
             } ,
             tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
-                :"Replace your current relic <br><i> Potential Effect : Lowered Research cost , Point Boost cost , Energy booster cost , LA/DS generator requirement , Additive/Subtractive cost scaling effect" 
+                :"Replace your current relic <br> Potential Effect : Lowered Research cost , Point Boost cost , Energy booster cost , LA/DS generator requirement , Additive/Subtractive cost scaling effect" 
             },
             ttStyle() {
                 return {
                     "width":"300px",
                     "border":"2px solid",
-                    "border-color":"white",
-					"color":"white",
+                    "border-color":"#add8c8",
+					"color":"#add8c8",
                 }
             },
             canAfford() { return player.g.points.gte(player.g.costMultiplier) },
@@ -550,13 +535,13 @@ addLayer("g", {
              return "Get a new Ring"
             } ,
             tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
-                :"Replace your current ring <br><i>Potential Effect : Raise Perk power gain , all improvement effect , Perk power effect (A/S/E cost reduction) , Point boost effect . Increase Twilight perk strength , LA and DS generator strength and the 10th boost from Perk power"},
+                :"Replace your current ring <br>Potential Effect : Raise Perk power gain , all improvement effect , Perk power effect (A/S/E cost reduction) , Point boost effect . Increase Twilight perk strength , LA and DS generator strength and the 10th boost from Perk power"},
             ttStyle() {
                 return {
                     "width":"300px",
                     "border":"2px solid",
-                    "border-color":"white",
-					"color":"white",
+                    "border-color":"#add8c8",
+					"color":"#add8c8",
                 }
             },
             canAfford() { return player.g.points.gte(player.g.costMultiplier) },
@@ -584,14 +569,14 @@ addLayer("g", {
              return "Get a new Charm"
             } ,
             tooltip() { return player.g.g1?"Locked - First Artifact must be an Orb"
-                :"Replace your current charm <br> <i> Potential Effect : Multiply Gamespeed / Prestige time gain . Raise Tickspeed / all Pre-Research challenge goal . Increase Exponent boost / Max perk power . Reduce MR challenge modifier effect , exponent cost scaling base " 
+                :"Replace your current charm <br>  Potential Effect : Multiply Gamespeed / Prestige time gain . Raise Tickspeed / all Pre-Research challenge goal . Increase Exponent boost / Max perk power . Reduce MR challenge modifier effect , exponent cost scaling base " 
             },
             ttStyle() {
                 return {
                     "width":"300px",
                     "border":"2px solid",
-                    "border-color":"white",
-					"color":"white",
+                    "border-color":"#add8c8",
+					"color":"#add8c8",
                 }
             },
             canAfford() { return player.g.points.gte(player.g.costMultiplier.times(2)) },
@@ -815,9 +800,9 @@ addLayer("g", {
              return player.g.s1best.max(1).pow(player.points.add(10).log(achievementEffect('ac',143).max(1)).div(10000))
             },
             display() {
-                let text = shiftDown?"x"+format(tmp.g.buyables[201].effect)+" Number":"Multiplier to Number gain based on highest Number in this sacrifice ("+format(player.g.s1best,0)+") and scale with current Points"
+                let text = shiftDown?"x"+format(tmp.g.buyables[201].effect)+" Number":"Multiplier to Number gain based on highest Number in this sacrifice ("+format(player.g.s1best,0)+") which scales with current Points"
                 let text2 = "^0.05 Number gain but ^2.5 Multiplicative & Divisive gain <br> Permeant reward : "+text+""
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Click this button"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Click me"
             },
             canAfford() { return true },
             buy() {
@@ -852,8 +837,8 @@ addLayer("g", {
                 return player.g.s2best.max(1).log(10).div(50).pow(6.4).times(99).add(1)
             },
             display() {
-                let text = options.hidemastery?"Sacrifice Tickspeed for an increasing Gamespeed multiplier <br> In this sacrifice , there is a bar requiring <i>Prestige time</i> to be filled and grant Gamespeed bonuses":"Sacrifice Tickspeed for a Gamespeed multiplier equal to current Mastery <br> In this sacrifice , there is a bar requiring <i>Prestige time</i> to be filled and grant Gamespeed bonuses"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text:"Unlock this sacrifice <br> Requiring "+format(d("1e1200"))+" Tickspeed <br><i> Current Tickspeed is "+format(tmp.t.effect)+""
+                let text = options.hidemastery?"Sacrifice Tickspeed for an increasing Gamespeed multiplier <br> In this sacrifice , there is a bar requiring Prestige time to be filled and grant Gamespeed bonuses":"Sacrifice Tickspeed for a Gamespeed multiplier equal to current Mastery <br> In this sacrifice , there is a bar requiring Prestige time to be filled and grant Gamespeed bonuses"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text:"Unlock this sacrifice <br> Requiring "+format(d("1e1200"))+" Tickspeed <br> Current Tickspeed is "+format(tmp.t.effect)+""
 
             },
             canAfford() { return true },
@@ -888,8 +873,8 @@ addLayer("g", {
                 return player.g.s3best.max(10).log(10).pow(0.5).div(5)
             },
             display() {
-                let text = options.hidemastery?"Sacrifice Prestige Time <br> Unlock various milestone , which grant more QOL":"Sacrifice Prestige Time for 1.67x Mastery <br> Unlock various milestone , which require Mastery <i>in this sacrifice</i> , granting more QOL"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text:"Unlock this sacrifice <br> Reach 135 total Improvements level<br><i> Total Improvements level is "+format(getBuyableAmount('r', '101').add(getBuyableAmount('r', '102')).add(getBuyableAmount('r', '103')).add(getBuyableAmount('r', '104')).add(getBuyableAmount('r','105')),0)+""
+                let text = options.hidemastery?"Sacrifice Prestige Time <br> Unlock various milestone , which grant more QOL":"Sacrifice Prestige Time for 1.67x Mastery <br> Unlock various milestone , which require Mastery in this sacrifice , granting more QOL"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text:"Unlock this sacrifice <br> Reach 135 total Improvements level<br> Current total Improvements level is "+format(getBuyableAmount('r', '101').add(getBuyableAmount('r', '102')).add(getBuyableAmount('r', '103')).add(getBuyableAmount('r', '104')).add(getBuyableAmount('r','105')),0)+""
 
             },
             canAfford() { return true },
@@ -926,8 +911,8 @@ addLayer("g", {
                 return player.g.s3best.max(1).pow(0.3).tetrate(1.5)
             },
             display() {
-                let text2 = "Permeant Altered realm but x3 MR gain <br> After reaching "+format(d("1e10000"))+" points <i>in this sacrifice</i> , you may further explore Altered realm , encountering harsher penalities but yielding more power"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Needing "+format(d("1e850"))+" Operation <br><i> You have "+format(player.al.operation)+" Operation"
+                let text2 = "Permeant Altered realm but x3 MR gain <br> After reaching "+format(d("1e10000"))+" points in this sacrifice , you may further explore Altered realm , encountering harsher penalities but yielding more power"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Needing "+format(d("1e850"))+" Operation <br> You have "+format(player.al.operation)+" Operation"
             },
             canAfford() { return true },
             buy() {
@@ -958,8 +943,8 @@ addLayer("g", {
                 return player.g.SacrificeUnlock[this.id-201].gte(1)?"Herbivore sacrifice":"Locked-S5"
                },
             display() {
-                 let text2 = "All row2 layers are disabled and cannot generate resources . +250% twilight reward strength <br> Inside of this sacrifice lies a portal to the third realm"
-                 return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Achieve "+format(d("24"),0)+" Tetration <br><i> You have "+format(player.r.tetration,0)+" Tetration"
+                 let text2 = "All row2 layers are disabled and cannot generate resources . +250% twilight reward strength <br> Permeantly retains Tetration equal to highest Tetration in this Sacrifice <br> Inside of this sacrifice also lies a portal to the third realm"
+                 return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Achieve "+format(d("24"),0)+" Tetration <br> You have "+format(player.r.tetration,0)+" Tetration"
             },
             canAfford() { return true },
             buy() {
@@ -991,7 +976,7 @@ addLayer("g", {
                },
             display() {
                 let text2 = "Exponent cost scaling base is much higher but Tickspeed is ^4 & Tickspeed cap is "+f(d("1e1500"))+"x higher  <br> Permeant reward : You can charge up 1 Graduation I Achievements per Exponent inside this challenge , giving it much stronger bonuses"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Have "+format(d("167"),0)+" Exponent <br><i> You have "+format(player.e.points,0)+" Exponent"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Have "+format(d("167"),0)+" Exponent <br> You have "+format(player.e.points,0)+" Exponent"
 
             },
             canAfford() { return true },
@@ -1023,8 +1008,8 @@ addLayer("g", {
                 return player.g.SacrificeUnlock[this.id-201].gte(1)?"Challenge sacrifice":"Locked-S7"
                },
             display() {
-                let text2 = "You're trapped in MR challenge with <i>every single modifier maxed apart from Frozen Time</i> ; Improvements cost way less and is unlocked instantly <br> Permeant reward : Any challenge you completed in this sacrifice recieve 1 new effect"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:player.g.sacrificeactive[2].gte(1)?"Unlock this sacrifice <br> You cannot unlock inside of Time sacrifice , nice try":"Unlock this sacrifice <br> Obtain "+format(d("250000"),0)+" Mastery (Currently impossible) <br><i> You have "+format(player.r.mastery)+" Mastery"
+                let text2 = "You're trapped in Meta-research challenge with extra exclusive modifier <br> Permeant reward : Any Pre-research challenge you completed in this sacrifice recieve 1 new effect"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:player.g.sacrificeactive[2].gte(1)?"Unlock this sacrifice <br> You cannot unlock inside of Time sacrifice":"Unlock this sacrifice <br> Obtain "+format(d("250000"),0)+" Mastery (Currently impossible) <br> You have "+format(player.r.mastery)+" Mastery"
 
             },
             canAfford() { return true },
@@ -1056,8 +1041,8 @@ addLayer("g", {
                 return player.g.SacrificeUnlock[this.id-201].gte(1)?"Points sacrifice":"Locked-S8"
                },
             display() {
-                let text2 = "All Points gain multiplier and exponent is reduced to 1 <br> Tickspeed is equal to 10^(log(Tickspeed)^0.75) <br> Permeant reward : The 6th improvement is unlocked and will not reset normally , but can only be bought inside of this sacrifice"
-                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Gather "+format(d("1e25000"),0)+" Points (Currently impossible) <br><i> You have "+format(player.points)+" Points"
+                let text2 = "Points gain multiplier and exponent are disabled ; Tickspeed cap starting is rooted by "+format(20,0)+" <br> Permeant reward : Unlock the sixth Improvement , which require Points in this sacrifice , which multiply all Twilight resources based on Points and achievement completed"
+                return player.g.SacrificeUnlock[this.id-201].gte(1)?text2:"Unlock this sacrifice <br> Gather "+format(d("1e25000"),0)+" Points (Currently impossible) <br> You have "+format(player.points)+" Points"
 
             },
             canAfford() { return true },
@@ -1120,7 +1105,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Graduation reset mostly everything prior to it (including best Altered resource record) for Graduate"}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i> You will keep ticks , challenge shard , all achievements and up to "+format(player.g.s5best.max(4),0)+" tetration on this reset"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3> You will keep ticks , challenge shard , all achievements and up to "+format(player.g.s5best.max(4),0)+" tetration on this reset"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["row" , [["buyable" , 17]]],
             ["row" , [["buyable" , 10]]],
@@ -1132,11 +1117,9 @@ microtabs: {
             buttonStyle() { return { 'color': 'lime' } },
             unlocked() { return true }, 
             content:[
-            ["raw-html", function () { return "<h3>Artifacts provide permeant buff"}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3>Artifacts have 4 out of 8 different effect , each having a random quality determining their strength"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Current Artifact quality is "+format(player.g.artifactquality,0)+" , averaging : "+format((d(0.5).pow(d(100).div(d(100).add(player.g.artifactquality)))).times(100))+"% quality"}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Current Artifact level is "+format(player.g.artifactlevel,0)+""}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
-
+            ["raw-html", function () { return "<h3>Artifacts provide powerful buff"}, { "color": "#add8c8", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Artifacts have 4 out of 8 different effect , each having a random quality determining their strength"}, { "color": "#add8c8", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Current Artifact quality is "+format(player.g.artifactquality,0)+" , averaging : "+format((d(0.5).pow(d(100).div(d(100).add(player.g.artifactquality)))).times(100))+"% quality"}, { "color": "lime", "font-size": "18px", "font-family": "helvetica" }],
             ["blank" , "25px"],
             ["microtabs", "artifact", { 'border-width': '0px' }],
         ]
@@ -1145,7 +1128,7 @@ microtabs: {
             buttonStyle() {return {'color' : 'red'}}, 
             unlocked() {return true},
             content: [
-                ["raw-html", function () { return "<h3>Graduation rank reward"}, { "color": "cyan", "font-size": "22px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3>Graduation rank reward"}, { "color": "#add8c8", "font-size": "22px", "font-family": "helvetica" }],
                 ["row", [["infobox" , "rank2"]]],
             ]
         },
@@ -1153,11 +1136,11 @@ microtabs: {
             buttonStyle() {return {'color' : 'red'}}, 
             unlocked() {return hasUpgrade('n',71)},
             content: [
-                ["raw-html", function () { return "<h3><i> You can enter multiple sacrifices at once <br>"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3><i> Sacrifice will be applied on the next Graduation reset"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
-                ["raw-html", function () { return "<h3><i> Click to see their effect and click again to activate , deactivate , unlock"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
-                ["raw-html", function () { return buyableEffect('g',202).gt(1)?"<h3><i> [Tickspeed sacrifice] @ "+formatTime(player.g.s2best)+" filled => "+format(buyableEffect('g',202),3)+"x Gamespeed":""}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
-                ["raw-html", function () { return player.g.s4best.gt(1)?"<h3><i> [Realm sacrifice] @ Altered realm exploration depth : "+format(player.g.s4best)+"":""}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3> You can enter multiple sacrifices at once <br>"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3> Sacrifice will be applied on the next Graduation reset"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+                ["raw-html", function () { return "<h3> Click to see their effect and click again to activate , deactivate or unlock"}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+                ["raw-html", function () { return buyableEffect('g',202).gt(1)?"<h3> [Tickspeed sacrifice] @ "+formatTime(player.g.s2best)+" filled => "+format(buyableEffect('g',202),3)+"x Gamespeed":""}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
+                ["raw-html", function () { return player.g.s4best.gt(1)?"<h3> [Realm sacrifice] @ Altered realm exploration depth : "+format(player.g.s4best,0)+"":""}, { "color": "gray", "font-size": "18px", "font-family": "helvetica" }],
 
                 ["blank","25px"],
                 ["raw-html", function () { return player.g.sacrificehover.eq(0)?"":"<h3> ["+tmp.g.buyables[d(200).add(player.g.sacrificehover.max(1))].title+"] "+tmp.g.buyables[d(200).add(player.g.sacrificehover.max(1))].display()+""}, { "color": function() {return player.g.sacrificenext[player.g.sacrificehover.max(1).sub(1)].gte(1)?"lime":"red"}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1187,7 +1170,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Orb"}, { "color": "green", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact1d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact1q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact1d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact1q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact1d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact1q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1201,7 +1184,7 @@ microtabs: {
             unlocked() { return true },  
             content: [
             ["raw-html", function () { return "<h3>Relic"}, { "color": "red", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact2d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact2q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact2d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact2q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact2d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact2q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1215,7 +1198,7 @@ microtabs: {
             unlocked() { return true }, 
             content:[
             ["raw-html", function () { return "<h3>Ring"}, { "color": "orange", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Cost "+formatWhole(player.g.costMultiplier)+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact3d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact3q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact3d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact3q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact3d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact3q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1228,8 +1211,8 @@ microtabs: {
             buttonStyle() { return { 'color': 'pink' } },
             unlocked() { return true }, 
             content:[
-            ["raw-html", function () { return "<h3>Charm provide various buff"}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
-            ["raw-html", function () { return "<h3><i>Cost "+formatWhole(player.g.costMultiplier.times(2))+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Charm"}, { "color": "pink", "font-size": "22px", "font-family": "helvetica" }],
+            ["raw-html", function () { return "<h3>Cost "+formatWhole(player.g.costMultiplier.times(2))+" Graduate"}, { "color": "grey", "font-size": "18px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact4d[0]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact4q[0] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact4d[1]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact4q[1] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
             ["raw-html", function () { return "<h3>"+player.g.artifact4d[2]+""}, { "color": function() {return `hsl(${180 * (player.g.artifact4q[2] - 1)/99}, 100%, 50%)`}, "font-size": "22px", "font-family": "helvetica" }],
@@ -1276,8 +1259,8 @@ microtabs: {
         },
 }},
 tabFormat: [
-    ["raw-html", function () { return hasAchievement('ac',111)?"<h3>You have "+formatWhole(player.g.points)+" Graduate (+"+formatWhole(buyableEffect('g',10))+" next reset)":"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
-    ["raw-html", function () { return "<h3>Your Graduation rank is currently "+convertToRoman(player.g.rank)+"" }, { "color": "white", "font-size": "22px", "font-family": "helvetica" }],
+    ["raw-html", function () { return hasAchievement('ac',111)?"<h3>You have "+formatWhole(player.g.points)+" Graduate (+"+formatWhole(buyableEffect('g',10))+" next reset)":"" }, { "color": "#add8c8", "font-size": "22px", "font-family": "helvetica" }],
+    ["raw-html", function () { return "<h3>Your Graduation rank is currently "+convertToRoman(player.g.rank)+"" }, { "color": "#add8c8", "font-size": "22px", "font-family": "helvetica" }],
     ["microtabs", "stuff", { 'border-width': '0px' }],
 ],
 layerShown() { return true}

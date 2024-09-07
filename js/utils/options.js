@@ -38,6 +38,7 @@ function getStartOptions() {
 		defaultFont:'monospace',
 		unit: "Scientific",
 		lore:false,
+		costIncrease:false
 	}
 }
 function toggleOpt(name) {
@@ -242,3 +243,6 @@ function earlyskip() {
 	function ChangeFont() {
 		  document.body.style.fontFamily = modal.textBox.value	
 		}
+	function costIncrease() {
+		options.costIncrease = !options.costIncrease
+	}

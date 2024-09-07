@@ -4,7 +4,7 @@ let modInfo = {
 	id: "mthprog",
 	author: "ccon1416",
 	pointsName: "points",
-	modFiles: ["layers.js", "tree.js","layers2.js","layers3.js","Modal.js"],
+	modFiles: ["layers.js", "tree.js","layers2.js","layers3.js","CursedRealm.js","Modal.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -19,9 +19,16 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3 style='color: crimson'> v0.0.4c - Cursed realm (Upcoming) </h3> <br>
+    <span style='color:brown'>Cursed realm</span> is the third realm you'll need to conquer <br> 
+	Progress starts to halt around 9 <span style='color:aqua'>charged achievements</span> <br>
+	Enter a new realm with <span style='color:red'>weird</span> mechanic <br>
+	Successfully <span style='color:yellow'>harness the core's power</span> to push past the limitation and finally complete <span style='color:lime'>Graduation II</span> <br>
+	<br>
 	<h3 style='color: red'> v0.0.4b - Graduation II additions </h3> <br>
 	*** Addition : <br>
-	- 7 Achievements <br>
+	- 12 Achievements <br>
+	- Implemented <span style='color:yellow'>Bits tree</span> import/export <br>
 	*** Balancing changes : <br>
 	- Capped <span style='color:yellow'>'Tetration II' upgrade</span> effect to -400 raw Tetration <br>
 	- <span style='color:yellow'>Realm sacrifice</span> requirement is decreased (1e1000 Operation => 1e850) <br>
@@ -35,12 +42,18 @@ let changelog = `<h1>Changelog:</h1><br>
 	- Buffed <span style='color:yellow'>Charm artifact</span> effect <span style='color:yellow'>'Gamespeed'</span> , 'Prestige time' , max effect : 10x => 25x , 30x respectively <br>
 	- Buffed <span style='color:yellow'>Ring artifact</span> Effect <span style='color:yellow'>'Twilight generator strength'</span> , max effect : 1.75x => 2x <br>
 	- Buffed <span style='color:yellow'>Ring artifact</span> Effect <span style='color:magenta'>'Improvement effect' , 'Point boost effect'</span> , max effect : ^1.2 => ^1.25 <br>
+	- Buffed <span style='color:yellow'>Ring artifact</span> Effect <span style='color:magenta'>'Additive/Subtractive/Exponent cost reduction'</span> , max effect : ^4 => ^2 <br>
 	- Reduce the cost of the first Bits tree perk (Exponent cost reduction) from 17 => 15 <br>
-	- <span style='color:yellow'>Tetration sacrifice</span> reward removed , renamed to <span style='color:yellow'>Herbivore sacrifice</span><br>
+	- <s><span style='color:yellow'>Tetration sacrifice</span> reward removed</s> , renamed to <span style='color:yellow'>Herbivore sacrifice</span><br>
 	*** Fixed : <br>
 	- Fixed Graduation milestone 1 and 2 not working <br>
 	- Fixed features that haven't been unlocked , being displayed <br>
 	*** Others : <br>
+	- Fixed typos (x3) <br>
+	- Reduced text wall (x2) <br>
+	- Make <span style='color:purple'>'Operationless'</span> and <span style='color:pink'>Operation from Mastery</span> not display insanely high number , <span style='color:green'>'Operation'</span> remains unchanged<br>
+	- <span style='color:#ffdead'>'Ticks'</span> layer color is now warmer (more orange) ; <span style='color:#ffdead'>'Graduation'</span> layer color is now cooler (more blue)<br>
+	- Added a slight <span style='color:purple'>shadow</span> to colored text<br>
 	- <span style='color:purple'>'Research'</span> hotkey is now shift+H<br>
 	- Tweaked number inverting e.x 2e-10 will become 1/(5e10) <br>
 	- Having the <span style='color:purple'>'Operationless' upgrade</span>  set the cost of <span style='color:orange'>'Mathmatical Operation' upgrade</span>  to 0<br>
@@ -172,7 +185,7 @@ function getStartPoints(){
 * Should the points/sec be shown 
 **/
 function canGenPoints(){
-	return !(player.g.timer2.lte(0.5) || player.r.timer2.lte(0.5))
+	return !(player.g.timer2.lte(0.5) || player.r.timer2.lte(0.5)) && !inChallenge('c',11)
 }
 
 /** 
@@ -187,7 +200,7 @@ function getPointGen() {
 	if(inChallenge('e',11)) total = total.min(player.n.points.pow(0.5))
 	if(inChallenge('e',12)) total = new Decimal(10).pow(total.max(10).log(10).pow(new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1))))
 
-	let sum = total.times(tmp.t.effect.div(1000)) //Tickspeed
+	let sum = total.times(tmp.t.effect.div(1000).min(player.t.cap)) //Tickspeed
 
 	if(inChallenge('d',13)) sum = sum.div(player.n.points.add(1))
 	if(inChallenge('d',13)) sum = sum.min(player.n.points.pow(0.5).add(1))
@@ -218,7 +231,9 @@ function getMult() {
 	if (hasUpgrade('n',31)) gain = gain.times(getPointCondensereffect_MUL())
 	if (hasAchievement('ac',19)) gain = gain.times(2)
 	if (inChallenge('d',12)) gain = gain.log(10)
+	if (inChallenge('al',11) && player.g.s4best.gte(3)) gain = gain.log(10)
 
+	if(player.g.sacrificeactive[7].gte(1)) gain = new Decimal(1)	
 	return gain
 }
 /** 
@@ -231,6 +246,7 @@ function getExp() {
 	if (hasUpgrade('m', 43)) power = power.times(1.05)
 	if (inChallenge('m', 11)) power = power.times(0.5)
 	if (inChallenge('d',12)) power = power.times(5) 
+	if (inChallenge('al',11) && player.g.s4best.gte(3)) power = power.times(125)
 	if (player.r.tetration.gt(0)) power = power.times(1.1)
 	if (player.e.unlocked) power = power.times(tmp.e.expeffect)
 	if(hasSuperAchievement('ac',19)) power = power.times(1.02)
@@ -243,7 +259,8 @@ function getExp() {
 	if (hasUpgrade('n',52)) power = power.times(buyableEffect('n',11))
 	if (inChallenge('d',13)) power = power.div(5)
 	if (true) power = power.times(player.g.timer.min(600).div(600))
-		
+	
+	if(player.g.sacrificeactive[7].gte(1)) power = new Decimal(1)
 	return power
 }
 
@@ -264,78 +281,79 @@ var displayThings = [
 		m += c
 		if(c !== '' && d!== '') m += ' / '
 		m += d
-		return ""+m
+		if(inChallenge('c',11)) m = d
+		return "<h4>"+m
 	},
-	function() {return !options.hidemastery?"Current Mastery : "+Qcolor2('e',format(player.r.mastery))+" (Highest : "+Qcolor2('r',format(player.r.bestmastery))+")":""},
+	function() {return !options.hidemastery&&!inChallenge('c',11)?"<h4>Current Mastery : "+Qcolor2('e',format(player.r.mastery))+" (Highest : "+Qcolor2('r',format(player.r.bestmastery))+")":""},
 	function() {
 	if (options.hidemastery) 
 	return ""
 	if (!player.r.bestmastery.gte(5)) 
-    return "Unlock Tickspeed Upgrade at 5 Best Mastery"
+    return "<h4>Unlock Tickspeed Upgrade at 5 Best Mastery"
     if (!player.r.bestmastery.gte(308.25)) 
-    return "Unlock another (non-reset) layer at 308.25 Best Mastery"
+    return "<h4>Unlock another (non-reset) layer at 308.25 Best Mastery"
 	if (!player.r.bestmastery.gte(1000)) 
-    return "Unlock Warp bundle at "+format(1000)+" Best Mastery"
+    return "<h4>Unlock Warp bundle at "+format(1000)+" Best Mastery"
     if (!player.r.bestmastery.gte(10000)) 
-    return "Unlock Meta-research resetting at "+format(10000)+" Best Mastery"
+    return "<h4>Unlock Meta-research resetting at "+format(10000)+" Best Mastery"
 	if (!player.r.bestmastery.gte(35000)) 
-    return "Unlock something at "+format(35000)+" Best Mastery and 80 Total achievements completions"
+    return "<h4>Unlock something at "+format(35000)+" Best Mastery and 80 Total achievements completions"
 	if (!hasAchievement('ac',109))
-    return "Get 80 achievements first"
+    return "<h4>Get 80 achievements first"
 	if (player.g.rank.eq(1))
-	return "Complete all of your Graduation tasks"
+	return "<h4>Complete all of your Graduation tasks"
 	else 
 	return ""
 		},
 	function() {
 		if(inChallenge('e',12)) 
-		return "No Number challenge : Points gain is 10^log(gain)^"+Qcolor2('d',format(new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1)),6))+""
+		return "<h4>No Number challenge : Points gain is 10^log(gain)^"+Qcolor2('d',format(new Decimal(0.25).times(player.points.max(10).log(10).pow(-0.1)),6))+""
 	},
 	function() {
 		if(inChallenge('d',13)) 
-		return "Chaotic Divisor challenge : "+format(player.points)+"/"+format(player.d.timereq)+" Points for "+Qcolor2('a',"x1.1 Prestige Time gain")+""
+		return "<h4>Chaotic Divisor challenge : "+format(player.points)+"/"+format(player.d.timereq)+" Points for "+Qcolor2('a',"x1.1 Prestige Time gain")+""
 	},
 	function() {
 		if(inChallenge('d',12) && inChallenge('al',11) && player.g.rank.eq(1)) 
-		return "Worsen condition challenge : "+format(player.points.sub(10))+"/"+format(d("3.16e10").pow(0.0000001).times(10).sub(10))+" points"
+		return "<h4>Worsen condition challenge : "+format(player.points.sub(10))+"/"+format(d("3.16e10").pow(0.0000001).times(10).sub(10))+" points"
 	},
 	function() {
 		if(player.g.timer.lt(600)) 
-		return "Graduation : Points gain and Tickspeed is currently raised to ^"+format(player.g.timer.div(600),4)+""
+		return "<h4>Graduation : Points gain and Tickspeed is currently raised to ^"+format(player.g.timer.div(600),4)+""
 	},
 	function() {
 		if(player.r.c10.eq(0)) return
 		switch (toNumber(player.r.c10)) {
 			case 1:
-				return "Challenge sacrifice : You can only gain Number (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Number (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 2: 
-				return "Challenge sacrifice : You can only gain Additive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Additive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 3:
-				return "Challenge sacrifice : You can only gain Subtractive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Subtractive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 4: 
-				return "Challenge sacrifice : You can only gain Multiplicative (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Multiplicative (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 5:
-				return "Challenge sacrifice : You can only gain Divisive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Divisive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 6: 
-				return "Challenge sacrifice : You can only gain Exponent (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Exponent (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 7:
-				return "Challenge sacrifice : You can only gain Perk Power (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Perk Power (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 8: 
-				return "Challenge sacrifice : You can only gain Research (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Research (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 9:
-				return "Challenge sacrifice : You can only gain Prestige time (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Prestige time (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 10: 
-				return "Challenge sacrifice : You can only gain Meta-research (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Meta-research (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 11:
-				return "Challenge sacrifice : You can only gain Light additive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Light additive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 12: 
-				return "Challenge sacrifice : You can only gain Dark subtractive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Dark subtractive (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 13:
-				return "Challenge sacrifice : You can only gain Twilight (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Twilight (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 14: 
-				return "Challenge sacrifice : You can only gain Energy (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Energy (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			case 15:
-				return "Challenge sacrifice : You can only gain Tetration (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
+				return "<h4>Challenge sacrifice : You can only gain Tetration (Changing in "+formatTime((player.g.timer2.div(60).ceil().sub(player.g.timer2.div(60))).times(60))+")"
 			default:
 				break;
 		}
@@ -348,12 +366,12 @@ var displayThings = [
 		let hue = toNumber(d(d(100).sub(d(current).div(d(max)))).times(120))
 		let sat = 100
 		let light = 50 
-		if(!options.heatPercentage) return `<span style='color:hsl(${hue},${sat}%,${light}%)'>${format(current)}/${format(max)} Heat (${format(difference)}/s)<span>`
-		else return `<span style='color:hsl(${hue},${sat}%,${light}%)'>${format(current/max*100)}% Heat (${format(difference/max*100)}%/s)<span>`
+		if(!options.heatPercentage) return `<h4 style='color:hsl(${hue},${sat}%,${light}%)'>${format(current)}/${format(max)} Heat (${format(difference)}/s)</h4>`
+		else return `<h4 style='color:hsl(${hue},${sat}%,${light}%)'>${format(current/max*100)}% Heat (${format(difference/max*100)}%/s)</h4>`
 	},
 	function() {
 		let len = pastTickTimes.length
-		if (len <= 1) return "Avg ms/ticks : ?? (Peak : ?? ms/ticks)"
+		if (len <= 1) return "<h4>Avg ms/ticks : ?? (Peak : ?? ms/ticks)"
 		let a = 0
 		let b = 0
 		for (i = 0; i < len; i++){
@@ -363,7 +381,7 @@ var displayThings = [
 
 		let val = Math.round(a/len)
 
-		if(options.dev) return "Avg ms/tick : "+ format(val,0) + " (Peak : "+format(b,0)+" ms/tick)"
+		if(options.dev) return "<h4>Avg ms/tick : "+ format(val,0) + " (Peak : "+format(b,0)+" ms/tick)"
 	},
 ]
 
@@ -400,6 +418,12 @@ function fixOldSave(oldVersion){
 		AllArtifactEffect()
 		updateAllAritfactEffect()
 
+		delete player.g.artifactstorage1
+		delete player.g.artifactstorage2
+		delete player.g.artifactstorage3
+		delete player.g.artifactstorage4
+		delete player.g.artifactstorage5
+		delete player.g.generated
 		delete player.t.accelerationMultiplier
 		delete player.t.accelerationPurchase
 		delete player.t.purchaseMultiplier
