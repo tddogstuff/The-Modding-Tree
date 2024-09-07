@@ -19,12 +19,6 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3 style='color: crimson'> v0.0.4c - Cursed realm (Upcoming) </h3> <br>
-    <span style='color:brown'>Cursed realm</span> is the third realm you'll need to conquer <br> 
-	Progress starts to halt around 9 <span style='color:aqua'>charged achievements</span> <br>
-	Enter a new realm with <span style='color:red'>weird</span> mechanic <br>
-	Successfully <span style='color:yellow'>harness the core's power</span> to push past the limitation and finally complete <span style='color:lime'>Graduation II</span> <br>
-	<br>
 	<h3 style='color: red'> v0.0.4b - Graduation II additions </h3> <br>
 	*** Addition : <br>
 	- 12 Achievements <br>

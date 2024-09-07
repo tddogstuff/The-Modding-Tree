@@ -12839,7 +12839,7 @@ addLayer("c", {
     clickables: {
       11: {
             title() { return inChallenge('c',11)?"Leave cursed realm":"Explore cursed realm" },
-            canClick() {return true},
+            canClick() {return options.dev},
             unlocked() { return hasAchievement('ac',169)},
             onClick() {
                if(!inChallenge('c',11)) { 
