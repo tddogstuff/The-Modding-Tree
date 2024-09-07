@@ -6478,9 +6478,7 @@ addLayer("s", {
         return base
     },
     tooltip() {
-        let a = ""
-        if(options.costIncrease) a = "Cost scaling : "+format(static_cost('s',player.s.points,d(0.6)).div(static_cost('s',player.s.points.sub(1).max(0),d(0.6))))+"x"
-        return ""+format(player.s.points,0)+" Subtractive </br> Next at "+format(static_cost('s',player.s.points,d(0.6)))+" <br>"+a},
+        return ""+format(player.s.points,0)+" Subtractive </br> Next at "+format(static_cost('s',player.s.points,d(0.6)))+""},
     ttStyle() {
         return {
             "color":"#FF0000",

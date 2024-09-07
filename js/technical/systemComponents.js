@@ -176,7 +176,6 @@ var systemComponents = {
 				<td><button class="opt" onclick="subCurrency()">Display layer sub-currency  : {{options.subCurrency?"ON":"OFF"}}</button></td>
 				<td><button class="opt" onclick="heatPercentage()">Heat display : {{options.heatPercentage?"Percentage":"Numeric"}}</button></td>
 				<td><button class="opt" onclick="noHeatColor()">Background Heat color : {{options.noHeatColor?"OFF":"ON"}}</button></td>
-				<td><button class="opt" onclick="costIncrease()">Show static layer cost increase : {{!options.costIncrease?"OFF":"ON"}}</button></td>
 
         </table>`
     },
